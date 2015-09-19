@@ -6,10 +6,45 @@
  *  				String arguments = <ArgParser>.parseArguments(userinput);
  */
 package Tempo;
-public class ArgParser {
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
+public class ArgParser {
+private HashMap<ArrayList<String>,String> keywords;
 
 	public ArgParser() {
+		keywords = new HashMap<ArrayList<String>,String>();
+		ArrayList<String> add = new ArrayList<String>();
+		add.add("add");
+		add.add("create");
+		add.add("new");
+	    keywords.put(add,"add");
+		
+	    ArrayList<String> display = new ArrayList<String>();
+		display.add("display");
+		display.add("all");
+		display.add("view");
+		display.add("list");
+		keywords.put(display,"display");
+		
+		ArrayList<String> edit = new ArrayList<String>();
+		edit.add("edit");
+		display.add("update");
+		display.add("change");
+		keywords.put(edit,"edit");
+		
+		ArrayList<String> delete = new ArrayList<String>();
+		delete.add("delete");
+		delete.add("cancel");
+		delete.add("remove");
+		keywords.put(delete,"delete");
+		
+		ArrayList<String> exit = new ArrayList<String>();
+		exit.add("exit");
+		exit.add("quit");
+		keywords.put(exit, "exit");
+		
 
 	}
 	/**
@@ -82,9 +117,32 @@ public class ArgParser {
 		}
 		String[] tokenizedInput = message.split(" ");
 		String action = tokenizedInput[0];
-		return action;
+		String keyword = getValidCommand(action);
+		
+		return keyword;
 	}
 
+	private String getValidCommand(String action) {
+		// TODO Auto-generated method stub
+		for(ArrayList<String> current : keywords.keySet()) {{
+			if(existsInArray(current,action)) {
+				return current.get(0);
+			}
+		}
+	}
+		return null;
+	}
+	private boolean existsInArray(ArrayList<String> current, String action) {
+		// TODO Auto-generated method stub
+		for(int i = 0; i < current.size(); i++) {
+			
+			if(current.get(i).equals(action)) {
+				
+				return true;
+			}
+		}
+		return false;
+	}
 	private boolean isEmpty(String message) {
 		return message.length() == 0;
 	}
