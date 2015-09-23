@@ -1,86 +1,149 @@
 package Tempo;
 
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class RequestHandler {
-	private  final String MSG_CMD_NOT_VALID = "Why don't you try entering an actual command?";
-	private  final String CMD_ADD_EVENT = "add";
-	private  final String CMD_DELETE_EVENT = "delete";
+	//global variable
+	private ArrayList<String> tasksWithDeadline;
+	private ArrayList<String> tasks;
+	private ArrayList<String> events;
+	
+	//private final String MSG_CMD_NOT_VALID = "Why don't you try entering an actual command?";
+	private final String MSG_ARG_NOT_VALID = "Why don't you try entering an actual argument?";
+	private final String CMD_ADD_EVENT = "add";
+	private final String CMD_DELETE_EVENT = "delete";
 	private final String CMD_EDIT_EVENT = "edit";
 	private final String CMD_DISPLAY_EVENT = "display";
-	private  final String CMD_EXIT = "EXIT";
-	private  final String[] VALID_COMMANDS = {CMD_ADD_EVENT,CMD_EXIT};
+	private final String CMD_EXIT = "EXIT";
+	private final String[] VALID_COMMANDS = { CMD_ADD_EVENT, CMD_EXIT };
+
+	// display args
+	private final String ARG_MANUAL = "manual";
+	private final String ARG_EVENTS = "events";
+	private final String ARG_UPCOMING_EVENTS = "upcoming events";
+	private final String ARG_TASKS = "tasks";
+	private final String ARG_UNDONE_TASKS = "undone tasks";
+	private final String ARG_MISSED_TASKS = "missed tasks";
+	
+	//display based on days
+	private final String ARG_TODAY = "today";
+	private final String ARG_WEEK = "week";
+	
+	// such args list out all the events and tasks
+	private final String ARGS_ALL = "all";
+
 	public RequestHandler() {
 
 	}
+
 	/**
 	 * Takes in command, and executes an event bsaed on given arguments
+	 * 
 	 * @param command
 	 * @param arguments
 	 * @return success
 	 */
 	public boolean execute(String command, String arguments) throws IllegalArgumentException {
-		if(!validInput(command)) {
+		if (!validInput(command)) {
 			throw new IllegalArgumentException();
 		}
-		switch(command) {
+		switch (command) {
 		case CMD_ADD_EVENT:
-			return add(command,arguments);
+			return add(command, arguments);
 		case CMD_DELETE_EVENT:
-			delete(command,arguments);
+			delete(command, arguments);
 		case CMD_EDIT_EVENT:
-			return edit(command,arguments);
+			return edit(command, arguments);
 		case CMD_DISPLAY_EVENT:
-			return display(command,arguments);
+			return display(command, arguments);
 		case CMD_EXIT:
 			exit();
 		default:
 			return false;
 		}
 	}
-	
+
 	/**
-	 * FOR ALL THESE METHODS: 
-	 * YOU GET PASSED : <COMMAND, ARGUMENTS>. 
-	 * 					THE ARUGMENTS ARE ESSENTIALLY WHATEVER THE USER INPUTS AFTER 
-	 * 					ADD,DELETE, WHATEVER KEYWORD. REFER TO THE MANUAL.
-	 * 					ADD , EVENTID,DATE,ETC,DESCRIPTION
-	 * 					DELETE, EVENTID,DAT
+	 * FOR ALL THESE METHODS: YOU GET PASSED : <COMMAND, ARGUMENTS>. THE
+	 * ARUGMENTS ARE ESSENTIALLY WHATEVER THE USER INPUTS AFTER ADD,DELETE,
+	 * WHATEVER KEYWORD. REFER TO THE MANUAL. ADD , EVENTID,DATE,ETC,DESCRIPTION
+	 * DELETE, EVENTID,DAT
+	 * 
 	 * @param command
 	 * @param arguments
 	 */
 	private void delete(String command, String arguments) {
 		// TODO Auto-generated method stub
-		
+
 	}
+
 	private boolean add(String command, String arguments) {
 		// TODO Auto-generated method stub
 		return false;
 	}
+
 	private boolean edit(String command, String arguments) {
 		// TODO Auto-generated method stub
 		return false;
 	}
+
 	private boolean display(String command, String arguments) {
-		// TODO Auto-generated method stub
+		Display display = new Display(events, tasks, tasksWithDeadline);
+
+		if (arguments.equalsIgnoreCase(ARG_MANUAL)){
+			System.out.println("lol");
+			Display.manual();
+		}
+
+		else if (arguments.equalsIgnoreCase(ARG_EVENTS)) {
+			display.events();
+		}
+		
+		else if(arguments.equalsIgnoreCase(ARG_UPCOMING_EVENTS)){
+			display.upcomingEvents();
+		}
+		
+		else if(arguments.equalsIgnoreCase(ARG_UNDONE_TASKS)){
+			display.undoneTasks();
+		}
+		
+		else if(arguments.equalsIgnoreCase(ARG_MISSED_TASKS)){
+			display.missedTasks();
+		}
+		
+		else if (arguments.equalsIgnoreCase(ARG_TASKS)) {
+			display.tasks();
+		}
+
+		else if (arguments.equalsIgnoreCase(ARGS_ALL)) {
+			display.all();
+		}
+
+		else {
+			System.out.println(MSG_ARG_NOT_VALID);
+		}
+
 		return false;
 	}
+
 	/*
-	 * Command to add event to calender 
+	 * Command to add event to calender
 	 */
-	private boolean addEvent() {
-		return false;
-	}
-	
+	//private boolean addEvent() {
+	//	return false;
+	//}
+
 	/*
 	 * Exists application.
 	 */
 	private void exit() {
 		System.exit(0);
 	}
-	
+
 	/**
 	 * Read next valid command.
+	 * 
 	 * @return valid Command
 	 */
 	public String readNextCommand() {
@@ -90,30 +153,35 @@ public class RequestHandler {
 			Scanner read = new Scanner(System.in);
 			nextCommand = read.nextLine();
 			ArgParser parser = new ArgParser();
-		    cmd=	parser.parseAction(nextCommand);
+			cmd = parser.parseAction(nextCommand);
 			System.out.println("cmd : " + cmd);
-			
+			read.close();
 
-		} while(!isValidCommand(cmd));
-		return cmd;
-
+		} while (!isValidCommand(cmd));
+			return cmd;	
 	}
+	
+	
+
 	/**
 	 * Checks to make sure computer input is correct
+	 * 
 	 * @param command
 	 * @return true if command is valid
 	 */
 	private boolean validInput(String command) {
-		return existsInArray(VALID_COMMANDS,command);
+		return existsInArray(VALID_COMMANDS, command);
 	}
+
 	/**
-	 * Checks to make sure user input is correct.
-	 * If not, displays message to console.
+	 * Checks to make sure user input is correct. If not, displays message to
+	 * console.
+	 * 
 	 * @param command
 	 * @return true if command is valid
 	 */
 	private boolean isValidCommand(String command) {
-			return	command != null;
+		return command != null;
 	}
 
 	/**
@@ -121,9 +189,9 @@ public class RequestHandler {
 	 * @param text
 	 * @return true if text exists in array
 	 */
-	private boolean existsInArray(String[] array,String text) {
-		for(int i = 0; i < array.length; i++) {
-			if(array[i].equalsIgnoreCase((text))) {
+	private boolean existsInArray(String[] array, String text) {
+		for (int i = 0; i < array.length; i++) {
+			if (array[i].equalsIgnoreCase((text))) {
 				return true;
 			}
 		}
