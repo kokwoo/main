@@ -84,6 +84,11 @@ public class Event implements Comparable<Event>{
 		return 0;
 	}
 	
+	public String toString(){
+		String delimeter = "!!";
+		return getName() + delimeter + getStartDate() + delimeter + getStartTime() + delimeter + getEndDate() + delimeter + getEndTime(); 
+	}
+	
 //	public boolean clashesWith(Event e){
 //		if(this.getStartTimeInMilli() < e.getEndTimeInMilli()){
 //			return true;

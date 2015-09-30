@@ -21,7 +21,7 @@ public class CalendarExporter {
 		this.floatingTasks = floatingTasks;
 		
 		try {
-			out = new BufferedWriter(new FileWriter(_fileName, true));
+			out = new BufferedWriter(new FileWriter(_fileName));
 		} catch (IOException e) {
 			System.out.println("Error while exporting calendar");
 		}					
@@ -29,17 +29,34 @@ public class CalendarExporter {
 	}
 	
 	public void export(){
-		
-	}
-	
-	public void writeToFile(String s){
 		try {
-			out.write(s + System.getProperty("line.separator"));
+			out.write("--EVENTS--" + "\n");
+			for(int i = 0; i < events.size(); i++){
+				out.write(events.get(i).toString() + "\n");
+			}
+			out.write("--TASKS--" + "\n");
+			for(int i = 0; i < tasks.size(); i++){
+				out.write(tasks.get(i).toString() + "\n");
+			}
+			out.write("--FLOATING TASKS--" + "\n");
+			for(int i = 0; i < floatingTasks.size(); i++){
+				out.write(floatingTasks.get(i).toString() + "\n");
+			}
 			out.flush();
-		} catch (Exception e) {
-			System.out.println("Error while exporting calendar");
+			out.close();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
+	
+//	public void writeToFile(String s){
+//		try {
+//			out.write(s + System.getProperty("line.separator"));
+//			out.flush();
+//		} catch (Exception e) {
+//			System.out.println("Error while exporting calendar");
+//		}
+//	}
 	
 	
 }
