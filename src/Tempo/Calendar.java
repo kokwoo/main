@@ -1,5 +1,6 @@
 package Tempo;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -10,17 +11,25 @@ public class Calendar {
 	private ArrayList<Task> tasksList;
 	private ArrayList<FloatingTask> floatingTasksList;
 
-	public Calendar() {
-		eventsList = new ArrayList<Event>();
-		tasksList = new ArrayList<Task>();
-		floatingTasksList = new ArrayList<FloatingTask>();
-	}
+//	public Calendar() {
+//		eventsList = new ArrayList<Event>();
+//		tasksList = new ArrayList<Task>();
+//		floatingTasksList = new ArrayList<FloatingTask>();
+//	}
 
 	public Calendar(String fileName) {
 		_fileName = fileName;
 		eventsList = new ArrayList<Event>();
 		tasksList = new ArrayList<Task>();
 		floatingTasksList = new ArrayList<FloatingTask>();
+		
+		File file = new File(_fileName);
+		
+		// if the file exists, import the existing data from file
+		// else ignore
+		if(file.exists()){
+			importFromFile();
+		}
 	}
 
 	public void addEvent(String name, String startDate, String startTime, String endDate, String endTime) {
@@ -70,12 +79,19 @@ public class Calendar {
 	}
 
 	public void exportToFile() {
+		System.out.println("Exporting: " + _fileName);
 		CalendarExporter exporter = new CalendarExporter(_fileName, eventsList, tasksList, floatingTasksList);
 		exporter.export();
+		System.out.println("Export Successful!");
 	}
 	
 	public void importFromFile(){
-		
+		System.out.println("Importing: " + _fileName);
+		CalendarImporter importer = new CalendarImporter(_fileName);
+		eventsList = importer.getEventsList();
+		tasksList = importer.getTasksList();
+		floatingTasksList = importer.getFloatingTasksList();
+		System.out.println("Import Sucessful!");
 	}
 	
 	

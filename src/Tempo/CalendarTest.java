@@ -28,7 +28,7 @@ public class CalendarTest {
 //		System.out.println(t.getDueDate());
 //		System.out.println(t.getDueDateTimeInMilli());
 		
-		Calendar cal = new Calendar();
+		Calendar cal = new Calendar("hello.txt");
 		
 		cal.addEvent("Event A", "26/08/2015", "10:00", "26/08/2015", "12:00");
 		cal.addEvent("Event B", "26/08/2015", "11:00", "26/08/2015", "14:00");
@@ -61,6 +61,8 @@ public class CalendarTest {
 		for(FloatingTask f : floatingTasks){
 			System.out.println(f.getName());
 		}
+		
+		cal.exportToFile();
 		
 	}
 }
