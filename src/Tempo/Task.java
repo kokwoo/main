@@ -7,7 +7,7 @@ import java.text.SimpleDateFormat;
 public class Task extends FloatingTask implements Comparable<Task>{
 	protected Date _dueDate;
 	
-	public Task(String name, boolean done, String dueDateString){
+	public Task(String name, String done, String dueDateString){
 		super(name, done);
 		SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
 		

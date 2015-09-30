@@ -9,9 +9,9 @@ public class FloatingTask{
 		_done = false;
 	}
 	
-	public FloatingTask(String name, boolean done) {
+	public FloatingTask(String name, String done) {
 		_name = name;
-		_done = done;
+		_done = Boolean.parseBoolean(done);
 	}
 
 	public String getName() {
