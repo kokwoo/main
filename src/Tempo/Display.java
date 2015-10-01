@@ -2,19 +2,27 @@ package Tempo;
 
 import java.util.ArrayList;
 
-public class Display {
-	private ArrayList<String> events;
-	private ArrayList<String> tasks;
-	private ArrayList<String> tasksWithDeadline;
 
-	public Display(ArrayList<String> eventsAdded, ArrayList<String> tasksAdded,
-			ArrayList<String> tasksWithDeadlineAdded) {
-		eventsAdded = events;
-		tasksAdded = tasks;
-		tasksWithDeadlineAdded = tasksWithDeadline;
+public class Display {
+	private static ArrayList<Event> events;
+	private static ArrayList<Task> tasks;
+	private static ArrayList<FloatingTask> floatingTasks;
+
+	public Display(String fileName) {
+		CalendarImporter calImport = new CalendarImporter(fileName); 
+		events = new ArrayList<Event>();
+		tasks = new ArrayList<Task>();
+		floatingTasks = new ArrayList<FloatingTask>();
+		assignObjFromCal(calImport);
 	}
 
-	public static void manual() {
+	private void assignObjFromCal(CalendarImporter calImport) {
+		events = calImport.getEventsList();
+		tasks = calImport.getTasksList();
+		floatingTasks = calImport.getFloatingTasksList();
+	}
+
+	public static boolean manual() {
 		// INTRO
 		System.out.println("Hello! This is the cheatsheet for tempo!");
 		System.out.println("");
@@ -163,14 +171,27 @@ public class Display {
 		System.out.println("<KEY>: view/display");
 		System.out.println("<KEY> week");
 		System.out.println("");
+		return false;
 
 	}
 
-	public void events() {
+	public boolean events() {
 		System.out.println("These are your events for today!");
-		printTodayEvents();
+		String currentDate =  getDate();
+		for(int i=0; i<events.size();i++){
+			System.out.print(i+") ");
+			if(currentDate.equalsIgnoreCase(events.get(i).getStartDate())){
+				System.out.print(events.get(i).toString());
+			}		
+		}
 		System.out.println("These are the rest of your events!");
 		printRemainingEvents();
+		return false;
+	}
+
+	private String getDate() {
+		CurrentDateAndTime date = new CurrentDateAndTime();
+		return date.getDay()+"/"+ date.getMonth()+"/"+date.getYear();
 	}
 
 	private void printRemainingEvents() {
@@ -183,13 +204,14 @@ public class Display {
 		
 	}
 	
-	public void tasks() {
+	public boolean tasks() {
 		System.out.println("These are your tasks for today!");
 		printTodayTasks();
 		System.out.println("These are your tasks with deadlines");
 		printTasksWDeadlines();
 		System.out.println("These are the rest of your tasks!");
 		printRemainingTasks();
+		return false;
 	}
 
 	private void printTasksWDeadlines() {
@@ -227,17 +249,30 @@ public class Display {
 		}
 	}
 
-	public void upcomingEvents() {
+	public boolean upcomingEvents() {
+		return false;
 		// TODO Auto-generated method stub
 		
 	}
 
-	public void undoneTasks() {
+	public boolean undoneTasks() {
+		return false;
 		// TODO Auto-generated method stub
 		
 	}
 
-	public void missedTasks() {
+	public boolean missedTasks() {
+		return false;
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void today() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void week() {
 		// TODO Auto-generated method stub
 		
 	}

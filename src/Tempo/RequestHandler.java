@@ -5,9 +5,6 @@ import java.util.Scanner;
 
 public class RequestHandler {
 	//global variable
-	private ArrayList<String> tasksWithDeadline;
-	private ArrayList<String> tasks;
-	private ArrayList<String> events;
 	
 	//private final String MSG_CMD_NOT_VALID = "Why don't you try entering an actual command?";
 	private final String MSG_ARG_NOT_VALID = "Why don't you try entering an actual argument?";
@@ -16,6 +13,8 @@ public class RequestHandler {
 	private final String CMD_EDIT_EVENT = "edit";
 	private final String CMD_DISPLAY_EVENT = "display";
 	private final String CMD_EXIT = "EXIT";
+	private final String CMD_HELP = "help";
+	private final String CMD_MANUAL = "manual";
 	private final String[] VALID_COMMANDS = { CMD_ADD_EVENT, CMD_EXIT };
 
 	// display args
@@ -89,43 +88,41 @@ public class RequestHandler {
 	}
 
 	private boolean display(String command, String arguments) {
-		Display display = new Display(events, tasks, tasksWithDeadline);
-
-		if (arguments.equalsIgnoreCase(ARG_MANUAL)){
-			System.out.println("lol");
+		String fileName = null;
+		Display display = new Display(fileName);
+		if(command.equalsIgnoreCase(CMD_HELP) | command.equalsIgnoreCase(CMD_MANUAL)){
 			Display.manual();
 		}
-
-		else if (arguments.equalsIgnoreCase(ARG_EVENTS)) {
+		
+		switch(arguments.toLowerCase()){
+		case(ARG_MANUAL):
+			Display.manual();
+		case(ARG_EVENTS):
 			display.events();
-		}
-		
-		else if(arguments.equalsIgnoreCase(ARG_UPCOMING_EVENTS)){
-			display.upcomingEvents();
-		}
-		
-		else if(arguments.equalsIgnoreCase(ARG_UNDONE_TASKS)){
-			display.undoneTasks();
-		}
-		
-		else if(arguments.equalsIgnoreCase(ARG_MISSED_TASKS)){
-			display.missedTasks();
-		}
-		
-		else if (arguments.equalsIgnoreCase(ARG_TASKS)) {
+		case(ARG_TASKS):
 			display.tasks();
-		}
-
-		else if (arguments.equalsIgnoreCase(ARGS_ALL)) {
+		case(ARG_UPCOMING_EVENTS):
+			display.upcomingEvents();
+		case(ARG_UNDONE_TASKS):
+			display.undoneTasks();
+		case(ARG_MISSED_TASKS):
+			display.missedTasks();
+		case(ARG_TODAY):
+			display.today();
+		case(ARG_WEEK):
+			display.week();
+		case(ARGS_ALL):
 			display.all();
-		}
-
-		else {
+		default:
 			System.out.println(MSG_ARG_NOT_VALID);
+			return false;
+			
+			
+			
 		}
-
-		return false;
 	}
+		
+	
 
 	/*
 	 * Command to add event to calender
