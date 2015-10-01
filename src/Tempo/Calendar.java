@@ -50,16 +50,16 @@ public class Calendar {
 		floatingTasksList.add(newFloatingTask);
 	}
 
-	public void removeEvent() {
-
+	public void removeEvent(int idx) {
+		eventsList.remove(idx);
 	}
 
-	public void removeTask() {
-
+	public void removeTask(int idx) {
+		tasksList.remove(idx);
 	}
 
-	public void removeFloatingTask() {
-
+	public void removeFloatingTask(int idx) {
+		floatingTasksList.remove(idx);
 	}
 
 	public void display() {
