@@ -17,6 +17,7 @@ public class Tempo {
 		String userInput = "";
 		while (!userInput.equals(EXIT_CMD)) {
 			userInput = run.readNextCommand();
+			System.out.println("user input " + userInput);
 		}
 	}
 }
