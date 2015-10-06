@@ -8,6 +8,7 @@
 package Tempo;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 public class ArgParser {
@@ -69,11 +70,13 @@ public class ArgParser {
 	 * @throws IllegalArugmentException
 	 **/
 	private String[] getArguments(String message) throws IllegalArgumentException {
+		System.out.println("in get arguments");
 		if (!verifyInput(message)) {
 			throw new IllegalArgumentException();
 		}
 		String[] tokenizedInput = message.split(" ");
 		String[] argument = extractSubArray(tokenizedInput, 1, tokenizedInput.length);
+		System.out.println(Arrays.toString(argument));
 		return argument;
 	}
 

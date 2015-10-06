@@ -1,6 +1,7 @@
 package Tempo;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Scanner;
 
 public class RequestHandler {
@@ -15,7 +16,7 @@ public class RequestHandler {
 	private final String CMD_EXIT = "EXIT";
 	private final String CMD_HELP = "help";
 	private final String CMD_MANUAL = "manual";
-	private final String[] VALID_COMMANDS = { CMD_ADD_EVENT, CMD_EXIT };
+	private final String[] VALID_COMMANDS = { CMD_ADD_EVENT, CMD_DELETE_EVENT,CMD_EXIT,CMD_EDIT_EVENT};
 
 	// display args
 	private final String ARG_MANUAL = "manual";
@@ -43,19 +44,25 @@ public class RequestHandler {
 	 * @param arguments
 	 * @return success
 	 */
-	public boolean execute(String command, String arguments) throws IllegalArgumentException {
+	public boolean execute(String command, String[] arguments) throws IllegalArgumentException {
 		if (!validInput(command)) {
 			throw new IllegalArgumentException();
 		}
 		switch (command) {
 		case CMD_ADD_EVENT:
-			return add(command, arguments);
+			AddEvent addEvent = new AddEvent(arguments);
+			return add(addEvent);
 		case CMD_DELETE_EVENT:
-			delete(command, arguments);
+			DeleteEvent deleteEvent = new DeleteEvent(arguments);
+			System.out.println(deleteEvent.getEventId());
+			
+			///delete(command, arguments);
 		case CMD_EDIT_EVENT:
-			return edit(command, arguments);
+			EditEvent edit = new EditEvent(arguments);
+			return true;	// REPLACE WITH CALL TO EDIT.
+			//return edit(command, arguments);
 		case CMD_DISPLAY_EVENT:
-			return display(command, arguments);
+			//return display(command, arguments);
 		case CMD_EXIT:
 			exit();
 		default:
@@ -77,8 +84,10 @@ public class RequestHandler {
 
 	}
 
-	private boolean add(String command, String arguments) {
+	private boolean add(AddEvent event) {
 		// TODO Auto-generated method stub
+		System.out.println("Inside Add Event");
+		System.out.println(Arrays.toString(event.getArguments()));
 		return false;
 	}
 
@@ -151,8 +160,13 @@ public class RequestHandler {
 			nextCommand = read.nextLine();
 			ArgParser parser = new ArgParser();
 			cmd = parser.parseAction(nextCommand);
+			String args[] = parser.parseArguments(nextCommand);
+			execute(cmd, args);
 			System.out.println("cmd : " + cmd);
-			read.close();
+			if(nextCommand.equals("exit")) {
+				read.close();
+			}
+
 
 		} while (!isValidCommand(cmd));
 			return cmd;	
@@ -167,6 +181,8 @@ public class RequestHandler {
 	 * @return true if command is valid
 	 */
 	private boolean validInput(String command) {
+		System.out.println(command);
+		System.out.println(Arrays.toString(VALID_COMMANDS));
 		return existsInArray(VALID_COMMANDS, command);
 	}
 
