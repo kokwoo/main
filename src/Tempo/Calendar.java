@@ -52,15 +52,15 @@ public class Calendar {
 	}
 
 	public void removeEvent(int idx) {
-		eventsList.remove(idx);
+		//TODO:
 	}
 
 	public void removeTask(int idx) {
-		tasksList.remove(idx);
+		//TODO:
 	}
 
 	public void removeFloatingTask(int idx) {
-		floatingTasksList.remove(idx);
+		//TODO:
 	}
 
 	public void display() {

@@ -19,19 +19,6 @@ public class FloatingTask{
 		_done = Boolean.parseBoolean(done);
 	}
 	
-	public int getIndexForNewEvent() {
-		int index;
-		
-		if (recycledIndex.isEmpty()) {
-			index = nextHigherIndex;
-			nextHigherIndex++;
-		} else {
-			index = recycledIndex.remove();
-		}
-		
-		return index;
-	}
-	
 	public int getIndex() {
 		return _index;
 	}
