@@ -1,5 +1,7 @@
 package Tempo;
 
+import java.util.*;
+
 public class FloatingTask{
 	protected String _name;
 	protected boolean _done;

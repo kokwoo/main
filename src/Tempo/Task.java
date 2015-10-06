@@ -1,8 +1,7 @@
 package Tempo;
 
-import java.util.Date;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.util.*;
+import java.text.*;
 
 public class Task extends FloatingTask implements Comparable<Task>{
 	protected Date _dueDate;
