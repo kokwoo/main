@@ -3,17 +3,20 @@ package Tempo;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.LinkedList;
 
 public class Event implements Comparable<Event>{
 	protected String _name;
 	protected Date _startDateTime;
 	protected Date _endDateTime;
 	protected int _index;
+	private static int nextHigherIndex = 0;
+	private static LinkedList<Integer> recycledIndex = new LinkedList<Integer>();
 	
 	
-	public Event(int index, String name, String startDate, String startTime, String endDate, String endTime){
+	public Event(String name, String startDate, String startTime, String endDate, String endTime){
 		_name = name;
-		_index = index;
+		setIndex();
 		
 		String startDateTimeString = startDate + "/" + startTime;
 		String endDateTimeString = endDate + "/" + endTime;
@@ -30,6 +33,15 @@ public class Event implements Comparable<Event>{
 			_endDateTime = formatter.parse(endDateTimeString);
 		} catch (ParseException e) {
 			System.out.println("Unable to format End Date/Time!");
+		}
+	}
+	
+	public void setIndex() {
+		if (recycledIndex.isEmpty()) {
+			_index = nextHigherIndex;
+			nextHigherIndex++;
+		} else {
+			_index = recycledIndex.remove();
 		}
 	}
 	
