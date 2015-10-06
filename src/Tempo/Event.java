@@ -1,9 +1,7 @@
 package Tempo;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.LinkedList;
+import java.text.*;
+import java.util.*;
 
 public class Event implements Comparable<Event>{
 	protected String _name;

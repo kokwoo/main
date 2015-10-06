@@ -1,8 +1,7 @@
 package Tempo;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
+import java.io.*;
+import java.util.*;
 
 public class Calendar {
 	private String _fileName;
@@ -34,7 +33,6 @@ public class Calendar {
 
 	public void addEvent(String name, String startDate, String startTime, String endDate, String endTime) {
 		Event newEvent = new Event(name, startDate, startTime, endDate, endTime);
-
 		eventsList.add(newEvent);
 		Collections.sort(eventsList);
 	}
@@ -63,7 +61,6 @@ public class Calendar {
 	}
 
 	public void display() {
-
 	}
 
 	public ArrayList<Event> getEventsList() {
