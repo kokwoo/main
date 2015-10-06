@@ -8,10 +8,12 @@ public class Event implements Comparable<Event>{
 	protected String _name;
 	protected Date _startDateTime;
 	protected Date _endDateTime;
+	protected int _index;
 	
 	
-	public Event(String name, String startDate, String startTime, String endDate, String endTime){
+	public Event(int index, String name, String startDate, String startTime, String endDate, String endTime){
 		_name = name;
+		_index = index;
 		
 		String startDateTimeString = startDate + "/" + startTime;
 		String endDateTimeString = endDate + "/" + endTime;
@@ -29,6 +31,10 @@ public class Event implements Comparable<Event>{
 		} catch (ParseException e) {
 			System.out.println("Unable to format End Date/Time!");
 		}
+	}
+	
+	public int getIndex() {
+		return _index;
 	}
 	
 	public String getName(){
