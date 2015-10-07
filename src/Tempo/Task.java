@@ -1,14 +1,13 @@
 package Tempo;
 
-import java.util.Date;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.util.*;
+import java.text.*;
 
 public class Task extends FloatingTask implements Comparable<Task>{
 	protected Date _dueDate;
 	
-	public Task(String name, String done, String dueDateString){
-		super(name, done);
+	public Task(int index, String name, String done, String dueDateString){
+		super(index, name, done);
 		SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
 		
 		try {
@@ -18,8 +17,8 @@ public class Task extends FloatingTask implements Comparable<Task>{
 		}
 	}
 	
-	public Task(String name, String dueDateString){
-		super(name);
+	public Task(int index, String name, String dueDateString){
+		super(index, name);
 		//SimpleDateFormat formatter = new SimpleDateFormat("EEEE, dd/MM/yyyy/hh:mm:ss");
 		SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
 		
@@ -28,6 +27,11 @@ public class Task extends FloatingTask implements Comparable<Task>{
 		} catch (ParseException e) {
 			System.out.println("Unable to format date");
 		}
+	}
+	
+	@Override
+	public boolean hasDueDate() {
+		return true;
 	}
 	
 	public String getDueDate(){
