@@ -89,6 +89,31 @@ public class Calendar {
 			}
 		}
 	}
+	
+	public void update(int idx, ArrayList<String> fields, 
+					   ArrayList<String> newValues) {
+		if (indexStore.isEvent(idx)) {
+			updateEvent(idx, fields, newValues);
+		} else if (indexStore.isFloatingTask(idx)) {
+			updateFloatingTask(idx, fields, newValues);
+		} else {
+			updateTask(idx, fields, newValues);
+		}
+	}
+	
+	public void updateEvent(int idx, ArrayList<String> fields, 
+							ArrayList<String> newValues) {
+	}
+	
+	public void updateTask(int idx, ArrayList<String> fields, 
+						   ArrayList<String> newValues) {
+		// TODO:
+	}
+	
+	public void updateFloatingTask(int idx, ArrayList<String> fields, 
+								   ArrayList<String> newValues) {
+		// TODO:
+	}
 
 	public void display() {
 	}
