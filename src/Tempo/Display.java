@@ -179,7 +179,7 @@ public class Display {
 
 	}
 
-	//view all the events
+	// view all the events
 	public boolean events() {
 		splitEvents(date.getDate());
 		printAllEvents();
@@ -192,15 +192,25 @@ public class Display {
 	}
 
 	private void printRestOfEvents() {
-		System.out.println("These are your upcoming events!");
-		printEvents(restOfEvents.size(), restOfEvents);
-		System.out.println("");
+		if (restOfEvents.isEmpty()) {
+			System.out.println("There are no upcoming events");
+		}
+
+		else {
+			System.out.println("These are your upcoming events!");
+			printEvents(restOfEvents.size(), restOfEvents);
+			System.out.println("");
+		}
 	}
 
 	private void printEventsToday() {
-		System.out.println("These are your events for the day!");
-		printEvents(eventsToday.size(), eventsToday);
-		System.out.println("");
+		if (eventsToday.isEmpty()) {
+			System.out.println("There are no events today!");
+		} else {
+			System.out.println("These are your events for the day!");
+			printEvents(eventsToday.size(), eventsToday);
+			System.out.println("");
+		}
 	}
 
 	private void splitEvents(String currentDate) {
@@ -221,9 +231,7 @@ public class Display {
 		}
 	}
 
-	
-
-	//view all tasks
+	// view all tasks
 	public boolean tasks() {
 		printFloatingTasks(floatingTasks);
 		splitTasksByDates(date.getDate());
@@ -233,15 +241,26 @@ public class Display {
 	}
 
 	private void printRestOfTasks() {
-		System.out.println("These are the rest of your tasks!");
-		printTasks(restOfTasks);
-		System.out.println("");
+
+		if (restOfTasks.isEmpty()) {
+			System.out.println("You have no more tasks with deadline");
+		} else {
+			System.out.println("These are the rest of your tasks!");
+			printTasks(restOfTasks);
+			System.out.println("");
+		}
 	}
 
 	private void printTasksToday() {
-		System.out.println("Tasks due today!");
-		printTasks(tasksToday);
-		System.out.println("");
+		if (tasksToday.isEmpty()) {
+			System.out.println("You have no tasks today");
+		}
+
+		else {
+			System.out.println("Tasks due today!");
+			printTasks(tasksToday);
+			System.out.println("");
+		}
 	}
 
 	private void splitTasksByDates(String currentDate) {
@@ -255,13 +274,20 @@ public class Display {
 	}
 
 	private void printFloatingTasks(ArrayList<FloatingTask> floatingTasks) {
-		System.out.println("Tasks without deadline!");
-		for (int i = 0; i < floatingTasks.size(); i++) {
-			int num = i + 1;
-			System.out.print(num + ")");
-			System.out.println(floatingTasks.get(i).toString());
+
+		if (floatingTasks.isEmpty()) {
+			System.out.println("You have no more task without deadline");
 		}
-		System.out.println("");
+
+		else {
+			System.out.println("Tasks without deadline!");
+			for (int i = 0; i < floatingTasks.size(); i++) {
+				int num = i + 1;
+				System.out.print(num + ")");
+				System.out.println(floatingTasks.get(i).toString());
+			}
+			System.out.println("");
+		}
 	}
 
 	private void printTasks(ArrayList<Task> tasks) {
@@ -272,7 +298,7 @@ public class Display {
 		}
 	}
 
-	//view all tasks and all events
+	// view all tasks and all events
 	public void all() {
 		splitEvents(date.getDate());
 		printAllEvents();
@@ -283,7 +309,7 @@ public class Display {
 		printRestOfTasks();
 	}
 
-	//view upcoming events
+	// view upcoming events
 	public boolean upcomingEvents() {
 		splitEvents(date.getDate());
 		printRestOfEvents();
@@ -291,7 +317,7 @@ public class Display {
 
 	}
 
-	//view undone tasks
+	// view undone tasks
 	public boolean undoneTasks() {
 		ArrayList<Task> undoneTasks = new ArrayList<Task>();
 		ArrayList<FloatingTask> undoneFloatingTasks = new ArrayList<FloatingTask>();
@@ -307,11 +333,11 @@ public class Display {
 				undoneFloatingTasks.add(floatingTasks.get(i));
 			}
 		}
-		
+
 		System.out.println("These are the list of undone tasks");
-		printTasks( undoneTasks);
+		printTasks(undoneTasks);
 		printFloatingTasks(undoneFloatingTasks);
-		
+
 		return false;
 	}
 
@@ -321,7 +347,7 @@ public class Display {
 
 	}
 
-	//view todays tasks and events
+	// view todays tasks and events
 	public void today() {
 		splitEvents(date.getDate());
 		splitTasksByDates(date.getDate());

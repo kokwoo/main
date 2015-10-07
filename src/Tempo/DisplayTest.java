@@ -52,15 +52,15 @@ public class DisplayTest {
 		System.out.println(date.getSecond());
 		*/
 		
-		//dp.all();
+		dp.all();
 		//dp.events();
 		//dp.tasks();
 		//dp.undoneTasks();
 		//dp.today();
-		dp.upcomingEvents();		
+		//dp.upcomingEvents();		
 		
-		CurrentDateAndTime date = new CurrentDateAndTime();
-		System.out.println(date.getDate());
+	//	CurrentDateAndTime date = new CurrentDateAndTime();
+	//	date.Date();
 	}
 	
 
