@@ -36,17 +36,23 @@ public class CalendarImporter {
 				
 				if(split.length == 6){
 					//events
-					Event newEvent  = new Event(Integer.parseInt(split[0]), split[1], split[2], split[3], split[4], split[5]);
+					int eventIndex = Integer.parseInt(split[0]);
+					Event newEvent  = new Event(eventIndex, split[1], split[2], 
+												split[3], split[4], split[5]);
 					events.add(newEvent);
 					Collections.sort(events);
 				}else if(split.length == 4){
 					//tasks
-					Task newTask = new Task(Integer.parseInt(split[0]), split[1], split[2], split[3]);
+					int taskIndex = Integer.parseInt(split[0]);
+					Task newTask = new Task(taskIndex, split[1], split[2], 
+											split[3]);
 					tasks.add(newTask);
 					Collections.sort(tasks);
 				}else if (split.length == 3){
 					//floating tasks
-					FloatingTask newFloatingTask =  new FloatingTask(Integer.parseInt(split[0]), split[1], split[2]);
+					int floatingTaskIndex = Integer.parseInt(split[0]);
+					FloatingTask newFloatingTask =  new FloatingTask(floatingTaskIndex, 
+																	split[1], split[2]);
 					floatingTasks.add(newFloatingTask);
 				}else{
 					//unrecognized
