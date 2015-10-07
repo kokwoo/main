@@ -117,8 +117,6 @@ public class RequestHandler {
 			display.missedTasks();
 		case(ARG_TODAY):
 			display.today();
-		case(ARG_WEEK):
-			display.week();
 		case(ARGS_ALL):
 			display.all();
 		default:
