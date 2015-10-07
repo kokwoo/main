@@ -30,8 +30,8 @@ public class Task extends FloatingTask implements Comparable<Task>{
 	}
 	
 	@Override
-	public boolean hasDueDate() {
-		return true;
+	public boolean isFloatingTask() {
+		return false;
 	}
 	
 	public String getDueDate(){

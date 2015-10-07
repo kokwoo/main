@@ -14,19 +14,21 @@ public class IndexStore {
 		recycledId = new LinkedList<Integer>();
 		events = new HashMap<Integer, Event>();
 		tasks = new HashMap<Integer, FloatingTask>();
-		initialiseMaps(eventsList, tasksList, floatingTasksList);
+		initialiseStore(eventsList, tasksList, floatingTasksList);
 	}
 	
-	private void initialiseMaps(ArrayList<Event> eventsList, ArrayList<Task> tasksList, 
+	private void initialiseStore(ArrayList<Event> eventsList, ArrayList<Task> tasksList, 
 			  					ArrayList<FloatingTask> floatingTasksList) {
 		initialiseEventsMap(eventsList);
 		initialiseTasksMap(tasksList, floatingTasksList);
+		updateRecycledId();
 	}
 	
 	private void initialiseEventsMap(ArrayList<Event> eventsList) {
 		for (int i = 0; i < eventsList.size(); i++) {
 			Event currEvent = eventsList.get(i);
 			addEvent(currEvent.getIndex(), currEvent);
+			updateNextUnusedId(currEvent.getIndex());
 		}
 	}
 	
@@ -35,14 +37,34 @@ public class IndexStore {
 		for (int i = 0; i < tasksList.size(); i++) {
 			Task currTask = tasksList.get(i);
 			addTask(currTask.getIndex(), currTask);
+			updateNextUnusedId(currTask.getIndex());
 		}
 		
 		for (int i = 0; i < floatingTasksList.size(); i++) {
 			FloatingTask currTask = floatingTasksList.get(i);
 			addTask(currTask.getIndex(), currTask);
+			updateNextUnusedId(currTask.getIndex());
 		}
 	}
-		
+	
+	private void updateNextUnusedId(int idx) {
+		if (idx >= nextUnusedId) {
+			nextUnusedId = idx + 1;
+		}
+	}
+	
+	private void updateRecycledId() {
+		for (int i = 0; i < nextUnusedId; i++) {
+			if (!isUsedId(i)) {
+				recycledId.add(i);
+			}
+		}
+	}
+	
+	private boolean isUsedId(int idx) {
+		return (events.containsKey(idx) || tasks.containsKey(idx));
+	}
+	
 	public void addEvent(int index, Event newEvent) {
 		events.put(index, newEvent);
 	}
@@ -51,12 +73,22 @@ public class IndexStore {
 		tasks.put(index, newTask);
 	}
 	
+	public void removeEvent(int index) {
+		events.remove(index);
+		recycledId.add(index);
+	}
+	
+	public void removeTask(int index) {
+		tasks.remove(index);
+		recycledId.add(index);
+	}
+	
 	public int getNewId() {
 		int id;
 		
 		if (recycledId.isEmpty()) {
 			id = nextUnusedId;
-			nextUnusedId++;
+			updateNextUnusedId(id);
 		} else {
 			id = recycledId.remove();
 		}
@@ -73,11 +105,11 @@ public class IndexStore {
 	}
 	
 	public boolean isFloatingTask(int id) {
-		FloatingTask task = tasks.get(id);
-		if (task.hasDueDate()) {
-			return false;
-		} else {
+		FloatingTask task = getTaskById(id);
+		if (task.isFloatingTask()) {
 			return true;
+		} else {
+			return false;
 		}
 	}
 	

@@ -31,8 +31,8 @@ public class FloatingTask{
 		_done = true;
 	}
 	
-	public boolean hasDueDate() {
-		return false;
+	public boolean isFloatingTask() {
+		return true;
 	}
 	
 	public String toString(){
