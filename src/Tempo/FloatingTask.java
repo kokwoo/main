@@ -3,15 +3,32 @@ package Tempo;
 public class FloatingTask{
 	protected String _name;
 	protected boolean _done;
+	protected int _index;
 	
-	public FloatingTask(String name){
+	private static final String DELIMETER = "!!";
+	
+	public FloatingTask(int index, String name){
 		_name = name;
 		_done = false;
 	}
 	
-	public FloatingTask(String name, String done) {
+	public FloatingTask(int index, String name, String done) {
 		_name = name;
 		_done = Boolean.parseBoolean(done);
+	}
+	
+	public void update(String field, String newValue) {
+		if (field.equals("name")) {
+			setName(newValue);
+		}
+	}
+	
+	public void setName(String newName) {
+		_name = newName;
+	}
+	
+	public int getIndex() {
+		return _index;
 	}
 
 	public String getName() {
@@ -26,8 +43,11 @@ public class FloatingTask{
 		_done = true;
 	}
 	
+	public boolean isFloatingTask() {
+		return true;
+	}
+	
 	public String toString(){
-		String delimeter = "!!";
-		return getName() + delimeter + getDone();
+		return getName() + DELIMETER + getDone();
 	}
 }

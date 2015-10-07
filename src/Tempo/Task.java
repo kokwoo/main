@@ -1,14 +1,23 @@
 package Tempo;
 
-import java.util.Date;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.util.*;
+import java.text.*;
 
 public class Task extends FloatingTask implements Comparable<Task>{
 	protected Date _dueDate;
+	private static final String DELIMETER = "!!";
 	
-	public Task(String name, String done, String dueDateString){
-		super(name, done);
+	public Task(int index, String name, String done, String dueDateString){
+		super(index, name, done);
+		setDueDate(dueDateString);
+	}
+	
+	public Task(int index, String name, String dueDateString){
+		super(index, name);
+		setDueDate(dueDateString);
+	}
+	
+	private void setDueDate(String dueDateString) {
 		SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
 		
 		try {
@@ -18,18 +27,23 @@ public class Task extends FloatingTask implements Comparable<Task>{
 		}
 	}
 	
-	public Task(String name, String dueDateString){
-		super(name);
-		//SimpleDateFormat formatter = new SimpleDateFormat("EEEE, dd/MM/yyyy/hh:mm:ss");
-		SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-		
-		try {
-			_dueDate = formatter.parse(dueDateString);
-		} catch (ParseException e) {
-			System.out.println("Unable to format date");
+	@Override
+	public void update(String field, String newValue) {
+		switch(field) {
+			case "name": 
+				super.setName(newValue);
+				break;
+			case "due":
+				setDueDate(newValue);
+				break;
 		}
 	}
 	
+	@Override
+	public boolean isFloatingTask() {
+		return false;
+	}
+		
 	public String getDueDate(){
 		//SimpleDateFormat formatter = new SimpleDateFormat("EEEE, dd/MM/yyyy");
 		SimpleDateFormat formatter = new SimpleDateFormat("EEEE, dd/MM/yyyy");
@@ -58,7 +72,6 @@ public class Task extends FloatingTask implements Comparable<Task>{
 	}
 	
 	public String toString(){
-		String delimeter = "!!";
-		return super.toString() + delimeter + getDueDateSimplified();
+		return super.toString() + DELIMETER + getDueDateSimplified();
 	}
 }
