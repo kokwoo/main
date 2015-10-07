@@ -9,7 +9,7 @@ public class Calendar {
 	private ArrayList<Event> eventsList;
 	private ArrayList<Task> tasksList;
 	private ArrayList<FloatingTask> floatingTasksList;
-	private IndexStore indexStore = new IndexStore(eventsList, tasksList, floatingTasksList);
+	private IndexStore indexStore;
 
 //	public Calendar() {
 //		eventsList = new ArrayList<Event>();
@@ -30,12 +30,15 @@ public class Calendar {
 		if(file.exists()){
 			importFromFile();
 		}
+		
+		indexStore = new IndexStore(eventsList, tasksList, floatingTasksList);
 	}
 
 	public void addEvent(String name, String startDate, String startTime, String endDate, String endTime) {
 		int newEventIndex = indexStore.getNewId();
 		Event newEvent = new Event(newEventIndex, name, startDate, startTime, endDate, endTime);
 		eventsList.add(newEvent);
+		indexStore.addEvent(newEventIndex, newEvent);
 		Collections.sort(eventsList);
 	}
 
@@ -43,12 +46,14 @@ public class Calendar {
 		int newTaskIndex = indexStore.getNewId();
 		Task newTask = new Task(newTaskIndex, name, dueDate);
 		tasksList.add(newTask);
+		indexStore.addTask(newTaskIndex, newTask);
 		Collections.sort(tasksList);
 	}
 
 	public void addFloatingTask(String name) {
 		int newTaskIndex = indexStore.getNewId();
 		FloatingTask newFloatingTask = new FloatingTask(newTaskIndex, name);
+		indexStore.addTask(newTaskIndex, newFloatingTask);
 		floatingTasksList.add(newFloatingTask);
 	}
 	
@@ -66,6 +71,7 @@ public class Calendar {
 	public void removeEvent(int idx) {
 		for (int i = 0; i < eventsList.size(); i++) {
 			if (eventsList.get(i).getIndex() == idx) {
+				indexStore.removeEvent(eventsList.get(i).getIndex());
 				eventsList.remove(i);
 				break;
 			}
@@ -75,6 +81,7 @@ public class Calendar {
 	public void removeTask(int idx) {
 		for (int i = 0; i < tasksList.size(); i++) {
 			if (tasksList.get(i).getIndex() == idx) {
+				indexStore.removeTask(tasksList.get(i).getIndex());
 				tasksList.remove(i);
 				break;
 			}
@@ -84,6 +91,7 @@ public class Calendar {
 	public void removeFloatingTask(int idx) {
 		for (int i = 0; i < floatingTasksList.size(); i++) {
 			if (floatingTasksList.get(i).getIndex() == idx) {
+				indexStore.removeTask(floatingTasksList.get(i).getIndex());
 				floatingTasksList.remove(i);
 				break;
 			}
