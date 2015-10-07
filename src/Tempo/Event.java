@@ -1,16 +1,17 @@
 package Tempo;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.text.*;
+import java.util.*;
 
 public class Event implements Comparable<Event>{
 	protected String _name;
 	protected Date _startDateTime;
 	protected Date _endDateTime;
+	protected int _index;
 	
+	private static final String DELIMETER = "!!";
 	
-	public Event(String name, String startDate, String startTime, String endDate, String endTime){
+	public Event(int index, String name, String startDate, String startTime, String endDate, String endTime){
 		_name = name;
 		
 		String startDateTimeString = startDate + "/" + startTime;
@@ -29,6 +30,10 @@ public class Event implements Comparable<Event>{
 		} catch (ParseException e) {
 			System.out.println("Unable to format End Date/Time!");
 		}
+	}
+	
+	public int getIndex() {
+		return _index;
 	}
 	
 	public String getName(){
@@ -85,8 +90,7 @@ public class Event implements Comparable<Event>{
 	}
 	
 	public String toString(){
-		String delimeter = "!!";
-		return getName() + delimeter + getStartDate() + delimeter + getStartTime() + delimeter + getEndDate() + delimeter + getEndTime(); 
+		return getName() + DELIMETER + getStartDate() + DELIMETER + getStartTime() + DELIMETER + getEndDate() + DELIMETER + getEndTime(); 
 	}
 	
 //	public boolean clashesWith(Event e){
