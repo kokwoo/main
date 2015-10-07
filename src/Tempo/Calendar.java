@@ -68,7 +68,7 @@ public class Calendar {
 	}
 	
 
-	public void removeEvent(int idx) {
+	private void removeEvent(int idx) {
 		for (int i = 0; i < eventsList.size(); i++) {
 			if (eventsList.get(i).getIndex() == idx) {
 				indexStore.removeEvent(eventsList.get(i).getIndex());
@@ -78,7 +78,7 @@ public class Calendar {
 		}
 	}
 
-	public void removeTask(int idx) {
+	private void removeTask(int idx) {
 		for (int i = 0; i < tasksList.size(); i++) {
 			if (tasksList.get(i).getIndex() == idx) {
 				indexStore.removeTask(tasksList.get(i).getIndex());
@@ -88,7 +88,7 @@ public class Calendar {
 		}
 	}
 	
-	public void removeFloatingTask(int idx) {
+	private void removeFloatingTask(int idx) {
 		for (int i = 0; i < floatingTasksList.size(); i++) {
 			if (floatingTasksList.get(i).getIndex() == idx) {
 				indexStore.removeTask(floatingTasksList.get(i).getIndex());
@@ -109,18 +109,31 @@ public class Calendar {
 		}
 	}
 	
-	public void updateEvent(int idx, ArrayList<String> fields, 
+	private void updateEvent(int idx, ArrayList<String> fields, 
 							ArrayList<String> newValues) {
+		int arrayListIndex = getArrayListIndexOfEvent(idx);
+		Event eventToUpdate = eventsList.get(arrayListIndex);
+		for (int i = 0; i < fields.size(); i++) {
+			eventToUpdate.update(fields.get(i), newValues.get(i));
+		}
 	}
 	
-	public void updateTask(int idx, ArrayList<String> fields, 
+	private void updateTask(int idx, ArrayList<String> fields, 
 						   ArrayList<String> newValues) {
-		// TODO:
+		int arrayListIndex = getArrayListIndexOfTask(idx);
+		Task taskToUpdate = tasksList.get(arrayListIndex);
+		for (int i = 0; i < fields.size(); i++) {
+			taskToUpdate.update(fields.get(i), newValues.get(i));
+		}	
 	}
 	
-	public void updateFloatingTask(int idx, ArrayList<String> fields, 
+	private void updateFloatingTask(int idx, ArrayList<String> fields, 
 								   ArrayList<String> newValues) {
-		// TODO:
+		int arrayListIndex = getArrayListIndexOfFloatingTask(idx);
+		FloatingTask taskToUpdate = floatingTasksList.get(arrayListIndex);
+		for (int i = 0; i < fields.size(); i++) {
+			taskToUpdate.update(fields.get(i), newValues.get(i));
+		}	
 	}
 
 	public void display() {
@@ -152,6 +165,42 @@ public class Calendar {
 		tasksList = importer.getTasksList();
 		floatingTasksList = importer.getFloatingTasksList();
 		System.out.println("Import Sucessful!");
+	}
+	
+	private int getArrayListIndexOfEvent(int id) {
+		int index = 0;
+		
+		for (int i = 0; i < eventsList.size(); i++) {
+			if (eventsList.get(i).getIndex() == id) {
+				i = index;
+			}
+		}
+		
+		return index;
+	}
+	
+	private int getArrayListIndexOfTask(int id) {
+		int index = 0;
+		
+		for (int i = 0; i < tasksList.size(); i++) {
+			if (tasksList.get(i).getIndex() == id) {
+				i = index;
+			}
+		}
+		
+		return index;
+	}
+	
+	private int getArrayListIndexOfFloatingTask(int id) {
+		int index = 0;
+		
+		for (int i = 0; i < floatingTasksList.size(); i++) {
+			if (floatingTasksList.get(i).getIndex() == id) {
+				i = index;
+			}
+		}
+		
+		return index;
 	}
 	
 	
