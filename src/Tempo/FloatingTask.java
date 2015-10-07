@@ -1,13 +1,9 @@
 package Tempo;
 
-import java.util.*;
-
 public class FloatingTask{
 	protected String _name;
 	protected boolean _done;
 	protected int _index;
-	public static int nextHigherIndex = 0;
-	public static LinkedList<Integer> recycledIndex = new LinkedList<Integer>();
 	
 	public FloatingTask(int index, String name){
 		_name = name;
@@ -33,6 +29,10 @@ public class FloatingTask{
 
 	public void markAsDone() {
 		_done = true;
+	}
+	
+	public boolean hasDueDate() {
+		return false;
 	}
 	
 	public String toString(){

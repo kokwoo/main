@@ -8,8 +8,6 @@ public class Event implements Comparable<Event>{
 	protected Date _startDateTime;
 	protected Date _endDateTime;
 	protected int _index;
-	public static int nextHigherIndex = 0;
-	public static LinkedList<Integer> recycledIndex = new LinkedList<Integer>();
 	
 	private static final String DELIMETER = "!!";
 	

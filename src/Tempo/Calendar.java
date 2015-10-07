@@ -9,6 +9,7 @@ public class Calendar {
 	private ArrayList<Event> eventsList;
 	private ArrayList<Task> tasksList;
 	private ArrayList<FloatingTask> floatingTasksList;
+	private IndexStore indexStore = new IndexStore(eventsList, tasksList, floatingTasksList);
 
 //	public Calendar() {
 //		eventsList = new ArrayList<Event>();
@@ -32,35 +33,61 @@ public class Calendar {
 	}
 
 	public void addEvent(String name, String startDate, String startTime, String endDate, String endTime) {
-		int newEventIndex = getIndexForNewEvent();
+		int newEventIndex = indexStore.getNewId();
 		Event newEvent = new Event(newEventIndex, name, startDate, startTime, endDate, endTime);
 		eventsList.add(newEvent);
 		Collections.sort(eventsList);
 	}
 
 	public void addTask(String name, String dueDate) {
-		int newTaskIndex = getIndexForNewTask();
+		int newTaskIndex = indexStore.getNewId();
 		Task newTask = new Task(newTaskIndex, name, dueDate);
 		tasksList.add(newTask);
 		Collections.sort(tasksList);
 	}
 
 	public void addFloatingTask(String name) {
-		int newTaskIndex = getIndexForNewTask();
+		int newTaskIndex = indexStore.getNewId();
 		FloatingTask newFloatingTask = new FloatingTask(newTaskIndex, name);
 		floatingTasksList.add(newFloatingTask);
 	}
+	
+	public void remove(int idx) {
+		if (indexStore.isEvent(idx)) {
+			removeEvent(idx);
+		} else if(indexStore.isFloatingTask(idx)){
+			removeFloatingTask(idx);
+		} else {
+			removeTask(idx);
+		}
+	}
+	
 
 	public void removeEvent(int idx) {
-		//TODO:
+		for (int i = 0; i < eventsList.size(); i++) {
+			if (eventsList.get(i).getIndex() == idx) {
+				eventsList.remove(i);
+				break;
+			}
+		}
 	}
 
 	public void removeTask(int idx) {
-		//TODO:
+		for (int i = 0; i < tasksList.size(); i++) {
+			if (tasksList.get(i).getIndex() == idx) {
+				tasksList.remove(i);
+				break;
+			}
+		}
 	}
-
+	
 	public void removeFloatingTask(int idx) {
-		//TODO:
+		for (int i = 0; i < floatingTasksList.size(); i++) {
+			if (floatingTasksList.get(i).getIndex() == idx) {
+				floatingTasksList.remove(i);
+				break;
+			}
+		}
 	}
 
 	public void display() {
@@ -78,32 +105,6 @@ public class Calendar {
 		return floatingTasksList;
 	}
 	
-	public int getIndexForNewEvent() {
-		int index;
-		
-		if (Event.recycledIndex.isEmpty()) {
-			index = Event.nextHigherIndex;
-			Event.nextHigherIndex++;
-		} else {
-			index = Event.recycledIndex.remove();
-		}
-		
-		return index;
-	}
-	
-	public int getIndexForNewTask() {
-		int index;
-		
-		if (FloatingTask.recycledIndex.isEmpty()) {
-			index = FloatingTask.nextHigherIndex;
-			FloatingTask.nextHigherIndex++;
-		} else {
-			index = FloatingTask.recycledIndex.remove();
-		}
-		
-		return index;
-	}
-
 	public void exportToFile() {
 		System.out.println("Exporting: " + _fileName);
 		CalendarExporter exporter = new CalendarExporter(_fileName, eventsList, tasksList, floatingTasksList);

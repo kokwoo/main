@@ -29,6 +29,11 @@ public class Task extends FloatingTask implements Comparable<Task>{
 		}
 	}
 	
+	@Override
+	public boolean hasDueDate() {
+		return true;
+	}
+	
 	public String getDueDate(){
 		//SimpleDateFormat formatter = new SimpleDateFormat("EEEE, dd/MM/yyyy");
 		SimpleDateFormat formatter = new SimpleDateFormat("EEEE, dd/MM/yyyy");
