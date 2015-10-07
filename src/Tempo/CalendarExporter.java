@@ -10,6 +10,9 @@ public class CalendarExporter {
 	private ArrayList<Task> tasks;
 	private ArrayList<FloatingTask> floatingTasks;
 	
+	private static final String HEADER_EVENTS = "--EVENTS--";
+	private static final String HEADER_TASKS = "--TASKS--";
+	private static final String HEADER_FLOATING_TASKS = "--FLOATING TASKS--";
 	private BufferedWriter out;
 	
 	public CalendarExporter(String fileName, ArrayList<Event> events, ArrayList<Task> tasks, ArrayList<FloatingTask> floatingTasks){
@@ -28,15 +31,15 @@ public class CalendarExporter {
 	
 	public void export(){
 		try {
-			out.write("--EVENTS--" + "\n");
+			out.write(HEADER_EVENTS + "\n");
 			for(int i = 0; i < events.size(); i++){
 				out.write(events.get(i).toString() + "\n");
 			}
-			out.write("--TASKS--" + "\n");
+			out.write(HEADER_TASKS + "\n");
 			for(int i = 0; i < tasks.size(); i++){
 				out.write(tasks.get(i).toString() + "\n");
 			}
-			out.write("--FLOATING TASKS--" + "\n");
+			out.write(HEADER_FLOATING_TASKS + "\n");
 			for(int i = 0; i < floatingTasks.size(); i++){
 				out.write(floatingTasks.get(i).toString() + "\n");
 			}

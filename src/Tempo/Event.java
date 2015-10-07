@@ -11,6 +11,7 @@ public class Event implements Comparable<Event>{
 	public static int nextHigherIndex = 0;
 	public static LinkedList<Integer> recycledIndex = new LinkedList<Integer>();
 	
+	private static final String DELIMETER = "!!";
 	
 	public Event(int index, String name, String startDate, String startTime, String endDate, String endTime){
 		_name = name;
@@ -91,8 +92,7 @@ public class Event implements Comparable<Event>{
 	}
 	
 	public String toString(){
-		String delimeter = "!!";
-		return getName() + delimeter + getStartDate() + delimeter + getStartTime() + delimeter + getEndDate() + delimeter + getEndTime(); 
+		return getName() + DELIMETER + getStartDate() + DELIMETER + getStartTime() + DELIMETER + getEndDate() + DELIMETER + getEndTime(); 
 	}
 	
 //	public boolean clashesWith(Event e){
