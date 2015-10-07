@@ -50,7 +50,7 @@ public class Task extends FloatingTask implements Comparable<Task>{
 		return formatter.format(_dueDate);
 	}
 	
-	private String getDueDateSimplified(){
+	public String getDueDateSimplified(){
 		//For toString() only
 		SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
 		return formatter.format(_dueDate);
