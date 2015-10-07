@@ -1,11 +1,20 @@
 # About
 Tempo is a simple tool that allows users to plan and manage their daily schedules using single line commands. With Tempo, you can now add, edit, search, delete, and view events and tasks - all with a single line command!
 
-# Features Details
+# Table of Contents
+- [Feature Details](#feature-details)
+  - [Basic Operations](#basic-operations)
+  - [Input Formats](#input-formats)
+  - [Manage Your Events](#manage-your-events)
+  - [Manage Your Tasks](#manage-your-tasks)
+  - [Display Calendar](#display-calendar)
+  - [Search](#search)
+- [Cheatsheet](#cheatsheet)
+
+# Feature Details
 ## Basic Operations
 To quickly list available commands, use the command `help`. 
-
-To undo your previous operation, use the command undo. The most recently made change will then be reverted.
+To undo your previous operation, use the command `undo`. The most recently made change will then be reverted.
 
 ## Input Formats
 The input format for dates across all commands should follow this syntax: `DD/MM/YYYY`. If the date input does not exist, you will be alerted and the previous operation with the invalid date input will not be carried out.
@@ -84,3 +93,5 @@ To view only your tasks, use the following command. The key `view` can be replac
 To search for an event or task, use the following commands. At least part of the event or task name must be keyed in the `<keywords>` field.
 
     search <keywords>
+
+# Cheatsheet
