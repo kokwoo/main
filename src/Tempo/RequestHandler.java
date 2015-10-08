@@ -4,9 +4,10 @@ import java.util.*;
 
 public class RequestHandler {
 
-	//global variable
+	// global variable
 	ArgParser parser;
-	
+	Calendar calendar;
+
 	// private final String MSG_CMD_NOT_VALID = "Why don't you try entering an actual command?";
 	private final String MSG_ARG_NOT_VALID = "Why don't you try entering an actual argument?";
 	private final String CMD_ADD = "add";
@@ -17,8 +18,7 @@ public class RequestHandler {
 	private final String CMD_HELP = "help";
 	private final String CMD_MANUAL = "manual";
 
-	private final String[] VALID_COMMANDS = { CMD_ADD, CMD_REMOVE,CMD_EXIT,CMD_UPDATE};
-
+	private final String[] VALID_COMMANDS = { CMD_ADD, CMD_REMOVE, CMD_EXIT, CMD_UPDATE };
 
 	// display args
 	private final String ARG_MANUAL = "manual";
@@ -30,53 +30,55 @@ public class RequestHandler {
 
 	// display based on days
 	private final String ARG_TODAY = "today";
-	private final String ARG_WEEK = "week";
+	// private final String ARG_WEEK = "week";
 
 	// such args list out all the events and tasks
 	private final String ARGS_ALL = "all";
-	
-	public RequestHandler() {
+
+	public RequestHandler(String fileName) {
 		parser = new ArgParser();
+		calendar = new Calendar(fileName);
 	}
-	
+
 	public String readNextCommand() {
 		String cmd;
 		do {
 			Scanner sc = new Scanner(System.in);
 			String nextCommand = sc.nextLine();
-			
+
 			cmd = parser.getCommand(nextCommand);
 			String args = parser.getArguments(nextCommand);
-			
+
 			execute(cmd, args);
 
-			if(nextCommand.equals("exit")) {
+			if (nextCommand.equals("exit")) {
 				sc.close();
 			}
 
-
 		} while (isValidCommand(cmd));
-		return cmd;	
+		return cmd;
 	}
 
 	public void execute(String command, String arguments) throws IllegalArgumentException {
-		if (!isValidInput(command)) {
-			// TODO: invalid input action
-		}
+		// I think if the command is invalid can go straight down to the default switch case
+		// aka display error message :/
+//		if (!isValidInput(command)) {
+//			// TODO: invalid input action
+//		}
 		switch (command) {
-			case CMD_ADD:
+			case CMD_ADD :
 				add(arguments);
-			case CMD_REMOVE:
+			case CMD_REMOVE :
 				remove(arguments);
-			case CMD_UPDATE:
+			case CMD_UPDATE :
 				update(arguments);
-			case CMD_DISPLAY:
-				//display(arguments); lol idk what to call here
-			case CMD_EXIT:
+			case CMD_DISPLAY :
+				display(command, arguments);
+			case CMD_EXIT :
 				exit();
-			default:
-				// TODO: Tell user it is an invalid command
-				exit();
+			default :
+				display(command, arguments);
+				//exit();
 		}
 	}
 
@@ -87,60 +89,67 @@ public class RequestHandler {
 			String startTime = parser.getEventStartTime(arguments);
 			String endDate = parser.getEventEndDate(arguments);
 			String endTime = parser.getEventEndTime(arguments);
-			// TODO: Call addEvent in Calendar 
+
+			calendar.addEvent(name, startDate, startTime, endDate, endTime);
 		} else if (parser.isFloatingTask(arguments)) {
 			String name = parser.getName(arguments);
-			// TODO: Call addFloatingTask in Calendar
+
+			calendar.addFloatingTask(name);
 		} else {
 			String name = parser.getName(arguments);
 			String dueDate = parser.getTaskDueDate(arguments);
-			// TODO: Call addTask in Calendar
+
+			calendar.addTask(name, dueDate);
 		}
 	}
-	
+
 	private void remove(String arguments) {
 		int id = parser.getId(arguments);
-		// TODO: Call remove in Calendar
+
+		calendar.remove(id);
 	}
 
-	private void update(String arguments) {	
+	private void update(String arguments) {
 		int id = parser.getId(arguments);
 		ArrayList<String> fields = parser.getFieldsList(arguments);
 		ArrayList<String> newValues = parser.getNewValuesList(arguments);
-		// TODO: Call update in Calendar
+
+		calendar.update(id, fields, newValues);
 	}
 
-	private boolean display(String command, String[] arguments) {
+	private void display(String command, String arguments) {
 		String args = arguments.toString().toLowerCase();
-		
+
 		if (command.equalsIgnoreCase(CMD_HELP) | command.equalsIgnoreCase(CMD_MANUAL)) {
 			Display.manual();
 		}
 
+		// this is not the best but it'll do for now ba....
 		switch (args) {
 			case (ARG_MANUAL) :
 				Display.manual();
 				break;
 			case (ARG_EVENTS) :
-				
+
 			case (ARG_TASKS) :
-				
+
 			case (ARG_UPCOMING_EVENTS) :
-				
+
 			case (ARG_UNDONE_TASKS) :
-				
+
 			case (ARG_MISSED_TASKS) :
-				
+
 			case (ARG_TODAY) :
-				
+
 			case (ARGS_ALL) :
 				calendar.display(args);
 				break;
 			default :
 				System.out.println(MSG_ARG_NOT_VALID);
-				return false;
+				break;
 		}
-		
+	}
+
 	private void exit() {
 		System.exit(0);
 	}
