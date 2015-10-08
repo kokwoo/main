@@ -8,11 +8,13 @@ public class FloatingTask{
 	private static final String DELIMETER = "!!";
 	
 	public FloatingTask(int index, String name){
+		_index = index;
 		_name = name;
 		_done = false;
 	}
 	
 	public FloatingTask(int index, String name, String done) {
+		_index = index;
 		_name = name;
 		_done = Boolean.parseBoolean(done);
 	}
@@ -48,6 +50,6 @@ public class FloatingTask{
 	}
 	
 	public String toString(){
-		return getName() + DELIMETER + getDone();
+		return getIndex() + DELIMETER + getName() + DELIMETER + getDone();
 	}
 }
