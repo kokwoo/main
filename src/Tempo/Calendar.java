@@ -12,7 +12,6 @@ public class Calendar {
 	private IndexStore indexStore;
 
 	// display arguments
-	private final String ARG_MANUAL = "manual";
 	private final String ARG_EVENTS = "events";
 	private final String ARG_UPCOMING_EVENTS = "upcoming events";
 	private final String ARG_TASKS = "tasks";
@@ -143,7 +142,7 @@ public class Calendar {
 
 	public void display(String displayType) {
 		Display display = new Display(getEventsList(), getTasksList(), getFloatingTasksList());
-		
+
 		switch (displayType) {
 			case (ARG_EVENTS) :
 				display.events();
