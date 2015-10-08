@@ -2,11 +2,11 @@ package Tempo;
 
 import java.util.*;
 
-
 public class RequestHandler {
-	//global variable
+	// global variable
+	private Calendar calendar;
 	
-	//private final String MSG_CMD_NOT_VALID = "Why don't you try entering an actual command?";
+	// private final String MSG_CMD_NOT_VALID = "Why don't you try entering an actual command?";
 	private final String MSG_ARG_NOT_VALID = "Why don't you try entering an actual argument?";
 	private final String CMD_ADD_EVENT = "add";
 	private final String CMD_DELETE_EVENT = "delete";
@@ -15,7 +15,7 @@ public class RequestHandler {
 	private final String CMD_EXIT = "EXIT";
 	private final String CMD_HELP = "help";
 	private final String CMD_MANUAL = "manual";
-	private final String[] VALID_COMMANDS = { CMD_ADD_EVENT, CMD_DELETE_EVENT,CMD_EXIT,CMD_EDIT_EVENT};
+	private final String[] VALID_COMMANDS = { CMD_ADD_EVENT, CMD_DELETE_EVENT, CMD_EXIT, CMD_EDIT_EVENT };
 
 	// display args
 	private final String ARG_MANUAL = "manual";
@@ -24,16 +24,16 @@ public class RequestHandler {
 	private final String ARG_TASKS = "tasks";
 	private final String ARG_UNDONE_TASKS = "undone tasks";
 	private final String ARG_MISSED_TASKS = "missed tasks";
-	
-	//display based on days
+
+	// display based on days
 	private final String ARG_TODAY = "today";
 	private final String ARG_WEEK = "week";
-	
+
 	// such args list out all the events and tasks
 	private final String ARGS_ALL = "all";
 
-	public RequestHandler() {
-
+	public RequestHandler(String fileName) {
+		calendar = new Calendar(fileName);
 	}
 
 	/**
@@ -48,32 +48,30 @@ public class RequestHandler {
 			throw new IllegalArgumentException();
 		}
 		switch (command) {
-		case CMD_ADD_EVENT:
-			AddEvent addEvent = new AddEvent(arguments);
-			return add(addEvent);
-		case CMD_DELETE_EVENT:
-			DeleteEvent deleteEvent = new DeleteEvent(arguments);
-			System.out.println(deleteEvent.getEventId());
-			
-			///delete(command, arguments);
-		case CMD_EDIT_EVENT:
-			EditEvent edit = new EditEvent(arguments);
-			return true;	// REPLACE WITH CALL TO EDIT.
-			//return edit(command, arguments);
-		case CMD_DISPLAY_EVENT:
-			//return display(command, arguments);
-		case CMD_EXIT:
-			exit();
-		default:
-			return false;
+			case CMD_ADD_EVENT :
+				AddEvent addEvent = new AddEvent(arguments);
+				return add(addEvent);
+			case CMD_DELETE_EVENT :
+				DeleteEvent deleteEvent = new DeleteEvent(arguments);
+				System.out.println(deleteEvent.getEventId());
+
+				/// delete(command, arguments);
+			case CMD_EDIT_EVENT :
+				EditEvent edit = new EditEvent(arguments);
+				return true; // REPLACE WITH CALL TO EDIT.
+			// return edit(command, arguments);
+			case CMD_DISPLAY_EVENT :
+				 return display(command, arguments);
+			case CMD_EXIT :
+				exit();
+			default :
+				return false;
 		}
 	}
 
 	/**
-	 * FOR ALL THESE METHODS: YOU GET PASSED : <COMMAND, ARGUMENTS>. THE
-	 * ARUGMENTS ARE ESSENTIALLY WHATEVER THE USER INPUTS AFTER ADD,DELETE,
-	 * WHATEVER KEYWORD. REFER TO THE MANUAL. ADD , EVENTID,DATE,ETC,DESCRIPTION
-	 * DELETE, EVENTID,DAT
+	 * FOR ALL THESE METHODS: YOU GET PASSED : <COMMAND, ARGUMENTS>. THE ARUGMENTS ARE ESSENTIALLY WHATEVER THE USER INPUTS AFTER ADD,DELETE, WHATEVER KEYWORD. REFER TO THE MANUAL. ADD ,
+	 * EVENTID,DATE,ETC,DESCRIPTION DELETE, EVENTID,DAT
 	 * 
 	 * @param command
 	 * @param arguments
@@ -95,47 +93,46 @@ public class RequestHandler {
 		return false;
 	}
 
-	private boolean display(String command, String arguments) {
-		String fileName = null;
-		Display display = new Display(fileName);
-		if(command.equalsIgnoreCase(CMD_HELP) | command.equalsIgnoreCase(CMD_MANUAL)){
+	private boolean display(String command, String[] arguments) {
+		String args = arguments.toString().toLowerCase();
+		
+		if (command.equalsIgnoreCase(CMD_HELP) | command.equalsIgnoreCase(CMD_MANUAL)) {
 			Display.manual();
+		}
+
+		switch (args) {
+			case (ARG_MANUAL) :
+				Display.manual();
+				break;
+			case (ARG_EVENTS) :
+				
+			case (ARG_TASKS) :
+				
+			case (ARG_UPCOMING_EVENTS) :
+				
+			case (ARG_UNDONE_TASKS) :
+				
+			case (ARG_MISSED_TASKS) :
+				
+			case (ARG_TODAY) :
+				
+			case (ARGS_ALL) :
+				calendar.display(args);
+				break;
+			default :
+				System.out.println(MSG_ARG_NOT_VALID);
+				return false;
 		}
 		
-		switch(arguments.toLowerCase()){
-		case(ARG_MANUAL):
-			Display.manual();
-		case(ARG_EVENTS):
-			display.events();
-		case(ARG_TASKS):
-			display.tasks();
-		case(ARG_UPCOMING_EVENTS):
-			display.upcomingEvents();
-		case(ARG_UNDONE_TASKS):
-			display.undoneTasks();
-		case(ARG_MISSED_TASKS):
-			display.missedTasks();
-		case(ARG_TODAY):
-			display.today();
-		case(ARGS_ALL):
-			display.all();
-		default:
-			System.out.println(MSG_ARG_NOT_VALID);
-			return false;
-			
-			
-			
-		}
+		return true;
 	}
-		
-	
 
 	/*
 	 * Command to add event to calender
 	 */
-	//private boolean addEvent() {
-	//	return false;
-	//}
+	// private boolean addEvent() {
+	// return false;
+	// }
 
 	/*
 	 * Exists application.
@@ -160,16 +157,13 @@ public class RequestHandler {
 			String args[] = parser.parseArguments(nextCommand);
 			execute(cmd, args);
 			System.out.println("cmd : " + cmd);
-			if(nextCommand.equals("exit")) {
+			if (nextCommand.equals("exit")) {
 				read.close();
 			}
 
-
 		} while (!isValidCommand(cmd));
-			return cmd;	
+		return cmd;
 	}
-	
-	
 
 	/**
 	 * Checks to make sure computer input is correct
@@ -184,8 +178,7 @@ public class RequestHandler {
 	}
 
 	/**
-	 * Checks to make sure user input is correct. If not, displays message to
-	 * console.
+	 * Checks to make sure user input is correct. If not, displays message to console.
 	 * 
 	 * @param command
 	 * @return true if command is valid

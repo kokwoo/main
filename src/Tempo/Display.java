@@ -14,13 +14,17 @@ public class Display {
 
 	public Display(ArrayList<Event> _events, ArrayList<Task> _tasks, ArrayList<FloatingTask> _floatingTasks) {
 		date = new CurrentDateAndTime();
+		
 		events = new ArrayList<Event>();
 		tasks = new ArrayList<Task>();
 		floatingTasks = new ArrayList<FloatingTask>();
+		
 		eventsToday = new ArrayList<Event>();
 		restOfEvents = new ArrayList<Event>();
+		
 		tasksToday = new ArrayList<Task>();
 		restOfTasks = new ArrayList<Task>();
+		
 		events = _events;
 		tasks = _tasks;
 		floatingTasks = _floatingTasks;
