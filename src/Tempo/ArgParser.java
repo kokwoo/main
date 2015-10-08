@@ -7,8 +7,7 @@
  */
 package Tempo;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 
 public class ArgParser {
 	private HashMap<ArrayList<String>, String> keywords;
@@ -74,6 +73,7 @@ public class ArgParser {
 		return getFirstWord(arguments);
 	}
 	
+//	from <start date> at <start time> to <end date> at <end time>
 	public String getEventStartDate(String arguments) {
 		String[] parameters1 = arguments.split("from");
 		String[] parameters2 = parameters1[1].trim().split("at");
@@ -81,27 +81,74 @@ public class ArgParser {
 	}
 	
 	public String getEventStartTime(String arguments) {
-		return ""; // TODO:
+		String[] parts = arguments.split(" ");
+		return parts[3]; //DONE
 	}
 	
 	public String getEventEndDate(String arguments) {
-		return ""; // TODO:
+		String[] parts = arguments.split(" ");
+		return parts[5]; //DONE
 	}
 	
 	public String getEventEndTime(String arguments) {
-		return ""; // TODO:
+		String[] parts = arguments.split(" ");
+		return parts[7]; //DONE
 	}
 	
 	public String getTaskDueDate(String arguments) {
-		return ""; // TODO:
+		String[] parts = arguments.split(" ");
+		return parts[3]; // DONE
 	}
-	
+
+	//event <id> <name> from <start date> at <start time> to <end date> at <end time>
+	//task <id> <name> due <date>
+	//task <id> <field name>: <new value>
 	public ArrayList<String> getFieldsList(String arguments) {
-		return new ArrayList<String>(); // TODO:
+		ArrayList<String> returnList = new ArrayList<String>();
+		
+		if(arguments.contains(":")){
+			//one argument only
+			String[] split1 = arguments.split(":");
+			String[] split2 = split1[0].split(" ");
+			returnList.add(split2[2]);
+		}else if (arguments.contains("due")){
+			//updating task
+			returnList.add("due");
+		}else if (arguments.contains("from")){
+			//updating event
+			returnList.add("start date");
+			returnList.add("start time");
+			returnList.add("end date");
+			returnList.add("end time");
+		}
+		return returnList; //DONE
 	}
 	
+	//event <id> <name> from <start date> at <start time> to <end date> at <end time>
+	//task <id> <name> due <date>
+	//task <id> <field name>: <new value>
 	public ArrayList<String> getNewValuesList(String arguments) {
-		return new ArrayList<String>(); // TODO:
+		ArrayList<String> returnList = new ArrayList<String>();
+		
+		if(arguments.contains(":")){
+			//one argument only
+			String[] split1 = arguments.split(":");
+			String[] split2 = split1[0].split(" ");
+			returnList.add(split2[1].trim());
+		}else if (arguments.contains("due")){
+			//updating task
+			String[] split = arguments.split(" ");
+			returnList.add(split[5]);
+		}else if (arguments.contains("from")){
+			//updating event
+			String[] split = arguments.split(" ");
+		
+			returnList.add(split[4]);
+			returnList.add(split[6]);
+			returnList.add(split[8]);
+			returnList.add(split[10]);
+		}
+		return returnList; //DONE
 	}
 	
 	private String removeFirstWord(String message) {   
@@ -129,54 +176,54 @@ public class ArgParser {
 	}
 	
 	// --------------------------------------------------- //
-
-	private String getValidCommand(String action) {
-		for (ArrayList<String> currActionKey : keywords.keySet()) {
-			{
-				if (isInArray(currActionKey, action)) {
-					return currActionKey.get(0);
-				}
-			}
-		}
-		return null;
-	}
-
-	private boolean isInArray(ArrayList<String> actionKey, String action) {
-		for (int i = 0; i < actionKey.size(); i++) {
-			if (actionKey.get(i).equals(action)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	private boolean isEmpty(String message) {
-		return message.length() == 0;
-	}
-	
-	private boolean isEmpty(String[] tokenizedInput) {
-		return tokenizedInput.length == 0;
-	}
-
-	private boolean isNull(String message) {
-		return message == null;
-	}
-	
-	private boolean isNull(String[] tokenizedInput) {
-		return tokenizedInput == null;
-	}
-	
-	private boolean isValidInput(String[] tokenizedInput) {
-		if (isEmpty(tokenizedInput) || isNull(tokenizedInput)) {
-			return false;
-		}
-		return true;
-	}
-
-	private boolean isValidInput(String message) {
-		if (isNull(message) || isEmpty(message)) {
-			return false;
-		}
-		return true;
-	}
+//
+//	private String getValidCommand(String action) {
+//		for (ArrayList<String> currActionKey : keywords.keySet()) {
+//			{
+//				if (isInArray(currActionKey, action)) {
+//					return currActionKey.get(0);
+//				}
+//			}
+//		}
+//		return null;
+//	}
+//
+//	private boolean isInArray(ArrayList<String> actionKey, String action) {
+//		for (int i = 0; i < actionKey.size(); i++) {
+//			if (actionKey.get(i).equals(action)) {
+//				return true;
+//			}
+//		}
+//		return false;
+//	}
+//
+//	private boolean isEmpty(String message) {
+//		return message.length() == 0;
+//	}
+//	
+//	private boolean isEmpty(String[] tokenizedInput) {
+//		return tokenizedInput.length == 0;
+//	}
+//
+//	private boolean isNull(String message) {
+//		return message == null;
+//	}
+//	
+//	private boolean isNull(String[] tokenizedInput) {
+//		return tokenizedInput == null;
+//	}
+//	
+//	private boolean isValidInput(String[] tokenizedInput) {
+//		if (isEmpty(tokenizedInput) || isNull(tokenizedInput)) {
+//			return false;
+//		}
+//		return true;
+//	}
+//
+//	private boolean isValidInput(String message) {
+//		if (isNull(message) || isEmpty(message)) {
+//			return false;
+//		}
+//		return true;
+//	}
 }

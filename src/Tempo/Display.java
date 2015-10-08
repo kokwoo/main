@@ -2,24 +2,32 @@ package Tempo;
 
 import java.util.ArrayList;
 
-
 public class Display {
-	private static ArrayList<Event> events;
-	private static ArrayList<Task> tasks;
-	private static ArrayList<FloatingTask> floatingTasks;
+	private ArrayList<Event> events;
+	private ArrayList<Event> eventsToday;
+	private ArrayList<Event> restOfEvents;
+	private ArrayList<Task> tasks;
+	private ArrayList<Task> tasksToday;
+	private ArrayList<Task> restOfTasks;
+	private ArrayList<FloatingTask> floatingTasks;
+	private CurrentDateAndTime date;
 
-	public Display(String fileName) {
-		CalendarImporter calImport = new CalendarImporter(fileName); 
+	public Display(ArrayList<Event> _events, ArrayList<Task> _tasks, ArrayList<FloatingTask> _floatingTasks) {
+		date = new CurrentDateAndTime();
+		
 		events = new ArrayList<Event>();
 		tasks = new ArrayList<Task>();
 		floatingTasks = new ArrayList<FloatingTask>();
-		assignObjFromCal(calImport);
-	}
-
-	private void assignObjFromCal(CalendarImporter calImport) {
-		events = calImport.getEventsList();
-		tasks = calImport.getTasksList();
-		floatingTasks = calImport.getFloatingTasksList();
+		
+		eventsToday = new ArrayList<Event>();
+		restOfEvents = new ArrayList<Event>();
+		
+		tasksToday = new ArrayList<Task>();
+		restOfTasks = new ArrayList<Task>();
+		
+		events = _events;
+		tasks = _tasks;
+		floatingTasks = _floatingTasks;
 	}
 
 	public static boolean manual() {
@@ -175,105 +183,181 @@ public class Display {
 
 	}
 
+	// view all the events
 	public boolean events() {
-		System.out.println("These are your events for today!");
-		String currentDate =  getDate();
-		for(int i=0; i<events.size();i++){
-			System.out.print(i+") ");
-			if(currentDate.equalsIgnoreCase(events.get(i).getStartDate())){
-				System.out.print(events.get(i).toString());
-			}		
+		splitEvents(date.getDate());
+		printAllEvents();
+		return true;
+	}
+
+	private void printAllEvents() {
+		printEventsToday();
+		printRestOfEvents();
+	}
+
+	private void printRestOfEvents() {
+		if (restOfEvents.isEmpty()) {
+			System.out.println("There are no upcoming events");
 		}
-		System.out.println("These are the rest of your events!");
-		printRemainingEvents();
-		return false;
+
+		else {
+			System.out.println("These are your upcoming events!");
+			printEvents(restOfEvents.size(), restOfEvents);
+			System.out.println("");
+		}
 	}
 
-	private String getDate() {
-		CurrentDateAndTime date = new CurrentDateAndTime();
-		return date.getDay()+"/"+ date.getMonth()+"/"+date.getYear();
+	private void printEventsToday() {
+		if (eventsToday.isEmpty()) {
+			System.out.println("There are no events today!");
+		} else {
+			System.out.println("These are your events for the day!");
+			printEvents(eventsToday.size(), eventsToday);
+			System.out.println("");
+		}
 	}
 
-	private void printRemainingEvents() {
-		// TODO Auto-generated method stub
-		
+	private void splitEvents(String currentDate) {
+		for (int i = 0; i < events.size(); i++) {
+			if (currentDate.equalsIgnoreCase(events.get(i).getStartDate())) {
+				eventsToday.add(events.get(i));
+			} else {
+				restOfEvents.add(events.get(i));
+			}
+		}
 	}
 
-	private void printTodayEvents() {
-		// TODO Auto-generated method stub
-		
+	private void printEvents(int numOfEvents, ArrayList<Event> events) {
+		for (int i = 0; i < numOfEvents; i++) {
+			int num = i + 1;
+			System.out.print(num + ")");
+			System.out.println(events.get(i).toString());
+		}
 	}
-	
+
+	// view all tasks
 	public boolean tasks() {
-		System.out.println("These are your tasks for today!");
-		printTodayTasks();
-		System.out.println("These are your tasks with deadlines");
-		printTasksWDeadlines();
-		System.out.println("These are the rest of your tasks!");
-		printRemainingTasks();
-		return false;
+		printFloatingTasks(floatingTasks);
+		splitTasksByDates(date.getDate());
+		printTasksToday();
+		printRestOfTasks();
+		return true;
 	}
 
-	private void printTasksWDeadlines() {
-		// TODO Auto-generated method stub
-		
-	}
+	private void printRestOfTasks() {
 
-	private void printRemainingTasks() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	private void printTodayTasks() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	public void all() {
-		System.out.println("These are your events for today!");
-		printTodayEvents();
-		System.out.println("These are the rest of your events!");
-		printRemainingEvents();
-		
-		System.out.println("These are your tasks for today!");
-		printTodayTasks();
-		System.out.println("These are your tasks with deadlines");
-		printTasksWDeadlines();
-		System.out.println("These are the rest of your tasks!");
-		printRemainingTasks();
-	}
-	
-	private void printArray(ArrayList<String> array){
-		for(int i=0; i<array.size(); i++){
-			System.out.println(array.get(i));
+		if (restOfTasks.isEmpty()) {
+			System.out.println("You have no more tasks with deadline");
+		} else {
+			System.out.println("These are the rest of your tasks!");
+			printTasks(restOfTasks);
+			System.out.println("");
 		}
 	}
 
-	public boolean upcomingEvents() {
-		return false;
-		// TODO Auto-generated method stub
-		
+	private void printTasksToday() {
+		if (tasksToday.isEmpty()) {
+			System.out.println("You have no tasks today");
+		}
+
+		else {
+			System.out.println("Tasks due today!");
+			printTasks(tasksToday);
+			System.out.println("");
+		}
 	}
 
-	public boolean undoneTasks() {
+	private void splitTasksByDates(String currentDate) {
+		for (int i = 0; i < tasks.size(); i++) {
+			if (currentDate.equalsIgnoreCase(tasks.get(i).getDueDateSimplified())) {
+				tasksToday.add(tasks.get(i));
+			} else {
+				restOfTasks.add(tasks.get(i));
+			}
+		}
+	}
+
+	private void printFloatingTasks(ArrayList<FloatingTask> floatingTasks) {
+
+		if (floatingTasks.isEmpty()) {
+			System.out.println("You have no more task without deadline");
+		}
+
+		else {
+			System.out.println("Tasks without deadline!");
+			for (int i = 0; i < floatingTasks.size(); i++) {
+				int num = i + 1;
+				System.out.print(num + ")");
+				System.out.println(floatingTasks.get(i).toString());
+			}
+			System.out.println("");
+		}
+	}
+
+	private void printTasks(ArrayList<Task> tasks) {
+		for (int i = 0; i < tasks.size(); i++) {
+			int num = i + 1;
+			System.out.print(num + ")");
+			System.out.println(tasks.get(i).toString());
+		}
+	}
+
+	// view all tasks and all events
+	public void all() {
+		splitEvents(date.getDate());
+		printAllEvents();
+
+		printFloatingTasks(floatingTasks);
+		splitTasksByDates(date.getDate());
+		printTasksToday();
+		printRestOfTasks();
+	}
+
+	// view upcoming events
+	public boolean upcomingEvents() {
+		splitEvents(date.getDate());
+		printRestOfEvents();
 		return false;
-		// TODO Auto-generated method stub
-		
+
+	}
+
+	// view undone tasks
+	public boolean undoneTasks() {
+		ArrayList<Task> undoneTasks = new ArrayList<Task>();
+		ArrayList<FloatingTask> undoneFloatingTasks = new ArrayList<FloatingTask>();
+		// System.out.println("These are the tasks that are still undone:");
+		for (int i = 0; i < tasks.size(); i++) {
+			if (!tasks.get(i).getDone()) {
+				undoneTasks.add(tasks.get(i));
+			}
+		}
+
+		for (int i = 0; i < floatingTasks.size(); i++) {
+			if (!floatingTasks.get(i).getDone()) {
+				undoneFloatingTasks.add(floatingTasks.get(i));
+			}
+		}
+
+		System.out.println("These are the list of undone tasks");
+		printTasks(undoneTasks);
+		printFloatingTasks(undoneFloatingTasks);
+
+		return false;
 	}
 
 	public boolean missedTasks() {
 		return false;
 		// TODO Auto-generated method stub
-		
+
 	}
 
+	// view todays tasks and events
 	public void today() {
-		// TODO Auto-generated method stub
-		
+		splitEvents(date.getDate());
+		splitTasksByDates(date.getDate());
+		printEventsToday();
+		printTasksToday();
+
 	}
 
-	public void week() {
-		// TODO Auto-generated method stub
-		
-	}
 }

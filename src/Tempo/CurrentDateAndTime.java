@@ -1,5 +1,7 @@
 package Tempo;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 //import java.util.Date;
 //import java.text.DateFormat;
 //import java.text.SimpleDateFormat;
@@ -8,10 +10,13 @@ import java.util.GregorianCalendar;
 
 public class CurrentDateAndTime {
 	private static Calendar _date;
+	private static Calendar cal = Calendar.getInstance();
+	private static DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
 
 	public CurrentDateAndTime() {
 		Calendar date = new GregorianCalendar();
 		_date = date;
+
 	}
 
 	public int getHour() {
@@ -30,12 +35,31 @@ public class CurrentDateAndTime {
 		return _date.get(Calendar.YEAR);
 	}
 
-	public int getMonth() {
-		return _date.get(Calendar.MONTH);
+	public String getMonth() {
+		int month = _date.get(Calendar.MONTH)+1;
+		if (month < 10) {
+			return "0" + month;
+		}
+		return month + "";
 	}
 
-	public int getDay() {
-		return _date.get(Calendar.DAY_OF_MONTH);
+	public String getDay() {
+		int day = _date.get(Calendar.DAY_OF_MONTH);
+		if (day < 10) {
+			return "0" + day;
+		}
+		return day + "";
 	}
+	
+	public String getDate(){
+		//System.out.println(df.format(cal.getTime()));
+		
+		return df.format(cal.getTime());
+	}
+	
+//	public String getDate() {
+//		CurrentDateAndTime date = new CurrentDateAndTime();
+//		return date.getDay() + "/" + date.getMonth() + "/" + date.getYear();
+//	}
 
 }
