@@ -45,29 +45,46 @@ public class RequestHandler {
 	 */
 	public boolean execute(String command, String[] arguments) throws IllegalArgumentException {
 		if (!validInput(command)) {
-			throw new IllegalArgumentException();
+			return false;
 		}
 		switch (command) {
-			case CMD_ADD_EVENT :
-				AddEvent addEvent = new AddEvent(arguments);
-				return add(addEvent);
-			case CMD_DELETE_EVENT :
-				DeleteEvent deleteEvent = new DeleteEvent(arguments);
-				System.out.println(deleteEvent.getEventId());
-
-				/// delete(command, arguments);
-			case CMD_EDIT_EVENT :
-				EditEvent edit = new EditEvent(arguments);
-				return true; // REPLACE WITH CALL TO EDIT.
-			// return edit(command, arguments);
-			case CMD_DISPLAY_EVENT :
-				 return display(command, arguments);
-			case CMD_EXIT :
-				exit();
-			default :
+		case CMD_ADD_EVENT:
+			if(!iscorrectLength(CMD_ADD_EVENT,arguments)) {
 				return false;
+			}
+			AddEvent addEvent = new AddEvent(arguments);
+			return add(addEvent);
+		case CMD_DELETE_EVENT:
+			System.out.println("len " + arguments.length);
+			if(!iscorrectLength(CMD_DELETE_EVENT,arguments)) {
+				System.out.println("FALSE");
+				return false;
+			}
+			DeleteEvent deleteEvent = new DeleteEvent(arguments);
+			System.out.println(deleteEvent.getEventId());
+			return true;
+			///delete(command, arguments);
+		case CMD_EDIT_EVENT:
+			System.out.println(arguments.length);
+			System.out.println(iscorrectLength(CMD_EDIT_EVENT,arguments));
+			if(!iscorrectLength(CMD_EDIT_EVENT,arguments)) {
+				return false;
+			}
+			else {
+				EditEvent edit = new EditEvent(arguments);
+				return true;
+			}
+				// REPLACE WITH CALL TO EDIT.
+			//return edit(command, arguments);
+		case CMD_DISPLAY_EVENT:
+			//return display(command, arguments);
+		case CMD_EXIT:
+			exit();
+		default:
+			return false;
 		}
 	}
+
 
 	/**
 	 * FOR ALL THESE METHODS: YOU GET PASSED : <COMMAND, ARGUMENTS>. THE ARUGMENTS ARE ESSENTIALLY WHATEVER THE USER INPUTS AFTER ADD,DELETE, WHATEVER KEYWORD. REFER TO THE MANUAL. ADD ,
@@ -133,6 +150,26 @@ public class RequestHandler {
 	// private boolean addEvent() {
 	// return false;
 	// }
+	
+	private boolean iscorrectLength(String cmd, String[] arguments) {
+		if(cmd.equals(CMD_EDIT_EVENT)  && arguments.length == 11) {
+			return true;
+		}
+		//add event MYEVENT from TODAY at 12 to TOMORROW at 1
+		else if(cmd.equals(CMD_ADD_EVENT) && arguments.length == 10) {
+			return true;
+		}
+		else if(cmd.equals(CMD_DELETE_EVENT) && arguments.length == 2) {
+			try {
+				Integer.parseInt(arguments[1]);
+			}
+			catch(Exception e ) {
+				return false;
+			} 
+			return true;
+		}
+		return false;
+	}
 
 	/*
 	 * Exists application.
