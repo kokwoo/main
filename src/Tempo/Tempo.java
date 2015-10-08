@@ -13,7 +13,7 @@ public class Tempo {
 			System.exit(0);
 		}
 		
-		RequestHandler run = new RequestHandler(args[1]);
+		RequestHandler run = new RequestHandler(args[0]);
 		ArgParser parser = new ArgParser();
 		System.out.println(WELCOME_MESSAGE);
 		listenForInput(run, parser);
