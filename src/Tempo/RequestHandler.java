@@ -30,9 +30,26 @@ public class RequestHandler {
 	
 	// such args list out all the events and tasks
 	private final String ARGS_ALL = "all";
+	
+	public String readNextCommand() {
+		String cmd;
+		do {
+			Scanner sc = new Scanner(System.in);
+			String nextCommand = sc.nextLine();
+			
+			ArgParser parser = new ArgParser();
+			cmd = parser.getAction(nextCommand);
+			String args[] = parser.getArguments(nextCommand);
+			
+			execute(cmd, args);
 
-	public RequestHandler() {
+			if(nextCommand.equals("exit")) {
+				sc.close();
+			}
 
+
+		} while (isValidCommand(cmd));
+		return cmd;	
 	}
 
 	/**
@@ -44,7 +61,7 @@ public class RequestHandler {
 	 */
 	public boolean execute(String command, String[] arguments) throws IllegalArgumentException {
 		if (!isValidInput(command)) {
-			throw new IllegalArgumentException();
+			return false;
 		}
 		switch (command) {
 		case CMD_ADD:
@@ -54,11 +71,12 @@ public class RequestHandler {
 		case CMD_UPDATE:
 			update(arguments);
 		case CMD_DISPLAY:
-			display(arguments);
+			//display(arguments); lol idk what to call here
 		case CMD_EXIT:
 			exit();
 		default:
-			return false;
+			// TODO: Tell user it is an invalid command
+			exit();
 		}
 	}
 
@@ -71,21 +89,15 @@ public class RequestHandler {
 	 * @param command
 	 * @param arguments
 	 */
-	private void remove(String command, String arguments) {
-		// TODO Auto-generated method stub
+	private void add(String[] arguments) {
+	}
+	
+	private void remove(String[] arguments) {
 
 	}
 
-	private boolean add(AddEvent event) {
-		// TODO Auto-generated method stub
-		System.out.println("Inside Add Event");
-		System.out.println(Arrays.toString(event.getArguments()));
-		return false;
-	}
-
-	private boolean update(String command, String arguments) {
-		// TODO Auto-generated method stub
-		return false;
+	private void update(String[] arguments) {
+		
 	}
 
 	private boolean display(String command, String arguments) {
@@ -138,33 +150,6 @@ public class RequestHandler {
 	private void exit() {
 		System.exit(0);
 	}
-
-	/**
-	 * Read next valid command.
-	 * 
-	 * @return valid Command
-	 */
-	public String readNextCommand() {
-		String cmd;
-		do {
-			String nextCommand = "";
-			Scanner sc = new Scanner(System.in);
-			nextCommand = sc.nextLine();
-			ArgParser parser = new ArgParser();
-			cmd = parser.parseAction(nextCommand);
-			String args[] = parser.parseArguments(nextCommand);
-			execute(cmd, args);
-			System.out.println("cmd : " + cmd);
-			if(nextCommand.equals("exit")) {
-				sc.close();
-			}
-
-
-		} while (!isValidCommand(cmd));
-			return cmd;	
-	}
-	
-	
 
 	/**
 	 * Checks to make sure computer input is correct
