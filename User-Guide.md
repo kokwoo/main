@@ -17,7 +17,7 @@ To quickly list available commands, use the command `help`.
 
 To undo your previous operation, use the command `undo`. The most recently made change will then be reverted.
 
-To obtain the id of your events or tasks, use any view or search command listed below. The ids of your events or tasks are unique and are necessary for their updating and deletion.
+To obtain the id of your events or tasks, use any view or search command listed below. The ids of your events or tasks are unique for each item and necessary for their updating and deletion.
 
 To exit Tempo, use the command `exit`.
 
@@ -29,16 +29,16 @@ The input format for time across all commands should follow the 24-hour format. 
 ## Manage Your Events
 To add an event, use the following command. The key `add` can be replaced by `create` or `new`.
 
-    add event <name> from <start date> at <start time> to <end date> at <end time>
+    add <name> from <start date> at <start time> to <end date> at <end time>
 
 If the event is to be repeated, simply append `repeat:<frequency>` to the above command, where the `<frequency>` can be `daily`, `weekly`, `monthly` or `yearly`.
 
-    add event <name> from <start date> at <start time> to <end date> at <end time> repeat:<frequency>
+    add <name> from <start date> at <start time> to <end date> at <end time> repeat:<frequency>
 
-To update an event, use the following command. The key `update` can be replaced by `edit` or `change`. If there are more than one fields to be modified, append as many `<field name>:<new value>` as possible using the delimeter `; `. 
+To update an event, use the following command. The key `update` can be replaced by `edit` or `change`. If there are more than one fields to be modified, append as many `<field name>:<new value>` as required using the delimeter `; `. 
 
- - `update task <id> <field name>:<new value>`
- - `update task <id> <field name>:<new value>; <field name>:<new value>`
+ - `update <id> <field name>:<new value>`
+ - `update <id> <field name>:<new value>; <field name>:<new value>`
 
 To repeat an event, use the following command. The possible choices for the frequency of the events are `daily`, `weekly`, `monthly` or `yearly`.
 
@@ -51,30 +51,30 @@ To delete an event, use the following command. The key `delete` can be replaced 
 ## Manage Your Tasks
 To add a task, use one of the following commands. The key `add` can be replaced by `create` or `new`. Use the second command if a deadline is to be specified.
 
- - `add task <name>`
- - `add task <name> due <date>`
+ - `add <name>`
+ - `add <name> due <date>`
 
-To update a task, use the following command. The key `update` can be replaced by `edit` or `change`. If there are more than one fields to be modified, append as many `<field name>:<new value>` as possible using the delimeter `; `. 
+To update a task, use the following command. The key `update` can be replaced by `edit` or `change`. If there are more than one fields to be modified, append as many `<field name>:<new value>` as required using the delimeter `; `. 
 
- - `update task <id> <field name>:<new value>`
- - `update task <id> <field name>:<new value>; <field name>:<new value>`
+ - `update <id> <field name>:<new value>`
+ - `update <id> <field name>:<new value>; <field name>:<new value>`
+
+To mark a task as done, use the following command. The key `done` can be replaced by `finished` or `completed`.
+
+    done <id>
 
 To delete a task, use the following command. The key `delete` can be replaced by `cancel` or `remove`. If you delete a recurring event, all instances of the event will be deleted.
 
     delete <id>
 
-To mark a task as done, use the following command. The key `mark` can be replaced by `flag`.
-
-    mark task done <id>
-
 ## Display Calendar
-To view the events and tasks due today, use the following command. The key `view` can be replaced by `display`.
+To view the events and tasks that are happening or due today, use the following command. The key `view` can be replaced by `display`.
 
     view today
 
-To view the events and tasks due this week, use the following command. The key `view` can be replaced by `display`.
+To view all events and tasks, use the following command. The key `view` can be replaced by `display`.
 
-    view week
+    view calendar
 
 To view only your events, use the following commands. The key `view` can be replaced by `display`.
 
@@ -89,8 +89,30 @@ To view only your tasks, use the following command. The key `view` can be replac
 
 
 ## Search 
-To search for an event or task, use the following commands. At least part of the event or task name must be keyed in the `<keywords>` field.
+To search for an event or task, use the following commands. At least part of the event or task name must be keyed in the `<keywords>` field. The key `search` can be replaced by `find`.
 
     search <keywords>
 
 # Cheatsheet
+Command | `<key>` Variations| Description
+--------| --------------| ---------------
+`help` | N.A. | List available commands
+`<key> <name> from <start date> at <start time> to <end date> at <end time>` | `add`, `create`, `new` | Add event
+`<key> <name> from <start date> at <start time> to <end date> at <end time> repeat:<frequency of occurrence>` | `add`, `create`, `new` | Add recurring event
+`<key> <name>` | `add`, `create`, `new` | Add task with no deadline
+`<key> <name> due <date>` | `add`, `create`, `new` | Add task with deadline
+`<key> <id> <field name>:<new value>` | `update`, `edit`, `change` | Update single field of event/task
+`<key> <id> <field name>:<new value>; <field name>:<new value>` | `update`, `edit`, `change` | Update multiple fields of event/task
+`<key> <id>` | `done`, `finished`, `completed` | Mark task as done 
+`repeat <id> <frequency> until <end date>` | N.A. | Repeat event (daily, weekly, monthly or yearly)
+`<key> <id>` | `delete`, `remove`, `cancel` | Delete event or task
+`<key> today` | `view`, `display` | View today's events and tasks
+`<key> calendar` | `view`, `display` | View all events and tasks
+`<key> upcoming events` | `view`, `display` | View upcoming events
+`<key> events` | `view`, `display` | View all events
+`<key> undone tasks` | `view`, `display` | View undone tasks
+`<key> missed tasks` | `view`, `display` | View missed events
+`<key> all tasks` | `view`, `display` | View all tasks
+`<key> <keywords>` | `search`, `find` | Search for an event or task
+`undo` | N.A. | Undo previous command
+`exit` | N.A. | Exit Tempo
