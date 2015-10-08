@@ -70,7 +70,9 @@ public class ArgParser {
 	}
 	
 	public String getName(String arguments) {
-		return getFirstWord(arguments);
+		arguments = removeFirstWord(arguments);
+		String[] parameters1 = arguments.split("from");
+		return parameters1[0].trim();
 	}
 	
 //	from <start date> at <start time> to <end date> at <end time>
@@ -81,74 +83,67 @@ public class ArgParser {
 	}
 	
 	public String getEventStartTime(String arguments) {
-		String[] parts = arguments.split(" ");
-		return parts[3]; //DONE
+		String[] parameters1 = arguments.split("at");
+		String[] parameters2 = parameters1[1].trim().split("to");
+		return parameters2[0].trim();
 	}
 	
 	public String getEventEndDate(String arguments) {
-		String[] parts = arguments.split(" ");
-		return parts[5]; //DONE
+		String[] parameters1 = arguments.split("to");
+		String[] parameters2 = parameters1[1].trim().split("at");
+		return parameters2[0].trim();
 	}
 	
 	public String getEventEndTime(String arguments) {
-		String[] parts = arguments.split(" ");
-		return parts[7]; //DONE
+		String[] parameters1 = arguments.split("at");
+		return parameters1[2].trim();
 	}
 	
 	public String getTaskDueDate(String arguments) {
-		String[] parts = arguments.split(" ");
-		return parts[3]; // DONE
+		String[] parameters1 = arguments.split("due");
+		return parameters1[1].trim();
 	}
 
 	//event <id> <name> from <start date> at <start time> to <end date> at <end time>
 	//task <id> <name> due <date>
 	//task <id> <field name>: <new value>
 	public ArrayList<String> getFieldsList(String arguments) {
-		ArrayList<String> returnList = new ArrayList<String>();
+		ArrayList<String> fields = new ArrayList<String>();
 		
-		if(arguments.contains(":")){
-			//one argument only
-			String[] split1 = arguments.split(":");
-			String[] split2 = split1[0].split(" ");
-			returnList.add(split2[2]);
-		}else if (arguments.contains("due")){
-			//updating task
-			returnList.add("due");
-		}else if (arguments.contains("from")){
-			//updating event
-			returnList.add("start date");
-			returnList.add("start time");
-			returnList.add("end date");
-			returnList.add("end time");
+		if(arguments.contains(";")) {
+			// more than one field to be updated
+			String[] split = arguments.split("; ");
+			for (int i = 0; i < split.length; i++) {
+				String[] params = split[i].trim().split(":");
+				fields.add(params[0].trim());
+			}
+		} else {
+			String[] split = arguments.split(":");
+			fields.add(split[0].trim());
 		}
-		return returnList; //DONE
+		
+		return fields; //DONE
 	}
 	
 	//event <id> <name> from <start date> at <start time> to <end date> at <end time>
 	//task <id> <name> due <date>
 	//task <id> <field name>: <new value>
 	public ArrayList<String> getNewValuesList(String arguments) {
-		ArrayList<String> returnList = new ArrayList<String>();
+		ArrayList<String> newValues = new ArrayList<String>();
 		
-		if(arguments.contains(":")){
-			//one argument only
-			String[] split1 = arguments.split(":");
-			String[] split2 = split1[0].split(" ");
-			returnList.add(split2[1].trim());
-		}else if (arguments.contains("due")){
-			//updating task
-			String[] split = arguments.split(" ");
-			returnList.add(split[5]);
-		}else if (arguments.contains("from")){
-			//updating event
-			String[] split = arguments.split(" ");
-		
-			returnList.add(split[4]);
-			returnList.add(split[6]);
-			returnList.add(split[8]);
-			returnList.add(split[10]);
+		if(arguments.contains(";")) {
+			// more than one field to be updated
+			String[] split = arguments.split("; ");
+			for (int i = 0; i < split.length; i++) {
+				String[] params = split[i].trim().split(":");
+				newValues.add(params[1].trim());
+			}
+		} else {
+			String[] split = arguments.split(":");
+			newValues.add(split[1].trim());
 		}
-		return returnList; //DONE
+		
+		return newValues; //DONE
 	}
 	
 	private String removeFirstWord(String message) {   
