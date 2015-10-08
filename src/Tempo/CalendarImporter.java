@@ -1,11 +1,7 @@
 package Tempo;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
+import java.io.*;
+import java.util.*;
 
 public class CalendarImporter {
 	private String _fileName; 
@@ -38,19 +34,25 @@ public class CalendarImporter {
 			while((currLine = in.readLine()) != null){
 				String[] split = currLine.split("!!");
 				
-				if(split.length == 5){
+				if(split.length == 6){
 					//events
-					Event newEvent  = new Event(split[0], split[1], split[2], split[3], split[4]);
+					int eventIndex = Integer.parseInt(split[0]);
+					Event newEvent  = new Event(eventIndex, split[1], split[2], 
+												split[3], split[4], split[5]);
 					events.add(newEvent);
 					Collections.sort(events);
-				}else if(split.length == 3){
+				}else if(split.length == 4){
 					//tasks
-					Task newTask = new Task(split[0], split[1], split[2]);
+					int taskIndex = Integer.parseInt(split[0]);
+					Task newTask = new Task(taskIndex, split[1], split[2], 
+											split[3]);
 					tasks.add(newTask);
 					Collections.sort(tasks);
-				}else if (split.length == 2){
+				}else if (split.length == 3){
 					//floating tasks
-					FloatingTask newFloatingTask =  new FloatingTask(split[0], split[1]);
+					int floatingTaskIndex = Integer.parseInt(split[0]);
+					FloatingTask newFloatingTask =  new FloatingTask(floatingTaskIndex, 
+																	split[1], split[2]);
 					floatingTasks.add(newFloatingTask);
 				}else{
 					//unrecognized

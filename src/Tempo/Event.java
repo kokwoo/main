@@ -1,34 +1,90 @@
 package Tempo;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.text.*;
+import java.util.*;
 
 public class Event implements Comparable<Event>{
 	protected String _name;
 	protected Date _startDateTime;
 	protected Date _endDateTime;
+	protected int _index;
 	
+	private static final String DELIMETER = "!!";
+	private SimpleDateFormat dateFormatter = new SimpleDateFormat("dd/MM/yyyy/HH:mm");
+
 	
-	public Event(String name, String startDate, String startTime, String endDate, String endTime){
-		_name = name;
-		
+	public Event(int index, String name, String startDate, String startTime, String endDate, String endTime){
+		_name = name;		
+		setStartDateTime(startDate, startTime);
+		setEndDateTime(endDate, endTime);
+	}
+	
+	public void update(String field, String newValue) {
+		switch(field) {
+			case "name": 
+				setName(newValue);
+				break;
+			case "start date":
+				setStartDate(newValue);
+				break;
+			case "start time":
+				setStartTime(newValue);
+				break;
+			case "end date":
+				setEndDate(newValue);
+				break;
+			case "end time":
+				setEndTime(newValue);
+				break;
+		}
+	}
+	
+	private void setName(String newName) {
+		_name = newName;
+	}
+	
+	private void setStartDateTime(String startDate, String startTime) {
 		String startDateTimeString = startDate + "/" + startTime;
-		String endDateTimeString = endDate + "/" + endTime;
-		
-		SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy/HH:mm");
 		
 		try {
-			_startDateTime = formatter.parse(startDateTimeString);
+			_startDateTime = dateFormatter.parse(startDateTimeString);
 		} catch (ParseException e) {
 			System.out.println("Unable to format Start Date/Time!");
 		}
+	}
+	
+	private void setStartDate(String newStartDate) {
+		String startTime = getStartTime();
+		setStartDateTime(newStartDate, startTime);
+	}
+	
+	private void setStartTime(String newStartTime) {
+		String startDate = getStartDate();
+		setStartDateTime(startDate, newStartTime);
+	}
+	
+	private void setEndDateTime(String endDate, String endTime) {
+		String endDateTimeString = endDate + "/" + endTime;
 		
 		try {
-			_endDateTime = formatter.parse(endDateTimeString);
+			_endDateTime = dateFormatter.parse(endDateTimeString);
 		} catch (ParseException e) {
 			System.out.println("Unable to format End Date/Time!");
 		}
+	}
+	
+	private void setEndDate(String newEndDate) {
+		String endTime = getEndTime();
+		setEndDateTime(newEndDate, endTime);
+	}
+	
+	private void setEndTime(String newEndTime) {
+		String endDate = getEndDate();
+		setEndDateTime(endDate, newEndTime);
+	}
+	
+	public int getIndex() {
+		return _index;
 	}
 	
 	public String getName(){
@@ -85,8 +141,7 @@ public class Event implements Comparable<Event>{
 	}
 	
 	public String toString(){
-		String delimeter = "!!";
-		return getName() + delimeter + getStartDate() + delimeter + getStartTime() + delimeter + getEndDate() + delimeter + getEndTime(); 
+		return getName() + DELIMETER + getStartDate() + DELIMETER + getStartTime() + DELIMETER + getEndDate() + DELIMETER + getEndTime(); 
 	}
 	
 //	public boolean clashesWith(Event e){

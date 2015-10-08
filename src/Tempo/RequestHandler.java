@@ -1,8 +1,7 @@
 package Tempo;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Scanner;
+import java.util.*;
+
 
 public class RequestHandler {
 	//global variable
@@ -118,8 +117,6 @@ public class RequestHandler {
 			display.missedTasks();
 		case(ARG_TODAY):
 			display.today();
-		case(ARG_WEEK):
-			display.week();
 		case(ARGS_ALL):
 			display.all();
 		default:
