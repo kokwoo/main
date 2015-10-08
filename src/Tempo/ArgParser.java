@@ -16,141 +16,135 @@ public class ArgParser {
 
 	public ArgParser() {
 		keywords = new HashMap<ArrayList<String>, String>();
+		initialiseKeywords();
+	}
+	
+	public void initialiseKeywords() {
+		addAddKeywords();
+		addUpdateKeywords();
+		addDisplayKeywords();
+		addRemoveKeywords();
+	}
+	
+	private void addAddKeywords() {
 		ArrayList<String> add = new ArrayList<String>();
 		add.add("add");
 		add.add("create");
 		add.add("new");
 		keywords.put(add, "add");
-
+	}
+	
+	private void addUpdateKeywords() {
+		ArrayList<String> update = new ArrayList<String>();
+		update.add("update");
+		update.add("edit");
+		update.add("change");
+		keywords.put(update, "update");
+	}
+	
+	private void addDisplayKeywords() {
 		ArrayList<String> display = new ArrayList<String>();
 		display.add("display");
 		display.add("all");
 		display.add("view");
 		display.add("list");
 		keywords.put(display, "display");
-
-		ArrayList<String> edit = new ArrayList<String>();
-		edit.add("edit");
-		display.add("update");
-		display.add("change");
-		keywords.put(edit, "edit");
-
-		ArrayList<String> delete = new ArrayList<String>();
-		delete.add("delete");
-		delete.add("cancel");
-		delete.add("remove");
-		keywords.put(delete, "delete");
-
-		ArrayList<String> exit = new ArrayList<String>();
-		exit.add("exit");
-		exit.add("quit");
-		keywords.put(exit, "exit");
-
+	}
+	
+	private void addRemoveKeywords() {
+		ArrayList<String> remove = new ArrayList<String>();
+		remove.add("remove");
+		remove.add("cancel");
+		remove.add("delete");
+		keywords.put(remove, "remove");
 	}
 
-	/**
-	 * @param userInput
-	 * @return arguments
-	 **/
-	public String[] parseArguments(String userInput) {
-		return getArguments(userInput);
+	public String getCommand(String message) {
+		return getFirstWord(message);
 	}
-
-	/**
-	 * @param userInput
-	 * @return action
-	 **/
-	public String parseAction(String userInput) {
-		return getAction(userInput);
+	
+	public String getArguments(String message) throws IllegalArgumentException {
+		return removeFirstWord(message);
 	}
-
-	/**
-	 * @param userInput
-	 * @return arguments
-	 * @throws IllegalArugmentException
-	 **/
-	private String[] getArguments(String message) throws IllegalArgumentException {
-		System.out.println("in get arguments");
-		if (!verifyInput(message)) {
-			throw new IllegalArgumentException();
+	
+	public int getId(String arguments) {
+		return Integer.parseInt(getFirstWord(arguments));
+	}
+	
+	public String getName(String arguments) {
+		return getFirstWord(arguments);
+	}
+	
+	public String getEventStartDate(String arguments) {
+		String[] parameters1 = arguments.split("from");
+		String[] parameters2 = parameters1[1].trim().split("at");
+		return parameters2[0].trim();
+	}
+	
+	public String getEventStartTime(String arguments) {
+		return ""; // TODO:
+	}
+	
+	public String getEventEndDate(String arguments) {
+		return ""; // TODO:
+	}
+	
+	public String getEventEndTime(String arguments) {
+		return ""; // TODO:
+	}
+	
+	public String getTaskDueDate(String arguments) {
+		return ""; // TODO:
+	}
+	
+	public ArrayList<String> getFieldsList(String arguments) {
+		return new ArrayList<String>(); // TODO:
+	}
+	
+	public ArrayList<String> getNewValuesList(String arguments) {
+		return new ArrayList<String>(); // TODO:
+	}
+	
+	private String removeFirstWord(String message) {   
+		return message.replace(getFirstWord(message), "").trim();  
+	}  
+	
+	private String getFirstWord(String message) {   
+		String commandTypeString = message.trim().split("\\s+")[0];   
+		return commandTypeString;  
+	}
+	
+	public boolean isEvent(String message) {
+		message = removeFirstWord(message);
+		if (getFirstWord(message).equals("event")) {
+			return true;
 		}
-		String[] tokenizedInput = message.split(" ");
-		String[] argument = extractSubArray(tokenizedInput, 1, tokenizedInput.length);
-		System.out.println(Arrays.toString(argument));
-		return argument;
+		return false;
 	}
-
-	/**
-	 * @param full
-	 *            array
-	 * @param lowerbound
-	 * @param upper
-	 *            bound
-	 * @throws IllegalArgumentException
-	 * @return subarray
-	 **/
-	private String[] extractSubArray(String[] tokenizedInput, int start, int end) throws IllegalArgumentException {
-		if (!verifyInput(tokenizedInput)) {
-			throw new IllegalArgumentException();
+	
+	public boolean isFloatingTask(String message) {
+		if (message.contains("due")) {
+			return true;
 		}
-		String[] subArray = new String[end - start];
-		System.arraycopy(tokenizedInput, 1, subArray, 0, end - start);
-		return subArray;
+		return false;
 	}
-
-	private boolean verifyInput(String[] tokenizedInput) {
-		// TODO Auto-generated method stub
-		if (isEmpty(tokenizedInput) || isNull(tokenizedInput)) {
-			return false;
-		}
-		return true;
-	}
-
-	private boolean isNull(String[] tokenizedInput) {
-		return tokenizedInput == null;
-	}
-
-	private boolean isEmpty(String[] tokenizedInput) {
-		return tokenizedInput.length == 0;
-
-	}
-
-	private boolean verifyInput(String message) {
-		if (isNull(message) || isEmpty(message)) {
-			return false;
-		}
-		return true;
-	}
-
-	private String getAction(String message) throws IllegalArgumentException {
-		if (!verifyInput(message)) {
-			throw new IllegalArgumentException();
-		}
-		String[] tokenizedInput = message.split(" ");
-		String action = tokenizedInput[0];
-		String keyword = getValidCommand(action);
-
-		return keyword;
-	}
+	
+	// --------------------------------------------------- //
 
 	private String getValidCommand(String action) {
-		// TODO Auto-generated method stub
-		for (ArrayList<String> current : keywords.keySet()) {
+		for (ArrayList<String> currActionKey : keywords.keySet()) {
 			{
-				if (existsInArray(current, action)) {
-					return current.get(0);
+				if (isInArray(currActionKey, action)) {
+					return currActionKey.get(0);
 				}
 			}
 		}
 		return null;
 	}
 
-	private boolean existsInArray(ArrayList<String> current, String action) {
-		// TODO Auto-generated method stub
-		for (int i = 0; i < current.size(); i++) {
-
-			if (current.get(i).equals(action)) {
-
+	private boolean isInArray(ArrayList<String> actionKey, String action) {
+		for (int i = 0; i < actionKey.size(); i++) {
+			if (actionKey.get(i).equals(action)) {
 				return true;
 			}
 		}
@@ -160,8 +154,30 @@ public class ArgParser {
 	private boolean isEmpty(String message) {
 		return message.length() == 0;
 	}
+	
+	private boolean isEmpty(String[] tokenizedInput) {
+		return tokenizedInput.length == 0;
+	}
 
 	private boolean isNull(String message) {
 		return message == null;
+	}
+	
+	private boolean isNull(String[] tokenizedInput) {
+		return tokenizedInput == null;
+	}
+	
+	private boolean isValidInput(String[] tokenizedInput) {
+		if (isEmpty(tokenizedInput) || isNull(tokenizedInput)) {
+			return false;
+		}
+		return true;
+	}
+
+	private boolean isValidInput(String message) {
+		if (isNull(message) || isEmpty(message)) {
+			return false;
+		}
+		return true;
 	}
 }
