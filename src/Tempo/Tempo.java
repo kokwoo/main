@@ -7,7 +7,13 @@ public class Tempo {
 	private static final String EXIT_CMD = "exit";
 
 	public static void main(String args[]) {
-		RequestHandler run = new RequestHandler();
+		if(args.length != 1){
+			System.out.println("Please enter a filename! :)");
+			System.out.println("Usage: java Tempo <filename>");
+			System.exit(0);
+		}
+		
+		RequestHandler run = new RequestHandler(args[1]);
 		ArgParser parser = new ArgParser();
 		System.out.println(WELCOME_MESSAGE);
 		listenForInput(run, parser);

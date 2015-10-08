@@ -5,32 +5,42 @@ import java.util.*;
 
 public class Calendar {
 	private String _fileName;
-	
+
 	private ArrayList<Event> eventsList;
 	private ArrayList<Task> tasksList;
 	private ArrayList<FloatingTask> floatingTasksList;
 	private IndexStore indexStore;
 
-//	public Calendar() {
-//		eventsList = new ArrayList<Event>();
-//		tasksList = new ArrayList<Task>();
-//		floatingTasksList = new ArrayList<FloatingTask>();
-//	}
+	// display arguments
+	private final String ARG_MANUAL = "manual";
+	private final String ARG_EVENTS = "events";
+	private final String ARG_UPCOMING_EVENTS = "upcoming events";
+	private final String ARG_TASKS = "tasks";
+	private final String ARG_UNDONE_TASKS = "undone tasks";
+	private final String ARG_MISSED_TASKS = "missed tasks";
+	private final String ARG_TODAY = "today";
+	private final String ARGS_ALL = "all";
+
+	// public Calendar() {
+	// eventsList = new ArrayList<Event>();
+	// tasksList = new ArrayList<Task>();
+	// floatingTasksList = new ArrayList<FloatingTask>();
+	// }
 
 	public Calendar(String fileName) {
 		_fileName = fileName;
 		eventsList = new ArrayList<Event>();
 		tasksList = new ArrayList<Task>();
 		floatingTasksList = new ArrayList<FloatingTask>();
-		
+
 		File file = new File(_fileName);
-		
+
 		// if the file exists, import the existing data from file
 		// else ignore
-		if(file.exists()){
+		if (file.exists()) {
 			importFromFile();
 		}
-		
+
 		indexStore = new IndexStore(eventsList, tasksList, floatingTasksList);
 	}
 
@@ -56,17 +66,16 @@ public class Calendar {
 		indexStore.addTask(newTaskIndex, newFloatingTask);
 		floatingTasksList.add(newFloatingTask);
 	}
-	
+
 	public void remove(int idx) {
 		if (indexStore.isEvent(idx)) {
 			removeEvent(idx);
-		} else if(indexStore.isFloatingTask(idx)){
+		} else if (indexStore.isFloatingTask(idx)) {
 			removeFloatingTask(idx);
 		} else {
 			removeTask(idx);
 		}
 	}
-	
 
 	private void removeEvent(int idx) {
 		for (int i = 0; i < eventsList.size(); i++) {
@@ -87,7 +96,7 @@ public class Calendar {
 			}
 		}
 	}
-	
+
 	private void removeFloatingTask(int idx) {
 		for (int i = 0; i < floatingTasksList.size(); i++) {
 			if (floatingTasksList.get(i).getIndex() == idx) {
@@ -97,9 +106,8 @@ public class Calendar {
 			}
 		}
 	}
-	
-	public void update(int idx, ArrayList<String> fields, 
-					   ArrayList<String> newValues) {
+
+	public void update(int idx, ArrayList<String> fields, ArrayList<String> newValues) {
 		if (indexStore.isEvent(idx)) {
 			updateEvent(idx, fields, newValues);
 		} else if (indexStore.isFloatingTask(idx)) {
@@ -108,35 +116,50 @@ public class Calendar {
 			updateTask(idx, fields, newValues);
 		}
 	}
-	
-	private void updateEvent(int idx, ArrayList<String> fields, 
-							ArrayList<String> newValues) {
+
+	private void updateEvent(int idx, ArrayList<String> fields, ArrayList<String> newValues) {
 		int arrayListIndex = getArrayListIndexOfEvent(idx);
 		Event eventToUpdate = eventsList.get(arrayListIndex);
 		for (int i = 0; i < fields.size(); i++) {
 			eventToUpdate.update(fields.get(i), newValues.get(i));
 		}
 	}
-	
-	private void updateTask(int idx, ArrayList<String> fields, 
-						   ArrayList<String> newValues) {
+
+	private void updateTask(int idx, ArrayList<String> fields, ArrayList<String> newValues) {
 		int arrayListIndex = getArrayListIndexOfTask(idx);
 		Task taskToUpdate = tasksList.get(arrayListIndex);
 		for (int i = 0; i < fields.size(); i++) {
 			taskToUpdate.update(fields.get(i), newValues.get(i));
-		}	
+		}
 	}
-	
-	private void updateFloatingTask(int idx, ArrayList<String> fields, 
-								   ArrayList<String> newValues) {
+
+	private void updateFloatingTask(int idx, ArrayList<String> fields, ArrayList<String> newValues) {
 		int arrayListIndex = getArrayListIndexOfFloatingTask(idx);
 		FloatingTask taskToUpdate = floatingTasksList.get(arrayListIndex);
 		for (int i = 0; i < fields.size(); i++) {
 			taskToUpdate.update(fields.get(i), newValues.get(i));
-		}	
+		}
 	}
 
-	public void display() {
+	public void display(String displayType) {
+		Display display = new Display(getEventsList(), getTasksList(), getFloatingTasksList());
+		
+		switch (displayType) {
+			case (ARG_EVENTS) :
+				display.events();
+			case (ARG_TASKS) :
+				display.tasks();
+			case (ARG_UPCOMING_EVENTS) :
+				display.upcomingEvents();
+			case (ARG_UNDONE_TASKS) :
+				display.undoneTasks();
+			case (ARG_MISSED_TASKS) :
+				display.missedTasks();
+			case (ARG_TODAY) :
+				display.today();
+			case (ARGS_ALL) :
+				display.all();
+		}
 	}
 
 	public ArrayList<Event> getEventsList() {
@@ -150,15 +173,15 @@ public class Calendar {
 	public ArrayList<FloatingTask> getFloatingTasksList() {
 		return floatingTasksList;
 	}
-	
+
 	public void exportToFile() {
 		System.out.println("Exporting: " + _fileName);
 		CalendarExporter exporter = new CalendarExporter(_fileName, eventsList, tasksList, floatingTasksList);
 		exporter.export();
 		System.out.println("Export Successful!");
 	}
-	
-	public void importFromFile(){
+
+	public void importFromFile() {
 		System.out.println("Importing: " + _fileName);
 		CalendarImporter importer = new CalendarImporter(_fileName);
 		eventsList = importer.getEventsList();
@@ -166,42 +189,41 @@ public class Calendar {
 		floatingTasksList = importer.getFloatingTasksList();
 		System.out.println("Import Sucessful!");
 	}
-	
+
 	private int getArrayListIndexOfEvent(int id) {
 		int index = 0;
-		
+
 		for (int i = 0; i < eventsList.size(); i++) {
 			if (eventsList.get(i).getIndex() == id) {
 				i = index;
 			}
 		}
-		
+
 		return index;
 	}
-	
+
 	private int getArrayListIndexOfTask(int id) {
 		int index = 0;
-		
+
 		for (int i = 0; i < tasksList.size(); i++) {
 			if (tasksList.get(i).getIndex() == id) {
 				i = index;
 			}
 		}
-		
+
 		return index;
 	}
-	
+
 	private int getArrayListIndexOfFloatingTask(int id) {
 		int index = 0;
-		
+
 		for (int i = 0; i < floatingTasksList.size(); i++) {
 			if (floatingTasksList.get(i).getIndex() == id) {
 				i = index;
 			}
 		}
-		
+
 		return index;
 	}
-	
-	
+
 }
