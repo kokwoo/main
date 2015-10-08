@@ -28,17 +28,17 @@ public class ArgParser {
 		display.add("list");
 		keywords.put(display, "display");
 
-		ArrayList<String> edit = new ArrayList<String>();
-		edit.add("edit");
-		display.add("update");
-		display.add("change");
-		keywords.put(edit, "edit");
+		ArrayList<String> update = new ArrayList<String>();
+		update.add("update");
+		update.add("edit");
+		update.add("change");
+		keywords.put(update, "update");
 
-		ArrayList<String> delete = new ArrayList<String>();
-		delete.add("delete");
-		delete.add("cancel");
-		delete.add("remove");
-		keywords.put(delete, "delete");
+		ArrayList<String> remove = new ArrayList<String>();
+		remove.add("remove");
+		remove.add("cancel");
+		remove.add("delete");
+		keywords.put(remove, "remove");
 
 		ArrayList<String> exit = new ArrayList<String>();
 		exit.add("exit");
@@ -69,7 +69,7 @@ public class ArgParser {
 	 * @throws IllegalArugmentException
 	 **/
 	private String[] getArguments(String message) throws IllegalArgumentException {
-		if (!verifyInput(message)) {
+		if (!isValidInput(message)) {
 			throw new IllegalArgumentException();
 		}
 		String[] tokenizedInput = message.split(" ");
@@ -87,7 +87,7 @@ public class ArgParser {
 	 * @return subarray
 	 **/
 	private String[] extractSubArray(String[] tokenizedInput, int start, int end) throws IllegalArgumentException {
-		if (!verifyInput(tokenizedInput)) {
+		if (!isValidInput(tokenizedInput)) {
 			throw new IllegalArgumentException();
 		}
 		String[] subArray = new String[end - start];
@@ -95,32 +95,8 @@ public class ArgParser {
 		return subArray;
 	}
 
-	private boolean verifyInput(String[] tokenizedInput) {
-		// TODO Auto-generated method stub
-		if (isEmpty(tokenizedInput) || isNull(tokenizedInput)) {
-			return false;
-		}
-		return true;
-	}
-
-	private boolean isNull(String[] tokenizedInput) {
-		return tokenizedInput == null;
-	}
-
-	private boolean isEmpty(String[] tokenizedInput) {
-		return tokenizedInput.length == 0;
-
-	}
-
-	private boolean verifyInput(String message) {
-		if (isNull(message) || isEmpty(message)) {
-			return false;
-		}
-		return true;
-	}
-
 	private String getAction(String message) throws IllegalArgumentException {
-		if (!verifyInput(message)) {
+		if (!isValidInput(message)) {
 			throw new IllegalArgumentException();
 		}
 		String[] tokenizedInput = message.split(" ");
@@ -131,23 +107,19 @@ public class ArgParser {
 	}
 
 	private String getValidCommand(String action) {
-		// TODO Auto-generated method stub
-		for (ArrayList<String> current : keywords.keySet()) {
+		for (ArrayList<String> currActionKey : keywords.keySet()) {
 			{
-				if (existsInArray(current, action)) {
-					return current.get(0);
+				if (existsInArray(currActionKey, action)) {
+					return currActionKey.get(0);
 				}
 			}
 		}
 		return null;
 	}
 
-	private boolean existsInArray(ArrayList<String> current, String action) {
-		// TODO Auto-generated method stub
-		for (int i = 0; i < current.size(); i++) {
-
-			if (current.get(i).equals(action)) {
-
+	private boolean existsInArray(ArrayList<String> actionKey, String action) {
+		for (int i = 0; i < actionKey.size(); i++) {
+			if (actionKey.get(i).equals(action)) {
 				return true;
 			}
 		}
@@ -157,8 +129,30 @@ public class ArgParser {
 	private boolean isEmpty(String message) {
 		return message.length() == 0;
 	}
+	
+	private boolean isEmpty(String[] tokenizedInput) {
+		return tokenizedInput.length == 0;
+	}
 
 	private boolean isNull(String message) {
 		return message == null;
+	}
+	
+	private boolean isNull(String[] tokenizedInput) {
+		return tokenizedInput == null;
+	}
+	
+	private boolean isValidInput(String[] tokenizedInput) {
+		if (isEmpty(tokenizedInput) || isNull(tokenizedInput)) {
+			return false;
+		}
+		return true;
+	}
+
+	private boolean isValidInput(String message) {
+		if (isNull(message) || isEmpty(message)) {
+			return false;
+		}
+		return true;
 	}
 }

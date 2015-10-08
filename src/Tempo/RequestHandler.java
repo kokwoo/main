@@ -7,14 +7,14 @@ public class RequestHandler {
 	
 	//private final String MSG_CMD_NOT_VALID = "Why don't you try entering an actual command?";
 	private final String MSG_ARG_NOT_VALID = "Why don't you try entering an actual argument?";
-	private final String CMD_ADD_EVENT = "add";
-	private final String CMD_DELETE_EVENT = "delete";
-	private final String CMD_EDIT_EVENT = "edit";
-	private final String CMD_DISPLAY_EVENT = "display";
+	private final String CMD_ADD = "add";
+	private final String CMD_REMOVE = "remove";
+	private final String CMD_UPDATE = "update";
+	private final String CMD_DISPLAY = "display";
 	private final String CMD_EXIT = "EXIT";
 	private final String CMD_HELP = "help";
 	private final String CMD_MANUAL = "manual";
-	private final String[] VALID_COMMANDS = { CMD_ADD_EVENT, CMD_DELETE_EVENT,CMD_EXIT,CMD_EDIT_EVENT};
+	private final String[] VALID_COMMANDS = { CMD_ADD, CMD_REMOVE,CMD_EXIT,CMD_UPDATE};
 
 	// display args
 	private final String ARG_MANUAL = "manual";
@@ -43,24 +43,18 @@ public class RequestHandler {
 	 * @return success
 	 */
 	public boolean execute(String command, String[] arguments) throws IllegalArgumentException {
-		if (!validInput(command)) {
+		if (!isValidInput(command)) {
 			throw new IllegalArgumentException();
 		}
 		switch (command) {
-		case CMD_ADD_EVENT:
-			AddEvent addEvent = new AddEvent(arguments);
-			return add(addEvent);
-		case CMD_DELETE_EVENT:
-			DeleteEvent deleteEvent = new DeleteEvent(arguments);
-			System.out.println(deleteEvent.getEventId());
-			
-			///delete(command, arguments);
-		case CMD_EDIT_EVENT:
-			EditEvent edit = new EditEvent(arguments);
-			return true;	// REPLACE WITH CALL TO EDIT.
-			//return edit(command, arguments);
-		case CMD_DISPLAY_EVENT:
-			//return display(command, arguments);
+		case CMD_ADD:
+			add(arguments);
+		case CMD_REMOVE:
+			remove(arguments);
+		case CMD_UPDATE:
+			update(arguments);
+		case CMD_DISPLAY:
+			display(arguments);
 		case CMD_EXIT:
 			exit();
 		default:
@@ -77,7 +71,7 @@ public class RequestHandler {
 	 * @param command
 	 * @param arguments
 	 */
-	private void delete(String command, String arguments) {
+	private void remove(String command, String arguments) {
 		// TODO Auto-generated method stub
 
 	}
@@ -89,7 +83,7 @@ public class RequestHandler {
 		return false;
 	}
 
-	private boolean edit(String command, String arguments) {
+	private boolean update(String command, String arguments) {
 		// TODO Auto-generated method stub
 		return false;
 	}
@@ -154,15 +148,15 @@ public class RequestHandler {
 		String cmd;
 		do {
 			String nextCommand = "";
-			Scanner read = new Scanner(System.in);
-			nextCommand = read.nextLine();
+			Scanner sc = new Scanner(System.in);
+			nextCommand = sc.nextLine();
 			ArgParser parser = new ArgParser();
 			cmd = parser.parseAction(nextCommand);
 			String args[] = parser.parseArguments(nextCommand);
 			execute(cmd, args);
 			System.out.println("cmd : " + cmd);
 			if(nextCommand.equals("exit")) {
-				read.close();
+				sc.close();
 			}
 
 
@@ -178,10 +172,10 @@ public class RequestHandler {
 	 * @param command
 	 * @return true if command is valid
 	 */
-	private boolean validInput(String command) {
+	private boolean isValidInput(String command) {
 		System.out.println(command);
 		System.out.println(Arrays.toString(VALID_COMMANDS));
-		return existsInArray(VALID_COMMANDS, command);
+		return isInArray(VALID_COMMANDS, command);
 	}
 
 	/**
@@ -200,7 +194,7 @@ public class RequestHandler {
 	 * @param text
 	 * @return true if text exists in array
 	 */
-	private boolean existsInArray(String[] array, String text) {
+	private boolean isInArray(String[] array, String text) {
 		for (int i = 0; i < array.length; i++) {
 			if (array[i].equalsIgnoreCase((text))) {
 				return true;
