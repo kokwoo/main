@@ -9,7 +9,7 @@ public class RequestHandler {
 	Calendar calendar;
 
 	// private final String MSG_CMD_NOT_VALID = "Why don't you try entering an actual command?";
-	private final String MSG_ARG_NOT_VALID = "Why don't you try entering an actual argument?";
+	private final String MSG_ARG_NOT_VALID = "Invalid command! Please refer to help";
 	private final String CMD_ADD = "add";
 	private final String CMD_REMOVE = "remove";
 	private final String CMD_UPDATE = "update";
@@ -45,15 +45,19 @@ public class RequestHandler {
 		do {
 			Scanner sc = new Scanner(System.in);
 			String nextCommand = sc.nextLine();
+			
+			if (nextCommand.equals("exit")) {
+				sc.close();
+				System.out.println("Thanks for using Tempo! :)");
+				System.exit(0);
+			}
 
 			cmd = parser.getCommand(nextCommand);
 			String args = parser.getArguments(nextCommand);
 
 			execute(cmd, args);
 
-			if (nextCommand.equals("exit")) {
-				sc.close();
-			}
+
 
 		} while (isValidCommand(cmd));
 		return cmd;
@@ -68,20 +72,27 @@ public class RequestHandler {
 		switch (command) {
 			case CMD_ADD :
 				add(arguments);
+				break;
 			case CMD_REMOVE :
 				remove(arguments);
+				break;
 			case CMD_UPDATE :
 				update(arguments);
+				break;
 			case CMD_DISPLAY :
 				display(command, arguments);
+				break;
 			case CMD_EXIT :
 				exit();
+				break;
 			default :
 				display(command, arguments);
+				break;
 				//exit();
 		}
 	}
 
+	//WORKING
 	private void add(String arguments) {
 		if (parser.isEvent(arguments)) {
 			String name = parser.getName(arguments);
@@ -89,6 +100,8 @@ public class RequestHandler {
 			String startTime = parser.getEventStartTime(arguments);
 			String endDate = parser.getEventEndDate(arguments);
 			String endTime = parser.getEventEndTime(arguments);
+			
+			//System.out.println("Passing into addEvent: " + name + " " + startDate + " " + startTime + " " + endDate + " " + endTime);
 
 			calendar.addEvent(name, startDate, startTime, endDate, endTime);
 		} else if (parser.isFloatingTask(arguments)) {
@@ -102,7 +115,8 @@ public class RequestHandler {
 			calendar.addTask(name, dueDate);
 		}
 	}
-
+	
+	//WORKING
 	private void remove(String arguments) {
 		int id = parser.getId(arguments);
 
@@ -113,7 +127,17 @@ public class RequestHandler {
 		int id = parser.getId(arguments);
 		ArrayList<String> fields = parser.getFieldsList(arguments);
 		ArrayList<String> newValues = parser.getNewValuesList(arguments);
-
+		
+		System.out.println("Fields: ");
+		for(String field: fields){
+			System.out.println(field);
+		}
+		
+		System.out.println("Values: ");
+		for(String value: newValues){
+			System.out.println(value);
+		}
+		
 		calendar.update(id, fields, newValues);
 	}
 

@@ -14,6 +14,7 @@ public class Event implements Comparable<Event>{
 
 	
 	public Event(int index, String name, String startDate, String startTime, String endDate, String endTime){
+		_index = index;
 		_name = name;		
 		setStartDateTime(startDate, startTime);
 		setEndDateTime(endDate, endTime);
@@ -141,7 +142,7 @@ public class Event implements Comparable<Event>{
 	}
 	
 	public String toString(){
-		return getName() + DELIMETER + getStartDate() + DELIMETER + getStartTime() + DELIMETER + getEndDate() + DELIMETER + getEndTime(); 
+		return getIndex() + DELIMETER + getName() + DELIMETER + getStartDate() + DELIMETER + getStartTime() + DELIMETER + getEndDate() + DELIMETER + getEndTime(); 
 	}
 	
 //	public boolean clashesWith(Event e){

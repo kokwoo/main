@@ -49,6 +49,7 @@ public class Calendar {
 		eventsList.add(newEvent);
 		indexStore.addEvent(newEventIndex, newEvent);
 		Collections.sort(eventsList);
+		exportToFile();
 	}
 
 	public void addTask(String name, String dueDate) {
@@ -57,6 +58,7 @@ public class Calendar {
 		tasksList.add(newTask);
 		indexStore.addTask(newTaskIndex, newTask);
 		Collections.sort(tasksList);
+		exportToFile();
 	}
 
 	public void addFloatingTask(String name) {
@@ -64,6 +66,7 @@ public class Calendar {
 		FloatingTask newFloatingTask = new FloatingTask(newTaskIndex, name);
 		indexStore.addTask(newTaskIndex, newFloatingTask);
 		floatingTasksList.add(newFloatingTask);
+		exportToFile();
 	}
 
 	public void remove(int idx) {
@@ -74,6 +77,7 @@ public class Calendar {
 		} else {
 			removeTask(idx);
 		}
+		exportToFile();
 	}
 
 	private void removeEvent(int idx) {
@@ -114,6 +118,7 @@ public class Calendar {
 		} else {
 			updateTask(idx, fields, newValues);
 		}
+		exportToFile();
 	}
 
 	private void updateEvent(int idx, ArrayList<String> fields, ArrayList<String> newValues) {
@@ -174,10 +179,10 @@ public class Calendar {
 	}
 
 	public void exportToFile() {
-		System.out.println("Exporting: " + _fileName);
+		//System.out.println("Exporting: " + _fileName);
 		CalendarExporter exporter = new CalendarExporter(_fileName, eventsList, tasksList, floatingTasksList);
 		exporter.export();
-		System.out.println("Export Successful!");
+		//System.out.println("Export Successful!");
 	}
 
 	public void importFromFile() {
