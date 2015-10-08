@@ -15,7 +15,7 @@ public class ArgParser {
 
 	public ArgParser() {
 		keywords = new HashMap<ArrayList<String>, String>();
-		initialiseKeywords(keywords);
+		initialiseKeywords();
 	}
 	
 	public void initialiseKeywords() {
@@ -58,25 +58,77 @@ public class ArgParser {
 		keywords.put(remove, "remove");
 	}
 
-	public String getAction(String message) throws IllegalArgumentException {
-		if (!isValidInput(message)) {
-			throw new IllegalArgumentException();
-		}
-		String[] tokenizedInput = message.split(" ");
-		String action = tokenizedInput[0];
-		String keyword = getValidCommand(action);
-
-		return keyword;
+	public String getCommand(String message) {
+		return getFirstWord(message);
 	}
 	
-	public String[] getArguments(String message) throws IllegalArgumentException {
-		if (!isValidInput(message)) {
-			throw new IllegalArgumentException();
-		}
-		String[] tokenizedInput = message.split(" ");
-		String[] arguments = removeFirstWord(tokenizedInput, 1, tokenizedInput.length);
-		return arguments;
+	public String getArguments(String message) throws IllegalArgumentException {
+		return removeFirstWord(message);
 	}
+	
+	public int getId(String arguments) {
+		return Integer.parseInt(getFirstWord(arguments));
+	}
+	
+	public String getName(String arguments) {
+		return getFirstWord(arguments);
+	}
+	
+	public String getEventStartDate(String arguments) {
+		String[] parameters1 = arguments.split("from");
+		String[] parameters2 = parameters1[1].trim().split("at");
+		return parameters2[0].trim();
+	}
+	
+	public String getEventStartTime(String arguments) {
+		return ""; // TODO:
+	}
+	
+	public String getEventEndDate(String arguments) {
+		return ""; // TODO:
+	}
+	
+	public String getEventEndTime(String arguments) {
+		return ""; // TODO:
+	}
+	
+	public String getTaskDueDate(String arguments) {
+		return ""; // TODO:
+	}
+	
+	public ArrayList<String> getFieldsList(String arguments) {
+		return new ArrayList<String>(); // TODO:
+	}
+	
+	public ArrayList<String> getNewValuesList(String arguments) {
+		return new ArrayList<String>(); // TODO:
+	}
+	
+	private String removeFirstWord(String message) {   
+		return message.replace(getFirstWord(message), "").trim();  
+	}  
+	
+	private String getFirstWord(String message) {   
+		String commandTypeString = message.trim().split("\\s+")[0];   
+		return commandTypeString;  
+	}
+	
+	public boolean isEvent(String message) {
+		message = removeFirstWord(message);
+		if (getFirstWord(message).equals("event")) {
+			return true;
+		}
+		return false;
+	}
+	
+	public boolean isFloatingTask(String message) {
+		if (message.contains("due")) {
+			return true;
+		}
+		return false;
+	}
+	
+	// --------------------------------------------------- //
 
 	private String getValidCommand(String action) {
 		for (ArrayList<String> currActionKey : keywords.keySet()) {
@@ -126,14 +178,5 @@ public class ArgParser {
 			return false;
 		}
 		return true;
-	}
-	
-	private String[] removeFirstWord(String[] tokenizedInput, int start, int end) throws IllegalArgumentException {
-		if (!isValidInput(tokenizedInput)) {
-			throw new IllegalArgumentException();
-		}
-		String[] subArray = new String[end - start];
-		System.arraycopy(tokenizedInput, 1, subArray, 0, end - start);
-		return subArray;
 	}
 }

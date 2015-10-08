@@ -4,6 +4,7 @@ import java.util.*;
 
 public class RequestHandler {
 	//global variable
+	ArgParser parser;
 	
 	//private final String MSG_CMD_NOT_VALID = "Why don't you try entering an actual command?";
 	private final String MSG_ARG_NOT_VALID = "Why don't you try entering an actual argument?";
@@ -31,15 +32,18 @@ public class RequestHandler {
 	// such args list out all the events and tasks
 	private final String ARGS_ALL = "all";
 	
+	public RequestHandler() {
+		parser = new ArgParser();
+	}
+	
 	public String readNextCommand() {
 		String cmd;
 		do {
 			Scanner sc = new Scanner(System.in);
 			String nextCommand = sc.nextLine();
 			
-			ArgParser parser = new ArgParser();
-			cmd = parser.getAction(nextCommand);
-			String args[] = parser.getArguments(nextCommand);
+			cmd = parser.getCommand(nextCommand);
+			String args = parser.getArguments(nextCommand);
 			
 			execute(cmd, args);
 
@@ -52,52 +56,55 @@ public class RequestHandler {
 		return cmd;	
 	}
 
-	/**
-	 * Takes in command, and executes an event bsaed on given arguments
-	 * 
-	 * @param command
-	 * @param arguments
-	 * @return success
-	 */
-	public boolean execute(String command, String[] arguments) throws IllegalArgumentException {
+	public void execute(String command, String arguments) throws IllegalArgumentException {
 		if (!isValidInput(command)) {
-			return false;
+			// TODO: invalid input action
 		}
 		switch (command) {
-		case CMD_ADD:
-			add(arguments);
-		case CMD_REMOVE:
-			remove(arguments);
-		case CMD_UPDATE:
-			update(arguments);
-		case CMD_DISPLAY:
-			//display(arguments); lol idk what to call here
-		case CMD_EXIT:
-			exit();
-		default:
-			// TODO: Tell user it is an invalid command
-			exit();
+			case CMD_ADD:
+				add(arguments);
+			case CMD_REMOVE:
+				remove(arguments);
+			case CMD_UPDATE:
+				update(arguments);
+			case CMD_DISPLAY:
+				//display(arguments); lol idk what to call here
+			case CMD_EXIT:
+				exit();
+			default:
+				// TODO: Tell user it is an invalid command
+				exit();
 		}
 	}
 
-	/**
-	 * FOR ALL THESE METHODS: YOU GET PASSED : <COMMAND, ARGUMENTS>. THE
-	 * ARUGMENTS ARE ESSENTIALLY WHATEVER THE USER INPUTS AFTER ADD,DELETE,
-	 * WHATEVER KEYWORD. REFER TO THE MANUAL. ADD , EVENTID,DATE,ETC,DESCRIPTION
-	 * DELETE, EVENTID,DAT
-	 * 
-	 * @param command
-	 * @param arguments
-	 */
-	private void add(String[] arguments) {
+	private void add(String arguments) {
+		if (parser.isEvent(arguments)) {
+			String name = parser.getName(arguments);
+			String startDate = parser.getEventStartDate(arguments);
+			String startTime = parser.getEventStartTime(arguments);
+			String endDate = parser.getEventEndDate(arguments);
+			String endTime = parser.getEventEndTime(arguments);
+			// TODO: Call addEvent in Calendar 
+		} else if (parser.isFloatingTask(arguments)) {
+			String name = parser.getName(arguments);
+			// TODO: Call addFloatingTask in Calendar
+		} else {
+			String name = parser.getName(arguments);
+			String dueDate = parser.getTaskDueDate(arguments);
+			// TODO: Call addTask in Calendar
+		}
 	}
 	
-	private void remove(String[] arguments) {
-
+	private void remove(String arguments) {
+		int id = parser.getId(arguments);
+		// TODO: Call remove in Calendar
 	}
 
-	private void update(String[] arguments) {
-		
+	private void update(String arguments) {	
+		int id = parser.getId(arguments);
+		ArrayList<String> fields = parser.getFieldsList(arguments);
+		ArrayList<String> newValues = parser.getNewValuesList(arguments);
+		// TODO: Call update in Calendar
 	}
 
 	private boolean display(String command, String arguments) {
@@ -135,50 +142,20 @@ public class RequestHandler {
 		}
 	}
 		
-	
-
-	/*
-	 * Command to add event to calender
-	 */
-	//private boolean addEvent() {
-	//	return false;
-	//}
-
-	/*
-	 * Exists application.
-	 */
 	private void exit() {
 		System.exit(0);
 	}
 
-	/**
-	 * Checks to make sure computer input is correct
-	 * 
-	 * @param command
-	 * @return true if command is valid
-	 */
 	private boolean isValidInput(String command) {
 		System.out.println(command);
 		System.out.println(Arrays.toString(VALID_COMMANDS));
 		return isInArray(VALID_COMMANDS, command);
 	}
 
-	/**
-	 * Checks to make sure user input is correct. If not, displays message to
-	 * console.
-	 * 
-	 * @param command
-	 * @return true if command is valid
-	 */
 	private boolean isValidCommand(String command) {
 		return command != null;
 	}
 
-	/**
-	 * @param array
-	 * @param text
-	 * @return true if text exists in array
-	 */
 	private boolean isInArray(String[] array, String text) {
 		for (int i = 0; i < array.length; i++) {
 			if (array[i].equalsIgnoreCase((text))) {
