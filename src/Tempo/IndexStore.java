@@ -85,7 +85,6 @@ public class IndexStore {
 	
 	public int getNewId() {
 		int id;
-		
 		if (recycledId.isEmpty()) {
 			id = nextUnusedId;
 			updateNextUnusedId(id);

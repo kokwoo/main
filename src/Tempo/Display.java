@@ -28,6 +28,29 @@ public class Display {
 		events = _events;
 		tasks = _tasks;
 		floatingTasks = _floatingTasks;
+		
+//		System.out.println("In display...");
+//		
+//		System.out.println("Printing all events");
+//		
+//		for(Event e : events){
+//			System.out.println(e.getIndex());
+//			System.out.println(e.getName());
+//		}
+//		
+//		System.out.println("Printing all tasks");
+//		
+//		for(Task t : tasks){
+//			System.out.println(t.getIndex());
+//			System.out.println(t.getName());
+//		}
+//		
+//		System.out.println("Printing all floating tasks");
+//		
+//		for(FloatingTask f : floatingTasks){
+//			System.out.println(f.getIndex());
+//			System.out.println(f.getName());
+//		}
 	}
 
 	public static boolean manual() {
@@ -229,9 +252,11 @@ public class Display {
 
 	private void printEvents(int numOfEvents, ArrayList<Event> events) {
 		for (int i = 0; i < numOfEvents; i++) {
+			Event currEvent = events.get(i);
 			int num = i + 1;
-			System.out.print(num + ")");
-			System.out.println(events.get(i).toString());
+			System.out.print(num + ") ");
+			//System.out.println(events.get(i).toString());
+			System.out.println(currEvent.getName() +" From: "+ currEvent.getStartDateTime() + " To: " + currEvent.getEndDateTime() + "\t[ID:" + currEvent.getIndex() + "] ");
 		}
 	}
 
@@ -286,9 +311,11 @@ public class Display {
 		else {
 			System.out.println("Tasks without deadline!");
 			for (int i = 0; i < floatingTasks.size(); i++) {
+				FloatingTask currFT = floatingTasks.get(i);
 				int num = i + 1;
-				System.out.print(num + ")");
-				System.out.println(floatingTasks.get(i).toString());
+				System.out.print(num + ") ");
+				//System.out.println(floatingTasks.get(i).toString());
+				System.out.println(currFT.getName() + "\t[ID:" + currFT.getIndex() + "] ");
 			}
 			System.out.println("");
 		}
@@ -297,8 +324,9 @@ public class Display {
 	private void printTasks(ArrayList<Task> tasks) {
 		for (int i = 0; i < tasks.size(); i++) {
 			int num = i + 1;
-			System.out.print(num + ")");
-			System.out.println(tasks.get(i).toString());
+			Task currTask = tasks.get(i);
+			System.out.print(num + ") ");
+			System.out.println(currTask.getName() + " Due: " + currTask.getDueDate() + "\t[ID:" + currTask.getIndex() + "] ");
 		}
 	}
 
