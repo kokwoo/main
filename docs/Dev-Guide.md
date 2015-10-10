@@ -110,11 +110,11 @@ The `Calendar` class is the main runtime data store which contains 3 main collec
  1. Requests for next available index number from `IndexStore` class<br/>
  2.  Using the recieved index number from `IndexStore` as well as the arguments passed in by `RequestHandler`, proceeds to call the constructor for `Event` or `Task` or `FloatingTask`<br/>
  3. Once the object is created, stores the object in its respective collection<br/>
- 4. Proceed to sort the collection based on chronological order<br/>
+ 4. Proceed to sort the collection based on chronological order
  5. Exports the data in all collections to the user-specified text file using `CalenderExporter` class<br/>
   
  
- **Removing of Event/Task/FloatingTask:**
+**Removing of Event/Task/FloatingTask:**
 //To-do
 
 
