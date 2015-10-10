@@ -70,7 +70,7 @@ At the center of Tempo, is the `RequestHandler` class. Its function is to reciev
 <b>How `RequestHandler` works:</b><br/>
 1. Recieves command string from `Tempo` class<br/>
 2. Pass the string to `ArgParser` for interpretation<br/>
-3. Pass the interpreted command by `ArgParser` and forwards the arguments to the respective CRUD logic (`Calendar` OR `Display`) components for execution<br/>
+3. Pass the interpreted command by `ArgParser` and forwards the arguments to the respective CRUD logic (`Calendar` <b>OR</b> `Display`) components for execution<br/>
      3.1 If `ArgParser` returns and error, it will forward the error to `Display` for the display of error message<br/>
 4. Waits for next command from `Tempo`<br/>
 
@@ -112,9 +112,11 @@ The `Calendar` class is the main runtime data store which contains 3 main collec
  3. Once the object is created, stores the object in its respective collection<br/>
  4. Proceed to sort the collection based on chronological order<br/>
  5. Exports the data in all collections to the user-specified text file using `CalenderExporter` class<br/>
-   
+  
+ 
  **Removing of Event/Task/FloatingTask:**
 //To-do
+
 
 **Updating of Event/Task/FloatingTask:**
 //To-do
