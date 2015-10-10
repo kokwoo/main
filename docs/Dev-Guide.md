@@ -26,12 +26,11 @@
 > Figure 1: Top-level design of Tempo 
 
 
-Tempo is made up of four main components:
-1. The **`UI`** component is the main handle between the user and the rest of Tempo's componets.
-2. The **`Request Handling`** component contains all the logic needed to parse users' commands, conduct error correction and handling, 
-before passing the commands to the respective logic components to perform CRUD functionalities.
-3. The **`Logic`** component comprises of all object representation of the user's data, as well as the CRUD logics to handle such data.  
-4. The **`Storage`** component acts the main handler between the logic and the backend storage(a text file). 
+Tempo is made up of four main components:<br/>
+1. The **`UI`** component is the main handle between the user and the rest of Tempo's componets.<br/>
+2. The **`Request Handling`** component contains all the logic needed to parse users' commands, conduct error correction and handling, before passing the commands to the respective logic components to perform CRUD functionalities.<br/>
+3. The **`Logic`** component comprises of all object representation of the user's data, as well as the CRUD logics to handle such data.  <br/>
+4. The **`Storage`** component acts the main handler between the logic and the backend storage(a text file).<br/> 
 
 After understanding the top-level design, we can take a look at the design of Tempo in terms of classes
 
@@ -68,12 +67,12 @@ This component consists of two classes: The `RequestHandler` class and the `ArgP
 At the center of Tempo, is the `RequestHandler` class. Its function is to recieve commands that are passed in by the user, redirects them to 
 `ArgParser` class for processing, before redirecting the processed command to the respective CRUD logics. 
 
-<b>How `RequestHandler` works:</b>
-1. Recieves command string from `Tempo` class
-2. Pass the string to `ArgParser` for interpretation
-3. Pass the interpreted command by `ArgParser` and forwards the arguments to the respective CRUD logic (`Calendar` OR `Display`) components for execution
-	3.1 If `ArgParser` returns and error, it will forward the error to `Display` for the display of error message
-4. Waits for next command from `Tempo`
+<b>How `RequestHandler` works:</b><br/>
+1. Recieves command string from `Tempo` class<br/>
+2. Pass the string to `ArgParser` for interpretation<br/>
+3. Pass the interpreted command by `ArgParser` and forwards the arguments to the respective CRUD logic (`Calendar` OR `Display`) components for execution<br/>
+     3.1 If `ArgParser` returns and error, it will forward the error to `Display` for the display of error message<br/>
+4. Waits for next command from `Tempo`<br/>
 
 #### Notable APIs
 Method Name | Description
@@ -82,11 +81,11 @@ Method Name | Description
 ## `ArgParser` Class
 The `ArgParser` class is a semi-NLP class. Its function is to breakdown the command string passed by the `RequestHandler` and processes them before the `RequestHandler`  executes. In the event that the command that is passed is invalid, `ArgParser` will return an error message.
 
-<b>How `ArgParser` works:</b>
-1. Recieves command string from `RequestHandler` class
-2. Interpretes the command type and return to the `ArgParser`
-3. Breaksdown the rest of the command string into arguments for `RequestHandler` to handle
-4. In the event that the command is invalid, return an error
+<b>How `ArgParser` works:</b><br/>
+1. Recieves command string from `RequestHandler` class<br/>
+2. Interpretes the command type and return to the `ArgParser`<br/>
+3. Breaksdown the rest of the command string into arguments for `RequestHandler` to handle<br/>
+4. In the event that the command is invalid, return an error<br/>
 
 #### Notable APIs
 Method Name | Description
@@ -106,13 +105,13 @@ Method Name | Description
 ## `Calendar` Class
 The `Calendar` class is the main runtime data store which contains 3 main collection that stores `Event`, `Task` and `FloatingTask` objects. It is also the class that performs **add**, **remove** and **update** functions on the objects in the collection.
 
-**How  `Calendar` works:**
-**Adding of Event/Task/FloatingTask:**
- 1. Requests for next available index number from `IndexStore` class
- 2.  Using the recieved index number from `IndexStore` as well as the arguments passed in by `RequestHandler`, proceeds to call the constructor for `Event` or `Task` or `FloatingTask`
- 3. Once the object is created, stores the object in its respective collection
- 4. Proceed to sort the collection based on chronological order
- 5. Exports the data in all collections to the user-specified text file using `CalenderExporter` class
+**How  `Calendar` works:**<br/>
+**Adding of Event/Task/FloatingTask:**<br/>
+ 1. Requests for next available index number from `IndexStore` class<br/>
+ 2.  Using the recieved index number from `IndexStore` as well as the arguments passed in by `RequestHandler`, proceeds to call the constructor for `Event` or `Task` or `FloatingTask`<br/>
+ 3. Once the object is created, stores the object in its respective collection<br/>
+ 4. Proceed to sort the collection based on chronological order<br/>
+ 5. Exports the data in all collections to the user-specified text file using `CalenderExporter` class<br/>
    
  **Removing of Event/Task/FloatingTask:**
 //To-do
@@ -123,16 +122,18 @@ The `Calendar` class is the main runtime data store which contains 3 main collec
 ## `Display` Class
 The `Display` class is the class that handles the display of all messages to the user. 
 
-**How  `Display` works:**
-**Displaying of Calendar Items**
-1. Retrieves the appropriate collections (of `Event`/`Task`/`FloatingTask`) from `Calendar` 
-2. Sorts and filters the collections based on **type/time** 
-3. Displays the filtered results of `Events`/`Task`/`FloatingTask` 
+**How  `Display` works:**<br/>
+**Displaying of Calendar Items**<br/>
+1. Retrieves the appropriate collections (of `Event`/`Task`/`FloatingTask`) from `Calendar` <br/>
+2. Sorts and filters the collections based on **type/time** <br/>
+3. Displays the filtered results of `Events`/`Task`/`FloatingTask` <br/>
 
-**Displaying of Manual**
-1. Upon receiving the appropriate command from `RequestHandler`, prints the manual (pre-formatted)
+**Displaying of Manual**<br/>
+1. Upon receiving the appropriate command from `RequestHandler`, prints the manual (pre-formatted)<br/>
+
 ## `IndexStore` Class
 //To-do
+
 ## `Event`, `Task`, `FloatingTask` Classes
 These are the OOP representation of the calendar objects 
 
@@ -145,15 +146,15 @@ The function of this class is to import the calendar data stored in the user-spe
 
 It is run only once during each execution of Tempo (during start up).
 
-**How  `CalendarImporter` works:**
-1. For each line in the user-specified text file, identify what type of calendar object it is (`Event`/`Task`/`FloatingTask`) and call its respective constructor.
-2. Add the newly created object into its collection based on its **type**.
+**How  `CalendarImporter` works:**<br/>
+1. For each line in the user-specified text file, identify what type of calendar object it is (`Event`/`Task`/`FloatingTask`) and call its respective constructor.<br/>
+2. Add the newly created object into its collection based on its **type**.<br/>
  
 ## `CalendarExporter` Class
 The function of this class is to export the calendar data stored into the user-specified text file for the purpose of storing the user data in a more persistent form.
 
 To keep the text file as updated as possible, is run during each instance of **add/remove/update** command.
 
-**How  `CalendarImporter` works:**
-1. Receives the collections of `Event`, `Task` and `FloatingTask` from `Calendar` 
-2. For each object in each collection, retrieves their attributes and write them into the text file.
+**How  `CalendarImporter` works:**<br/>
+1. Receives the collections of `Event`, `Task` and `FloatingTask` from `Calendar` <br/>
+2. For each object in each collection, retrieves their attributes and write them into the text file.<br/>
