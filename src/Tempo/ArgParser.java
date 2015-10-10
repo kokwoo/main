@@ -139,7 +139,7 @@ public class ArgParser {
 			// more than one field to be updated
 			String[] split = arguments.split("; ");
 			for (int i = 0; i < split.length; i++) {
-				String[] params = split[i].split(".:");
+				String[] params = split[i].split(":");
 				if (params.length == 3) {
 					String timeString = params[1] + ":" + params[2];
 					newValues.add(timeString);
@@ -148,15 +148,11 @@ public class ArgParser {
 				}
 			}
 		} else {
+			
 			String[] split = arguments.split(":");
 			
-			System.out.println("Split: ");
-			for(int i = 0; i < split.length; i++){
-				System.out.println(split[i]);
-			}
-			
 			if(split.length == 3){
-				String timeString = split[1] + ".:" + split[2];
+				String timeString = split[1] + ":" + split[2];
 				newValues.add(timeString);
 			}else{
 				newValues.add(split[1]);
@@ -168,7 +164,16 @@ public class ArgParser {
 	}
 
 	private String removeFirstWord(String message) {
-		return message.replace(getFirstWord(message), "").trim();
+		String[] split = message.split(" ");
+		
+		String returnMessage = "";
+		
+		for(int i = 1; i < split.length; i++){
+			returnMessage += split[i] + " ";
+		}
+		
+		returnMessage = returnMessage.trim();
+		return returnMessage;
 	}
 
 	private String getFirstWord(String message) {

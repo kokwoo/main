@@ -128,16 +128,6 @@ public class RequestHandler {
 		ArrayList<String> fields = parser.getFieldsList(arguments);
 		ArrayList<String> newValues = parser.getNewValuesList(arguments);
 		
-		System.out.println("Fields: ");
-		for(String field: fields){
-			System.out.println(field);
-		}
-		
-		System.out.println("Values: ");
-		for(String value: newValues){
-			System.out.println(value);
-		}
-		
 		calendar.update(id, fields, newValues);
 	}
 
