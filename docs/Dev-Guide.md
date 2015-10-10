@@ -22,7 +22,7 @@
 <!-- /MarkdownTOC -->
 
 # Architecture
-<img src="/images/dev-guide/Top-level Design.gif">
+<img src="/images/dev-guide/Top-level Design.GIF">
 > Figure 1: Top-level design of Tempo 
 
 
@@ -35,7 +35,7 @@ before passing the commands to the respective logic components to perform CRUD f
 
 After understanding the top-level design, we can take a look at the design of Tempo in terms of classes
 
-<img src="images/dev-guide/Classes.gif">
+<img src="images/dev-guide/Classes.GIF">
 > Figure 2: Breakdown of main classes of Tempo
 
 
