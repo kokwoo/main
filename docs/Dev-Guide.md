@@ -22,7 +22,7 @@
 <!-- /MarkdownTOC -->
 
 # Architecture
-<img src="images/developer-guide/architecture.png">
+<img src="/images/dev-guide/Top-level Design.gif">
 > Figure 1: Top-level design of Tempo 
 
 
