@@ -22,6 +22,7 @@ We have organised this guide in a top-down manner so that you can understand Tem
 - [Storage Component](#storage-component)
     - [`CalendarImporter` Class](#calendarimporter-class)
     - [`CalendarExporter` Class](#calendarexporter-class)
+
 <!-- /MarkdownTOC -->
 
 # Architecture
@@ -81,7 +82,7 @@ At the center of Tempo, is the `RequestHandler` class. Its function is to reciev
 1. Recieves command string the user<br/>
 2. Pass the string to `ArgParser` for interpretation<br/>
 3. Pass the interpreted command by `ArgParser` and forwards the arguments to the respective CRUD logic (`Calendar` <b>OR</b> `Display`) components for execution<br/>
-    * If `ArgParser` returns and error, it will forward the error to `Display` for the display of error message<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; i. If `ArgParser` returns and error, it will forward the error to `Display` for the display of error message<br/>
 4. Returns command String to `Tempo` and waits for next command<br/>
 
 #### Significant Methods
