@@ -219,7 +219,7 @@ It is run only once during each execution of Tempo (during start up).
 #### Significant Methods
 |Return Type | Method Name | Description|
 | ------------- |-------------| ----------------|
-|`void`|`importFromFile`|Reads each line in the user-specified text file and determines its object types based on the number of fields (6 for `Event`, 4 for `Task` and 3 for `FloatingTask`). Calls their respective constructor and add them to their collection based on their types|
+|`void`|`importFromFile()`|Reads each line in the user-specified text file and determines its object types based on the number of fields (6 for `Event`, 4 for `Task` and 3 for `FloatingTask`). Calls their respective constructor and add them to their collection based on their types|
 |`ArrayList`|`getEventsList()` <br/> `getTasksList()` <br/> `getFloatingTasksList()`|Returns the respective collection to `Calendar`.|
  
 ## `CalendarExporter` Class
