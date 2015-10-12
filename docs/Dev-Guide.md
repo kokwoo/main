@@ -58,7 +58,7 @@ This component is the main interaction interface into Tempo from the command lin
 <img src="images/dev-guide/Tempo-Relation.GIF">
 > Figure 3: `Tempo`'s relation to other classes within Tempo
 
-The `Tempo` class is also main executable class for Tempo. Also, thro
+The `Tempo` class is the main entry/exit point for users in Tempo. It is also Tempo's only executable class from the command line. Also, Tempo is responsible for listening to inputs read by `RequestHandler` and when the *exit* command has been called, terminates the program.
 
 #### Significant Methods
 |Return Type | Method Name | Description|
@@ -81,7 +81,7 @@ At the center of Tempo, is the `RequestHandler` class. Its function is to reciev
 1. Recieves command string the user<br/>
 2. Pass the string to `ArgParser` for interpretation<br/>
 3. Pass the interpreted command by `ArgParser` and forwards the arguments to the respective CRUD logic (`Calendar` <b>OR</b> `Display`) components for execution<br/>
-     3.1 If `ArgParser` returns and error, it will forward the error to `Display` for the display of error message<br/>
+  1. If `ArgParser` returns and error, it will forward the error to `Display` for the display of error message<br/>
 4. Returns command String to `Tempo` and waits for next command<br/>
 
 #### Significant Methods
@@ -97,7 +97,7 @@ The `ArgParser` class is a semi-NLP class. Its function is to breakdown the comm
 <b>How `ArgParser` works:</b><br/>
 1. Recieves command string from `RequestHandler` class<br/>
 2. Interpretes the command type and return to the `ArgParser`<br/>
-3. Breaksdown the rest of the command string into arguments for `RequestHandler` to handle<br/>
+3. Breakdown the rest of the command string into arguments for `RequestHandler` to handle<br/>
 4. In the event that the command is invalid, return an error<br/>
 
 #### Significant Methods
@@ -128,17 +128,17 @@ The `Calendar` class is the main runtime data store which contains 3 main collec
  5. Exports the data in all collections to the user-specified text file using `CalenderExporter` class<br/>
   
  
-**Removing of Event/Task/FloatingTask:**
-1. Checks with `IndexStore` to determine the type of object to be removed (`Event`/`Task`/``FloatingTask`) based on the index
-2.  Removes from respective collection based on the object type as determined by `IndexStore`
-3. Removes from `IndexStore` the association between the object to be removed and its index
- 4. Exports the data in all collections to the user-specified text file using `CalenderExporter` class<br/>
+**Removing of Event/Task/FloatingTask:**<br/>
+1. Checks with `IndexStore` to determine the type of object to be removed (`Event`/`Task`/``FloatingTask`) based on the index<br/>
+2. Removes from respective collection based on the object type as determined by `IndexStore`<br/>
+3. Removes from `IndexStore` the association between the object to be removed and its index<br/>
+4. Exports the data in all collections to the user-specified text file using `CalenderExporter` class<br/>
 
 
-**Updating of Event/Task/FloatingTask:**
-1. Checks with `IndexStore` to determine the type of object to be updated(`Event`/`Task`/``FloatingTask`) based on the index
-2.  Updates the respective fields of objects from in their respective collection based on the object type as determined by `IndexStore` and field names and values passed in by `RequestHandler`
- 3. Exports the data in all collections to the user-specified text file using `CalenderExporter` class<br/>
+**Updating of Event/Task/FloatingTask:**<br/>
+1. Checks with `IndexStore` to determine the type of object to be updated(`Event`/`Task`/``FloatingTask`) based on the index<br/>
+2.  Updates the respective fields of objects from in their respective collection based on the object type as determined by `IndexStore` and field names and values passed in by `RequestHandler`<br/>
+3. Exports the data in all collections to the user-specified text file using `CalenderExporter` class<br/>
  
 #### Significant Methods
 |Return Type | Method Name | Description|
@@ -182,6 +182,7 @@ Additionally, the `IndexStore` class is able to determine the type of a calendar
 4. Upon deletion of an object, `IndexStore` will:
   1. Remove the object from its index to object-type mapping
   2. Adds to the index of the removed object to the list of *recycled index*
+
 #### Significant Methods
 |Return Type | Method Name | Description|
 | ------------- |-------------| ----------------|
