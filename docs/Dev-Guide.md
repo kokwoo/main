@@ -99,7 +99,7 @@ The `ArgParser` class is a semi-NLP class. Its function is to breakdown the comm
 1. Recieves command string from `RequestHandler` class<br/>
 2. Interpretes the command type and return to the `ArgParser`<br/>
 3. Breakdown the rest of the command string into arguments for `RequestHandler` to handle<br/>
-    1. In the event that the command is invalid, return an error<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; i. In the event that the command is invalid, return an error<br/>
 
 #### Significant Methods
 |Return Type | Method Name | Description|
@@ -177,12 +177,12 @@ Additionally, the `IndexStore` class is able to determine the type of a calendar
 1. Upon initialization, the `IndexStore` will recieve all object collections from `Calendar`
 2. Based on the collection received from `Calendar`, the `IndexStore` will keep track of which index are used and which are not. At the same time, it will map the type of Calendar object to its' respective index. <br/>
 3.  When `Calendar` requests for an index, the index store will:
-    * Check if there are any *recycledindex* (index that were previously assigned but their objects have be subsequently removed)
-    * If there are *recycled index* available, `IndexStore` will return the first available *recycled index*
-    * If not, `IndexStore` will return the next available index 
+&nbsp; &nbsp; &nbsp; &nbsp; i. Check if there are any *recycledindex* (index that were previously assigned but their objects have be subsequently removed)
+&nbsp; &nbsp; &nbsp; &nbsp; ii. If there are *recycled index* available, `IndexStore` will return the first available *recycled index*
+&nbsp; &nbsp; &nbsp; &nbsp; iii. If not, `IndexStore` will return the next available index 
 4. Upon deletion of an object, `IndexStore` will:
-    * Remove the object from its index to object-type mapping
-    * Adds to the index of the removed object to the list of *recycled index*
+&nbsp; &nbsp; &nbsp; &nbsp; i. Remove the object from its index to object-type mapping
+&nbsp; &nbsp; &nbsp; &nbsp; ii. Adds to the index of the removed object to the list of *recycled index*
 
 #### Significant Methods
 |Return Type | Method Name | Description|
