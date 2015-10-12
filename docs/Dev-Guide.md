@@ -73,21 +73,6 @@ This component serves to function as the main instruction processor of Tempo. Tr
 This component consists of two classes: The `RequestHandler` class and the `ArgParser` class.
 
 ## `RequestHandler` Class
-<<<<<<< HEAD
-At the center of Tempo, is the `RequestHandler` class. Its function is to recieve commands that are passed in by the user, redirects them to 
-`ArgParser` class for processing, before redirecting the processed command to the respective CRUD logics. 
-
-<b>How `RequestHandler` works:</b><br/>
-1. Recieves command string from `Tempo` class<br/>
-2. Pass the string to `ArgParser` for interpretation<br/>
-3. Pass the interpreted command by `ArgParser` and forwards the arguments to the respective CRUD logic (`Calendar` <b>OR</b> `Display`) components for execution<br/>
-     3.1 If `ArgParser` returns and error, it will forward the error to `Display` for the display of error message<br/>
-4. Waits for next command from `Tempo`<br/>
-
-#### Notable APIs
-Method Name | Description
------------ | ----------------------
-=======
 <img src="images/dev-guide/RequestHandler-Relation.GIF">
 > Figure 4: `RequestHandler`'s relation to other classes within Tempo
 
@@ -106,18 +91,12 @@ At the center of Tempo, is the `RequestHandler` class. Its function is to reciev
 | `String` |`readNextCommand()`| Reads command from user and passes them to `ArgParser` for interpretation of command type.|
 | `void` |`execute()`| Executes the interpreted command from `readNextCommand()` based on commad type as interpreted by `ArgParser()`.| 
 
->>>>>>> a6815847d1e117d508e4e285a5771c476f7769be
-
 ## `ArgParser` Class
 The `ArgParser` class is a semi-NLP class. Its function is to breakdown the command string passed by the `RequestHandler` and processes them before the `RequestHandler`  executes. In the event that the command that is passed is invalid, `ArgParser` will return an error message.
 
 <b>How `ArgParser` works:</b><br/>
 1. Recieves command string from `RequestHandler` class<br/>
 2. Interpretes the command type and return to the `ArgParser`<br/>
-<<<<<<< HEAD
-3. Breaksdown the rest of the command string into arguments for `RequestHandler` to handle<br/>
-4. In the event that the command is invalid, return an error<br/>
-=======
 3. Breakdown the rest of the command string into arguments for `RequestHandler` to handle<br/>
 &nbsp; &nbsp; &nbsp; &nbsp; i. In the event that the command is invalid, return an error<br/>
 
@@ -126,10 +105,7 @@ The `ArgParser` class is a semi-NLP class. Its function is to breakdown the comm
 | ------------- |-------------| ----------------|
 | `void` |`initializeKeywords()`| Called during initialization of `ArgParser`. Matches keywords of similar command type to their respective commands.|
 | `String` |`getCommand()`| Extracts the command type and returns it to `RequestHandler`.|
->>>>>>> a6815847d1e117d508e4e285a5771c476f7769be
 
-
-	
 # Logic Component
 This component serves to function as the CRUD logic of Tempo. It functions as the runtime **data store** for the OOP representation of the user's calendar items as well as the logic to **add**, **remove** and **update** the information is this datastore. It also contains the logic to display the information that is stored in this datastore for user to review their events, tasks and floating tasks.
 
@@ -143,35 +119,17 @@ The `Calendar` class is the main runtime data store which contains 3 main collec
 
 **How  `Calendar` works:**<br/>
 **Adding of Event/Task/FloatingTask:**<br/>
-<<<<<<< HEAD
- 1. Requests for next available index number from `IndexStore` class<br/>
- 2.  Using the recieved index number from `IndexStore` as well as the arguments passed in by `RequestHandler`, proceeds to call the constructor for `Event` or `Task` or `FloatingTask`<br/>
- 3. Once the object is created, stores the object in its respective collection<br/>
- 4. Proceed to sort the collection based on chronological order
- 5. Exports the data in all collections to the user-specified text file using `CalenderExporter` class<br/>
-  
- 
-**Removing of Event/Task/FloatingTask:**
-//To-do
-
-
-**Updating of Event/Task/FloatingTask:**
-//To-do
-=======
 1. Requests for next available index number from `IndexStore` class<br/>
 2.  Using the recieved index number from `IndexStore` as well as the arguments passed in by `RequestHandler`, proceeds to call the constructor for `Event` or `Task` or `FloatingTask`<br/>
 3. Once the object is created, stores the object in its respective collection<br/>
 4. Proceed to sort the collection based on chronological order
 5. Exports the data in all collections to the user-specified text file using `CalenderExporter` class<br/>
-  
->>>>>>> a6815847d1e117d508e4e285a5771c476f7769be
  
 **Removing of Event/Task/FloatingTask:**<br/>
 1. Checks with `IndexStore` to determine the type of object to be removed (`Event`/`Task`/``FloatingTask`) based on the index<br/>
 2. Removes from respective collection based on the object type as determined by `IndexStore`<br/>
 3. Removes from `IndexStore` the association between the object to be removed and its index<br/>
 4. Exports the data in all collections to the user-specified text file using `CalenderExporter` class<br/>
-
 
 **Updating of Event/Task/FloatingTask:**<br/>
 1. Checks with `IndexStore` to determine the type of object to be updated(`Event`/`Task`/``FloatingTask`) based on the index<br/>
@@ -198,11 +156,6 @@ The `Display` class is the class that handles the display of all messages to the
 
 **Displaying of Manual**<br/>
 1. Upon receiving the appropriate command from `RequestHandler`, prints the manual (pre-formatted)<br/>
-<<<<<<< HEAD
-
-## `IndexStore` Class
-//To-do
-=======
 
 #### Significant Methods
 |Return Type | Method Name | Description|
@@ -233,7 +186,6 @@ Additionally, the `IndexStore` class is able to determine the type of a calendar
 |`int`|`getNewId()`|Returns the next index to be used to `Calendar`|
 |`void`|`removeEvent()` <br/> `removeTask()`|Remove the object from it's index-object type mapping and also to add the removed object's index to the *recycled index* list.|
 |`boolean`|`isEvent()` <br/> `isFloatingTask()`|Determines if object of specified index is an `Event` or `FloatingTask`|
->>>>>>> a6815847d1e117d508e4e285a5771c476f7769be
 
 ## `Event`, `Task`, `FloatingTask` Classes
 These are the OOP representation of the calendar objects. 
@@ -258,15 +210,12 @@ It is run only once during each execution of Tempo (during start up).
 **How  `CalendarImporter` works:**<br/>
 1. For each line in the user-specified text file, identify what type of calendar object it is (`Event`/`Task`/`FloatingTask`) and call its respective constructor.<br/>
 2. Add the newly created object into its collection based on its **type**.<br/>
-<<<<<<< HEAD
-=======
 
 #### Significant Methods
 |Return Type | Method Name | Description|
 | ------------- |-------------| ----------------|
 |`void`|`importFromFile()`|Reads each line in the user-specified text file and determines its object types based on the number of fields (6 for `Event`, 4 for `Task` and 3 for `FloatingTask`). Calls their respective constructor and add them to their collection based on their types|
 |`ArrayList`|`getEventsList()` <br/> `getTasksList()` <br/> `getFloatingTasksList()`|Returns the respective collection to `Calendar`.|
->>>>>>> a6815847d1e117d508e4e285a5771c476f7769be
  
 ## `CalendarExporter` Class
 The function of this class is to export the calendar data stored into the user-specified text file for the purpose of storing the user data in a more persistent form.
@@ -276,11 +225,8 @@ To keep the text file as updated as possible, is run during each instance of **a
 **How  `CalendarImporter` works:**<br/>
 1. Receives the collections of `Event`, `Task` and `FloatingTask` from `Calendar` <br/>
 2. For each object in each collection, retrieves their attributes and write them into the text file.<br/>
-<<<<<<< HEAD
-=======
 
 #### Significant Methods
 |Return Type | Method Name | Description|
 | ------------- |-------------| ----------------|
 |`void`|`export()`|Writes the collections from `Calendar` to the user-specified text file.|
->>>>>>> a6815847d1e117d508e4e285a5771c476f7769be
