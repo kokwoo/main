@@ -1,10 +1,7 @@
 # About
-Tempo is a simple tool that allows users to plan and manage their daily schedules using single line commands. With Tempo, you can now add, edit, search, delete, and view events and tasks - all with a single line command!
+Tempo is a simple Calendar tool for users to organise their events and tasks. It is a Java application that operates with a **Text UI**. 
 
-This guide aims to describe the design and implementation of Tempo. It will help you understand how Tempo works from a developer's point of view. 
-
-We have organised this guide in a top-down manner so that you can understand Tempo from the big picture before moving on to the more detailed sections.
-
+If you are interested in contributing to the further development of Tempo, this guide will help you understand how it works. We have organized this guide in a top-down manner so that you can understand the design of Tempo before going down to the details of its implementation.
 
 # Table of Contents
 <!-- MarkdownTOC -->
@@ -32,8 +29,9 @@ We have organised this guide in a top-down manner so that you can understand Tem
 
 Tempo is made up of four main components:<br/>
 1. The **`UI`** component is the main handle between the user and the rest of Tempo's componets.<br/>
-2. The **`Request Handling`** component contains all the logic needed to parse users' commands, conduct error correction and handling, before passing the commands to the respective logic components to perform CRUD functionalities.<br/>
-3. The **`Logic`** component comprises of all object representation of the user's data, as well as the CRUD logics to handle such data.  <br/>
+2. The **`Request Handling`** component parses users' commands and conducts error correction and handling, before passing the parsed commands to the respective logic components to perform CRUD functionalities.<br/>
+3. The **`Logic`** component comprises of all object representations of the user's data, as well as the CRUD logic to handle such data.  <br/>
+38c37
 4. The **`Storage`** component acts the main handler between the logic and the backend storage(a text file).<br/> 
 
 After understanding the top-level design, we can take a look at the design of Tempo in terms of classes
@@ -50,7 +48,7 @@ Component Name | Classes
 `Logic` | `Calendar` class <br/> `Display` class <br/> `IndexStore` class <br/> `Event`, `Task`, `FloatingTask` classes
 `Storage` | `CalendarImporter` class <br/> `CalendarExporter` class
 
-More extensive description of the functionalities of the classes are detailed as follows.
+More extensive description of the functionalities of the classes are detailed as follow.
 
 #UI component
 This component is the main interaction interface into Tempo from the command line. It consists of one class, `Tempo`.
@@ -60,6 +58,31 @@ This component is the main interaction interface into Tempo from the command lin
 > Figure 3: `Tempo`'s relation to other classes within Tempo
 
 The `Tempo` class is the main entry/exit point for users in Tempo. It is also Tempo's only executable class from the command line. Also, Tempo is responsible for listening to inputs read by `RequestHandler` and when the *exit* command has been called, terminates the program.
+
+``` java
+public static void main(String args[]) {
+	if(args.length != 1){
+		...
+		...
+		System.exit(0);
+	}
+	
+	RequestHandler run = new RequestHandler(args[0]);
+	...
+	...
+	listenForInput(run, parser);
+}
+
+public static void listenForInput(RequestHandler run, ArgParser parser) {
+	String userInput = "";
+	while (!userInput.equals(EXIT_CMD)) {
+		userInput = run.readNextCommand();
+	}
+}
+```
+
+The above code snippet shows you the main method which calls the method 
+`listenForInput()` to continuously accept users' input until an exit command is entered.
 
 #### Significant Methods
 |Return Type | Method Name | Description|
@@ -76,13 +99,13 @@ This component consists of two classes: The `RequestHandler` class and the `ArgP
 <img src="images/dev-guide/RequestHandler-Relation.GIF">
 > Figure 4: `RequestHandler`'s relation to other classes within Tempo
 
-At the center of Tempo, is the `RequestHandler` class. Its function is to recieve commands that are passed in by the user, redirects them to `ArgParser` class for processing, before redirecting the processed command to the respective CRUD logics. 
+At the center of Tempo is the `RequestHandler` class. Its function is to recieve inputs that are passed in by the user and redirect them to `ArgParser` class for processing to obtain the necessary parameters for execution, before redirecting the processed command and parameters to the respective CRUD logic. 
 
 <b>How `RequestHandler` works:</b><br/>
 1. Recieves command string the user<br/>
 2. Pass the string to `ArgParser` for interpretation<br/>
 3. Pass the interpreted command by `ArgParser` and forwards the arguments to the respective CRUD logic (`Calendar` <b>OR</b> `Display`) components for execution<br/>
-&nbsp; &nbsp; &nbsp; &nbsp; i. If `ArgParser` returns and error, it will forward the error to `Display` for the display of error message<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; i. If `ArgParser` returns an error, it will forward the error to `Display` for the display of error message<br/>
 4. Returns command String to `Tempo` and waits for next command<br/>
 
 #### Significant Methods
@@ -125,16 +148,19 @@ The `Calendar` class is the main runtime data store which contains 3 main collec
 4. Proceed to sort the collection based on chronological order
 5. Exports the data in all collections to the user-specified text file using `CalenderExporter` class<br/>
  
-**Removing of Event/Task/FloatingTask:**<br/>
-1. Checks with `IndexStore` to determine the type of object to be removed (`Event`/`Task`/``FloatingTask`) based on the index<br/>
-2. Removes from respective collection based on the object type as determined by `IndexStore`<br/>
-3. Removes from `IndexStore` the association between the object to be removed and its index<br/>
-4. Exports the data in all collections to the user-specified text file using `CalenderExporter` class<br/>
+**Removing of Event/Task/FloatingTask:**
+1. Requests for item type from `IndexStore` class given the index of the item passed in by `RequestHandler` and calls `removeEvent(int)`, `removeTask(int)` or `removeFloatingTask(int)` accordingly.
+2. For each `removeEvent(int)`, `removeTask(int)` and `removeFloatingTask(int)` method, search in the respective collections in `Calendar` class until the item with the given index is found.
+3. Remove the item from its collection in `IndexStore` class.
+4. Remove the item from its collection in `Calendar` class.
+5. Exports the data in all collections to the user-specified text file using `CalenderExporter` class<br/>
 
-**Updating of Event/Task/FloatingTask:**<br/>
-1. Checks with `IndexStore` to determine the type of object to be updated(`Event`/`Task`/``FloatingTask`) based on the index<br/>
-2.  Updates the respective fields of objects from in their respective collection based on the object type as determined by `IndexStore` and field names and values passed in by `RequestHandler`<br/>
-3. Exports the data in all collections to the user-specified text file using `CalenderExporter` class<br/>
+**Updating of Event/Task/FloatingTask:**
+1. Requests for item type from `IndexStore` class given the index of the item passed in by `RequestHandler` and calls `updateEvent(int)`, `updateTask(int)` or `updateFloatingTask(int)` accordingly.
+2. For each `updateEvent(int)`, `updateTask(int)` and `updateFloatingTask(int)` method, search in the respective collections in `Calendar` class until the item with the given index is found.
+3. Call the item's class (`Event`, `Task` or `FloatingTask`) to update its parameters.
+4. Stores the updated item in its collection in `IndexStore` class.
+5. Exports the data in all collections to the user-specified text file using `CalenderExporter` class<br/>
  
 #### Significant Methods
 |Return Type | Method Name | Description|
