@@ -176,12 +176,12 @@ Additionally, the `IndexStore` class is able to determine the type of a calendar
  **How  `IndexStore` works:**<br/>
 1. Upon initialization, the `IndexStore` will recieve all object collections from `Calendar`
 2. Based on the collection received from `Calendar`, the `IndexStore` will keep track of which index are used and which are not. At the same time, it will map the type of Calendar object to its' respective index. <br/>
-3.  When `Calendar` requests for an index, the index store will:
-&nbsp; &nbsp; &nbsp; &nbsp; i. Check if there are any *recycledindex* (index that were previously assigned but their objects have be subsequently removed)
-&nbsp; &nbsp; &nbsp; &nbsp; ii. If there are *recycled index* available, `IndexStore` will return the first available *recycled index*
-&nbsp; &nbsp; &nbsp; &nbsp; iii. If not, `IndexStore` will return the next available index 
-4. Upon deletion of an object, `IndexStore` will:
-&nbsp; &nbsp; &nbsp; &nbsp; i. Remove the object from its index to object-type mapping
+3.  When `Calendar` requests for an index, the index store will:<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; i. Check if there are any *recycledindex* (index that were previously assigned but their objects have be subsequently removed)<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; ii. If there are *recycled index* available, `IndexStore` will return the first available *recycled index*<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; iii. If not, `IndexStore` will return the next available index <br/>
+4. Upon deletion of an object, `IndexStore` will:<br/>
+&nbsp; &nbsp; &nbsp; &nbsp; i. Remove the object from its index to object-type mapping<br/>
 &nbsp; &nbsp; &nbsp; &nbsp; ii. Adds to the index of the removed object to the list of *recycled index*
 
 #### Significant Methods
