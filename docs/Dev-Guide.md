@@ -81,7 +81,7 @@ At the center of Tempo, is the `RequestHandler` class. Its function is to reciev
 1. Recieves command string the user<br/>
 2. Pass the string to `ArgParser` for interpretation<br/>
 3. Pass the interpreted command by `ArgParser` and forwards the arguments to the respective CRUD logic (`Calendar` <b>OR</b> `Display`) components for execution<br/>
-    1. If `ArgParser` returns and error, it will forward the error to `Display` for the display of error message<br/>
+    * If `ArgParser` returns and error, it will forward the error to `Display` for the display of error message<br/>
 4. Returns command String to `Tempo` and waits for next command<br/>
 
 #### Significant Methods
@@ -176,12 +176,12 @@ Additionally, the `IndexStore` class is able to determine the type of a calendar
 1. Upon initialization, the `IndexStore` will recieve all object collections from `Calendar`
 2. Based on the collection received from `Calendar`, the `IndexStore` will keep track of which index are used and which are not. At the same time, it will map the type of Calendar object to its' respective index. <br/>
 3.  When `Calendar` requests for an index, the index store will:
-    1. Check if there are any *recycledindex* (index that were previously assigned but their objects have be subsequently removed)
-    2. If there are *recycled index* available, `IndexStore` will return the first available *recycled index*
-    3. If not, `IndexStore` will return the next available index 
+    * Check if there are any *recycledindex* (index that were previously assigned but their objects have be subsequently removed)
+    * If there are *recycled index* available, `IndexStore` will return the first available *recycled index*
+    * If not, `IndexStore` will return the next available index 
 4. Upon deletion of an object, `IndexStore` will:
-    1. Remove the object from its index to object-type mapping
-    2. Adds to the index of the removed object to the list of *recycled index*
+    * Remove the object from its index to object-type mapping
+    * Adds to the index of the removed object to the list of *recycled index*
 
 #### Significant Methods
 |Return Type | Method Name | Description|
