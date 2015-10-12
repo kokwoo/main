@@ -47,10 +47,10 @@ Component Name | Classes
 ----------- | ----------------------
 `UI` | `Tempo`</font>
 `Request Handling` | `RequestHandler` Class <br/> `ArgParser` class
-`Logic` | `Calendar` class <br/> `Display` class <br/> `Event`, `Task`, `FloatingTask` classes
+`Logic` | `Calendar` class <br/> `Display` class <br/> `IndexStore` class <br/> `Event`, `Task`, `FloatingTask` classes
 `Storage` | `CalendarImporter` class <br/> `CalendarExporter` class
 
-More extensive description of the functionalities of the classes are detailed as follow.
+More extensive description of the functionalities of the classes are detailed as follows.
 
 #UI component
 This component is the main interaction interface into Tempo from the command line. It consists of one class, `Tempo`.
