@@ -3,7 +3,7 @@ Tempo is a simple tool that allows users to plan and manage their daily schedule
 
 This guide aims to describe the design and implementation of Tempo. It will help you understand how Tempo works from a developer's point of view. 
 
-We have organised this guide in a top-down manner so that you can understand the big picture before moving on to the more detailed sections.
+We have organised this guide in a top-down manner so that you can understand Tempo from the big picture before moving on to the more detailed sections.
 
 
 # Table of Contents
