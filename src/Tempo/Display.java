@@ -12,50 +12,52 @@ public class Display {
 	private ArrayList<Event> pastEvents;
 	private ArrayList<Task> tasks;
 	private ArrayList<Task> tasksToday;
-	private ArrayList<Task> restOfTasks;
+	private ArrayList<Task> upcomingTasks;
+	private ArrayList<Task> missedTasks;
 	private ArrayList<FloatingTask> floatingTasks;
 	private CurrentDateAndTime date;
 
 	public Display(ArrayList<Event> _events, ArrayList<Task> _tasks, ArrayList<FloatingTask> _floatingTasks) {
 		date = new CurrentDateAndTime();
-		
+
 		events = new ArrayList<Event>();
 		tasks = new ArrayList<Task>();
 		floatingTasks = new ArrayList<FloatingTask>();
-		
+
 		eventsToday = new ArrayList<Event>();
 		upcomingEvents = new ArrayList<Event>();
 		pastEvents = new ArrayList<Event>();
-		
+
 		tasksToday = new ArrayList<Task>();
-		restOfTasks = new ArrayList<Task>();
-		
+		upcomingTasks = new ArrayList<Task>();
+		missedTasks = new ArrayList<Task>();
+
 		events = _events;
 		tasks = _tasks;
 		floatingTasks = _floatingTasks;
-		
-//		System.out.println("In display...");
-//		
-//		System.out.println("Printing all events");
-//		
-//		for(Event e : events){
-//			System.out.println(e.getIndex());
-//			System.out.println(e.getName());
-//		}
-//		
-//		System.out.println("Printing all tasks");
-//		
-//		for(Task t : tasks){
-//			System.out.println(t.getIndex());
-//			System.out.println(t.getName());
-//		}
-//		
-//		System.out.println("Printing all floating tasks");
-//		
-//		for(FloatingTask f : floatingTasks){
-//			System.out.println(f.getIndex());
-//			System.out.println(f.getName());
-//		}
+
+		// System.out.println("In display...");
+		//
+		// System.out.println("Printing all events");
+		//
+		// for(Event e : events){
+		// System.out.println(e.getIndex());
+		// System.out.println(e.getName());
+		// }
+		//
+		// System.out.println("Printing all tasks");
+		//
+		// for(Task t : tasks){
+		// System.out.println(t.getIndex());
+		// System.out.println(t.getName());
+		// }
+		//
+		// System.out.println("Printing all floating tasks");
+		//
+		// for(FloatingTask f : floatingTasks){
+		// System.out.println(f.getIndex());
+		// System.out.println(f.getName());
+		// }
 	}
 
 	public static boolean manual() {
@@ -212,7 +214,7 @@ public class Display {
 	}
 
 	// view all the events
-	public boolean events() throws ParseException {
+	public boolean events() {
 		splitEvents(date.getDate());
 		printAllEvents();
 		return true;
@@ -247,34 +249,44 @@ public class Display {
 			System.out.println("");
 		}
 	}
-	
+
 	private void printPastEvents() {
-		if(pastEvents.isEmpty()){
+		if (pastEvents.isEmpty()) {
 			System.out.println("There are no past events!");
 			System.out.println("");
 		}
-		
-		else{
+
+		else {
 			System.out.println("These are your past events!");
 			printEvents(pastEvents.size(), pastEvents);
 			System.out.println("");
 		}
-		
+
 	}
-	
-	
-	private void splitEvents(String currentDate) throws ParseException {
+
+	private Date getDateInDateFormat(String date) {
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-    	Date dateCurr = sdf.parse(currentDate);
+		Date formatDate = null;
+
+		try {
+			formatDate = sdf.parse(date);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return formatDate;
+	}
+
+	private void splitEvents(String currentDate) {
+		Date dateCurr = getDateInDateFormat(currentDate);
+
 		for (int i = 0; i < events.size(); i++) {
-			Date dateCompare = sdf.parse(events.get(i).getStartDate());
-			if (dateCurr.compareTo(dateCompare)==0) {
+			Date dateCompare = getDateInDateFormat(events.get(i).getStartDate());
+			if (dateCurr.compareTo(dateCompare) == 0) {
 				eventsToday.add(events.get(i));
-			} 
-			else if(dateCurr.compareTo(dateCompare)<0){
+			} else if (dateCurr.compareTo(dateCompare) < 0) {
 				upcomingEvents.add(events.get(i));
-			}
-			else if(dateCurr.compareTo(dateCompare)>0){
+			} else if (dateCurr.compareTo(dateCompare) > 0) {
 				pastEvents.add(events.get(i));
 			}
 		}
@@ -285,8 +297,9 @@ public class Display {
 			Event currEvent = events.get(i);
 			int num = i + 1;
 			System.out.print(num + ") ");
-			//System.out.println(events.get(i).toString());
-			System.out.println(currEvent.getName() +" From: "+ currEvent.getStartDateTime() + " To: " + currEvent.getEndDateTime() + "\t[ID:" + currEvent.getIndex() + "] ");
+			// System.out.println(events.get(i).toString());
+			System.out.println(currEvent.getName() + " From: " + currEvent.getStartDateTime() + " To: "
+					+ currEvent.getEndDateTime() + "\t[ID:" + currEvent.getIndex() + "] ");
 		}
 	}
 
@@ -295,18 +308,18 @@ public class Display {
 		printFloatingTasks(floatingTasks);
 		splitTasksByDates(date.getDate());
 		printTasksToday();
-		printRestOfTasks();
+		printUpcomingTasks();
 		return true;
 	}
 
-	private void printRestOfTasks() {
+	private void printUpcomingTasks() {
 
-		if (restOfTasks.isEmpty()) {
+		if (upcomingTasks.isEmpty()) {
 			System.out.println("You have no more tasks with deadline");
 			System.out.println("");
 		} else {
 			System.out.println("These are the rest of your tasks!");
-			printTasks(restOfTasks);
+			printTasks(upcomingTasks);
 			System.out.println("");
 		}
 	}
@@ -325,11 +338,19 @@ public class Display {
 	}
 
 	private void splitTasksByDates(String currentDate) {
+		Date dateCurr = getDateInDateFormat(currentDate);
+		
 		for (int i = 0; i < tasks.size(); i++) {
-			if (currentDate.equalsIgnoreCase(tasks.get(i).getDueDateSimplified())) {
+			Date dateCompare = getDateInDateFormat(tasks.get(i).getDueDateSimplified());
+			if (dateCurr.compareTo(dateCompare) == 0) {
 				tasksToday.add(tasks.get(i));
-			} else {
-				restOfTasks.add(tasks.get(i));
+			} 
+			else if(dateCurr.compareTo(dateCompare) < 0) {
+				upcomingTasks.add(tasks.get(i));
+			}
+			
+			else if(dateCurr.compareTo(dateCompare) > 0){
+				missedTasks.add(tasks.get(i));
 			}
 		}
 	}
@@ -346,7 +367,7 @@ public class Display {
 				FloatingTask currFT = floatingTasks.get(i);
 				int num = i + 1;
 				System.out.print(num + ") ");
-				//System.out.println(floatingTasks.get(i).toString());
+				// System.out.println(floatingTasks.get(i).toString());
 				System.out.println(currFT.getName() + "\t[ID:" + currFT.getIndex() + "] ");
 			}
 			System.out.println("");
@@ -358,7 +379,8 @@ public class Display {
 			int num = i + 1;
 			Task currTask = tasks.get(i);
 			System.out.print(num + ") ");
-			System.out.println(currTask.getName() + " Due: " + currTask.getDueDate() + "\t[ID:" + currTask.getIndex() + "] ");
+			System.out.println(
+					currTask.getName() + " Due: " + currTask.getDueDate() + "\t[ID:" + currTask.getIndex() + "] ");
 		}
 	}
 
@@ -370,7 +392,7 @@ public class Display {
 		printFloatingTasks(floatingTasks);
 		splitTasksByDates(date.getDate());
 		printTasksToday();
-		printRestOfTasks();
+		printUpcomingTasks();
 	}
 
 	// view upcoming events
@@ -405,7 +427,6 @@ public class Display {
 		return false;
 	}
 
-	
 	public void today() throws ParseException {
 		splitEvents(date.getDate());
 		splitTasksByDates(date.getDate());
@@ -413,10 +434,24 @@ public class Display {
 		printTasksToday();
 
 	}
+	
 
 	public void missedTasks() {
-		// TODO Auto-generated method stub
-		
+		splitTasksByDates(date.getDate());
+		printMissedTasks(missedTasks);
 	}
 
+	private void printMissedTasks(ArrayList<Task> missedTasks) {
+		if (missedTasks.isEmpty()) {
+			System.out.println("You have no missed tasks");
+			System.out.println("");
+		}
+
+		else {
+			System.out.println("These are the tasks you missed");
+			printTasks(missedTasks);
+			System.out.println("");
+		}
+		
+	}
 }

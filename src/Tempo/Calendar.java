@@ -1,6 +1,7 @@
 package Tempo;
 
 import java.io.*;
+import java.text.ParseException;
 import java.util.*;
 
 public class Calendar {
@@ -145,25 +146,43 @@ public class Calendar {
 		}
 	}
 
-	public void display(String displayType) {
+	public void display(String displayType)  {
 		Display display = new Display(getEventsList(), getTasksList(), getFloatingTasksList());
-
+		
+		
 		switch (displayType) {
 			case (ARG_EVENTS) :
 				display.events();
 			case (ARG_TASKS) :
 				display.tasks();
 			case (ARG_UPCOMING_EVENTS) :
+			try {
 				display.upcomingEvents();
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			case (ARG_UNDONE_TASKS) :
 				display.undoneTasks();
 			case (ARG_MISSED_TASKS) :
 				display.missedTasks();
-			case (ARG_TODAY) :
+			case (ARG_TODAY) :	
+			try {
 				display.today();
+			} catch (ParseException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}		
 			case (ARGS_ALL) :
+			try {
 				display.all();
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+	
 		}
+		
 	}
 
 	public ArrayList<Event> getEventsList() {
@@ -179,10 +198,10 @@ public class Calendar {
 	}
 
 	public void exportToFile() {
-		//System.out.println("Exporting: " + _fileName);
+		// System.out.println("Exporting: " + _fileName);
 		CalendarExporter exporter = new CalendarExporter(_fileName, eventsList, tasksList, floatingTasksList);
 		exporter.export();
-		//System.out.println("Export Successful!");
+		// System.out.println("Export Successful!");
 	}
 
 	public void importFromFile() {

@@ -53,7 +53,8 @@ public class DisplayTest {
 		System.out.println(date.getSecond());
 		*/
 		
-		dp.all();
+		dp.missedTasks();
+		//dp.all();
 		//dp.events();
 		//dp.tasks();
 		//dp.undoneTasks();
