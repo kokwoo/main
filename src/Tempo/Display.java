@@ -1,11 +1,15 @@
 package Tempo;
 
 import java.util.ArrayList;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class Display {
 	private ArrayList<Event> events;
 	private ArrayList<Event> eventsToday;
-	private ArrayList<Event> restOfEvents;
+	private ArrayList<Event> upcomingEvents;
+	private ArrayList<Event> pastEvents;
 	private ArrayList<Task> tasks;
 	private ArrayList<Task> tasksToday;
 	private ArrayList<Task> restOfTasks;
@@ -20,7 +24,8 @@ public class Display {
 		floatingTasks = new ArrayList<FloatingTask>();
 		
 		eventsToday = new ArrayList<Event>();
-		restOfEvents = new ArrayList<Event>();
+		upcomingEvents = new ArrayList<Event>();
+		pastEvents = new ArrayList<Event>();
 		
 		tasksToday = new ArrayList<Task>();
 		restOfTasks = new ArrayList<Task>();
@@ -207,7 +212,7 @@ public class Display {
 	}
 
 	// view all the events
-	public boolean events() {
+	public boolean events() throws ParseException {
 		splitEvents(date.getDate());
 		printAllEvents();
 		return true;
@@ -215,17 +220,19 @@ public class Display {
 
 	private void printAllEvents() {
 		printEventsToday();
-		printRestOfEvents();
+		printUpcomingEvents();
+		printPastEvents();
 	}
 
-	private void printRestOfEvents() {
-		if (restOfEvents.isEmpty()) {
+	private void printUpcomingEvents() {
+		if (upcomingEvents.isEmpty()) {
 			System.out.println("There are no upcoming events");
+			System.out.println("");
 		}
 
 		else {
 			System.out.println("These are your upcoming events!");
-			printEvents(restOfEvents.size(), restOfEvents);
+			printEvents(upcomingEvents.size(), upcomingEvents);
 			System.out.println("");
 		}
 	}
@@ -233,19 +240,42 @@ public class Display {
 	private void printEventsToday() {
 		if (eventsToday.isEmpty()) {
 			System.out.println("There are no events today!");
+			System.out.println("");
 		} else {
 			System.out.println("These are your events for the day!");
 			printEvents(eventsToday.size(), eventsToday);
 			System.out.println("");
 		}
 	}
-
-	private void splitEvents(String currentDate) {
+	
+	private void printPastEvents() {
+		if(pastEvents.isEmpty()){
+			System.out.println("There are no past events!");
+			System.out.println("");
+		}
+		
+		else{
+			System.out.println("These are your past events!");
+			printEvents(pastEvents.size(), pastEvents);
+			System.out.println("");
+		}
+		
+	}
+	
+	
+	private void splitEvents(String currentDate) throws ParseException {
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+    	Date dateCurr = sdf.parse(currentDate);
 		for (int i = 0; i < events.size(); i++) {
-			if (currentDate.equalsIgnoreCase(events.get(i).getStartDate())) {
+			Date dateCompare = sdf.parse(events.get(i).getStartDate());
+			if (dateCurr.compareTo(dateCompare)==0) {
 				eventsToday.add(events.get(i));
-			} else {
-				restOfEvents.add(events.get(i));
+			} 
+			else if(dateCurr.compareTo(dateCompare)<0){
+				upcomingEvents.add(events.get(i));
+			}
+			else if(dateCurr.compareTo(dateCompare)>0){
+				pastEvents.add(events.get(i));
 			}
 		}
 	}
@@ -273,6 +303,7 @@ public class Display {
 
 		if (restOfTasks.isEmpty()) {
 			System.out.println("You have no more tasks with deadline");
+			System.out.println("");
 		} else {
 			System.out.println("These are the rest of your tasks!");
 			printTasks(restOfTasks);
@@ -283,6 +314,7 @@ public class Display {
 	private void printTasksToday() {
 		if (tasksToday.isEmpty()) {
 			System.out.println("You have no tasks today");
+			System.out.println("");
 		}
 
 		else {
@@ -331,7 +363,7 @@ public class Display {
 	}
 
 	// view all tasks and all events
-	public void all() {
+	public void all() throws ParseException {
 		splitEvents(date.getDate());
 		printAllEvents();
 
@@ -342,9 +374,9 @@ public class Display {
 	}
 
 	// view upcoming events
-	public boolean upcomingEvents() {
+	public boolean upcomingEvents() throws ParseException {
 		splitEvents(date.getDate());
-		printRestOfEvents();
+		printUpcomingEvents();
 		return false;
 
 	}
@@ -373,19 +405,18 @@ public class Display {
 		return false;
 	}
 
-	public boolean missedTasks() {
-		return false;
-		// TODO Auto-generated method stub
-
-	}
-
-	// view todays tasks and events
-	public void today() {
+	
+	public void today() throws ParseException {
 		splitEvents(date.getDate());
 		splitTasksByDates(date.getDate());
 		printEventsToday();
 		printTasksToday();
 
+	}
+
+	public void missedTasks() {
+		// TODO Auto-generated method stub
+		
 	}
 
 }
