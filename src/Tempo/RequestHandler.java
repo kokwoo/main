@@ -150,12 +150,7 @@ public class RequestHandler {
 			display.tasks();
 			break;
 		case (ARG_UPCOMING_EVENTS):
-			try {
-				display.upcomingEvents();
-			} catch (ParseException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			display.upcomingEvents();
 			break;
 		case (ARG_UNDONE_TASKS):
 			display.undoneTasks();

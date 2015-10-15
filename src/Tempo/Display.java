@@ -17,6 +17,10 @@ public class Display {
 	private ArrayList<Task> upcomingTasks;
 	private ArrayList<Task> missedTasks;
 	private ArrayList<FloatingTask> floatingTasks;
+	private ArrayList<Task> undoneTasks;
+	private ArrayList<FloatingTask> undoneFloatingTasks;
+	private ArrayList<Task> doneTasks;
+	private ArrayList<FloatingTask> doneFloatingTasks;
 	private CurrentDateAndTime date;
 
 	// Messages
@@ -35,6 +39,7 @@ public class Display {
 	private String NO_TODAY_EVENTS = "You have no event today";
 	private String UPCOMING_EVENTS = "These are the list of upcoming events";
 	private String NO_UPCOMING_EVENTS = "You have no upcoming event";
+	private String DONE_TASKS = "These are all the tasks that are done";
 
 	public Display(ArrayList<Event> _events, ArrayList<Task> _tasks, ArrayList<FloatingTask> _floatingTasks) {
 		date = new CurrentDateAndTime();
@@ -51,32 +56,23 @@ public class Display {
 		upcomingTasks = new ArrayList<Task>();
 		missedTasks = new ArrayList<Task>();
 
+		undoneTasks = new ArrayList<Task>();
+		undoneFloatingTasks = new ArrayList<FloatingTask>();
+
+		doneTasks = new ArrayList<Task>();
+		doneFloatingTasks = new ArrayList<FloatingTask>();
+
 		events = _events;
 		tasks = _tasks;
 		floatingTasks = _floatingTasks;
 
-		// System.out.println("In display...");
-		//
-		// System.out.println("Printing all events");
-		//
-		// for(Event e : events){
-		// System.out.println(e.getIndex());
-		// System.out.println(e.getName());
-		// }
-		//
-		// System.out.println("Printing all tasks");
-		//
-		// for(Task t : tasks){
-		// System.out.println(t.getIndex());
-		// System.out.println(t.getName());
-		// }
-		//
-		// System.out.println("Printing all floating tasks");
-		//
-		// for(FloatingTask f : floatingTasks){
-		// System.out.println(f.getIndex());
-		// System.out.println(f.getName());
-		// }
+		splitsEvents();
+		// splitting (floating) done and undone tasks
+		splitFtasks();
+		// splitting done and undone tasks
+		splitTasks();
+		// splitting the dated undone tasks
+		splitDatedTask();
 	}
 
 	public static boolean manual() {
@@ -232,17 +228,49 @@ public class Display {
 
 	}
 
-	// view all the events
+	private static void printNewLine() {
+		System.out.println("");
+	}
+
+	// missing print upcoming events
 	public boolean events() {
-		splitEvents(date.getDate());
-		printAllEvents();
+
+		printUpcomingEvents();
+
+		printTodayEvents();
+
+		printPastEvents();
+
 		return true;
 	}
 
-	private void printAllEvents() {
-		printEventsToday();
+	public boolean upcomingEvents() {
 		printUpcomingEvents();
-		printPastEvents();
+		return true;
+	}
+
+	private void printPastEvents() {
+		if (pastEvents.isEmpty()) {
+			System.out.println(NO_PAST_EVENTS);
+			printNewLine();
+		}
+
+		else {
+			System.out.println(PAST_EVENTS);
+			printEvents(pastEvents.size(), pastEvents);
+			printNewLine();
+		}
+	}
+
+	private void printTodayEvents() {
+		if (eventsToday.isEmpty()) {
+			System.out.println(NO_TODAY_EVENTS);
+			printNewLine();
+		} else {
+			System.out.println(TODAY_EVENTS);
+			printEvents(eventsToday.size(), eventsToday);
+			printNewLine();
+		}
 	}
 
 	private void printUpcomingEvents() {
@@ -258,29 +286,29 @@ public class Display {
 		}
 	}
 
-	private void printEventsToday() {
-		if (eventsToday.isEmpty()) {
-			System.out.println(NO_TODAY_EVENTS);
-			printNewLine();
-		} else {
-			System.out.println(TODAY_EVENTS);
-			printEvents(eventsToday.size(), eventsToday);
-			printNewLine();
+	private void splitsEvents() {
+		String currentDate = date.getDate();
+		Date dateCurr = getDateInDateFormat(currentDate);
+		for (int i = 0; i < events.size(); i++) {
+			Date dateCompare = getDateInDateFormat(events.get(i).getStartDate());
+			if (dateCurr.compareTo(dateCompare) == 0) {
+				eventsToday.add(events.get(i));
+			} else if (dateCurr.compareTo(dateCompare) < 0) {
+				upcomingEvents.add(events.get(i));
+			} else if (dateCurr.compareTo(dateCompare) > 0) {
+				pastEvents.add(events.get(i));
+			}
 		}
 	}
 
-	private void printPastEvents() {
-		if (pastEvents.isEmpty()) {
-			System.out.println(NO_PAST_EVENTS);
-			printNewLine();
+	private void printEvents(int numOfEvents, ArrayList<Event> events) {
+		for (int i = 0; i < numOfEvents; i++) {
+			Event currEvent = events.get(i);
+			int num = i + 1;
+			System.out.print(num + ") ");
+			System.out.println(currEvent.getName() + " From: " + currEvent.getStartDateTime() + " To: "
+					+ currEvent.getEndDateTime() + "\t[ID:" + currEvent.getIndex() + "] ");
 		}
-
-		else {
-			System.out.println(PAST_EVENTS);
-			printEvents(pastEvents.size(), pastEvents);
-			printNewLine();
-		}
-
 	}
 
 	private Date getDateInDateFormat(String date) {
@@ -294,58 +322,27 @@ public class Display {
 		return formatDate;
 	}
 
-	private void splitEvents(String currentDate) {
-		Date dateCurr = getDateInDateFormat(currentDate);
-
-		for (int i = 0; i < events.size(); i++) {
-			Date dateCompare = getDateInDateFormat(events.get(i).getStartDate());
-			if (dateCurr.compareTo(dateCompare) == 0) {
-				addTodayEvents(i);
-			} else if (dateCurr.compareTo(dateCompare) < 0) {
-				addUpcomingEvents(i);
-			} else if (dateCurr.compareTo(dateCompare) > 0) {
-				addPastEvents(i);
-			}
-		}
-	}
-
-	private void addPastEvents(int i) {
-		pastEvents.add(events.get(i));
-	}
-
-	private void addUpcomingEvents(int i) {
-		upcomingEvents.add(events.get(i));
-	}
-
-	private void addTodayEvents(int i) {
-		eventsToday.add(events.get(i));
-	}
-
-	private void printEvents(int numOfEvents, ArrayList<Event> events) {
-		for (int i = 0; i < numOfEvents; i++) {
-			Event currEvent = events.get(i);
-			int num = i + 1;
-			printEventsString(currEvent, num);
-		}
-	}
-
-	private void printEventsString(Event currEvent, int num) {
-		System.out.print(num + ") ");
-		System.out.println(currEvent.getName() + " From: " + currEvent.getStartDateTime() + " To: "
-				+ currEvent.getEndDateTime() + "\t[ID:" + currEvent.getIndex() + "] ");
-	}
-
 	// view all tasks
-	public boolean tasks() {
-		printFloatingTasks(floatingTasks);
-		splitTasksByDates(date.getDate());
-		printTasksToday();
+	// Finds all the undone tasks in the floating tasks and tasks
+	// prints only the undone floating tasks
+	// split the undone tasks into upcoming and today
+	// print today undone tasks
+	// print upcoming undone tasks
+	// show tasks that are done only in "display all"
+
+	public void tasks() {
+
+		// print floating tasks (only undone)
+		printFloatingTasks(undoneFloatingTasks);
+
+		// print tasks today(only undone)
+		printTodayTasks();
+
+		// print upcoming tasks(only undone)
 		printUpcomingTasks();
-		return true;
 	}
 
 	private void printUpcomingTasks() {
-
 		if (upcomingTasks.isEmpty()) {
 			System.out.println(NO_UPCOMING_TASKS);
 			printNewLine();
@@ -356,7 +353,7 @@ public class Display {
 		}
 	}
 
-	private void printTasksToday() {
+	private void printTodayTasks() {
 		if (tasksToday.isEmpty()) {
 			System.out.println(NO_TODAY_TASKS);
 			printNewLine();
@@ -369,140 +366,71 @@ public class Display {
 		}
 	}
 
-	private void splitTasksByDates(String currentDate) {
+	private void splitDatedTask() {
+		String currentDate = date.getDate();
 		Date dateCurr = getDateInDateFormat(currentDate);
 
-		for (int i = 0; i < tasks.size(); i++) {
-			Date dateCompare = getDateInDateFormat(tasks.get(i).getDueDateSimplified());
+		for (int i = 0; i < undoneTasks.size(); i++) {
+			Date dateCompare = getDateInDateFormat(undoneTasks.get(i).getDueDateSimplified());
 			if (dateCurr.compareTo(dateCompare) == 0) {
-				addTodayTasks(i);
+				tasksToday.add(undoneTasks.get(i));
 			} else if (dateCurr.compareTo(dateCompare) < 0) {
-				addUpcomingTasks(i);
+				upcomingTasks.add(undoneTasks.get(i));
 			} else if (dateCurr.compareTo(dateCompare) > 0) {
-				addMissedTasks(i);
+				missedTasks.add(undoneTasks.get(i));
 			}
 		}
 	}
 
-	private void addTodayTasks(int i) {
-		tasksToday.add(tasks.get(i));
-	}
-
-	private void addUpcomingTasks(int i) {
-		upcomingTasks.add(tasks.get(i));
-	}
-
-	private void addMissedTasks(int i) {
-		missedTasks.add(tasks.get(i));
-	}
-
-	private void printFloatingTasks(ArrayList<FloatingTask> floatingTasks) {
-
-		if (floatingTasks.isEmpty()) {
+	private void printFloatingTasks(ArrayList<FloatingTask> _floatingTasks) {
+		if ( _floatingTasks.isEmpty()) {
 			System.out.println(NO_FLOATING_TASKS);
 			printNewLine();
 		}
 
 		else {
 			System.out.println(FLOATING_TASKS);
-			for (int i = 0; i < floatingTasks.size(); i++) {
-				FloatingTask currFT = floatingTasks.get(i);
+			for (int i = 0; i <  _floatingTasks.size(); i++) {
+				FloatingTask currFT =  _floatingTasks.get(i);
 				int num = i + 1;
-				printFloatingTasksString(currFT, num);
+				System.out.print(num + ") ");
+				System.out.println(currFT.getName() + "\t[ID:" + currFT.getIndex() + "] ");
 			}
 			printNewLine();
 		}
 	}
 
-	private void printFloatingTasksString(FloatingTask currFT, int num) {
-		System.out.print(num + ") ");
-		System.out.println(currFT.getName() + "\t[ID:" + currFT.getIndex() + "] ");
+	private void splitTasks() {
+		for (int i = 0; i < tasks.size(); i++) {
+			if (!tasks.get(i).getDone()) {
+				undoneTasks.add(tasks.get(i));
+			} else {
+				doneTasks.add(tasks.get(i));
+			}
+		}
+	}
+
+	private void splitFtasks() {
+		for (int i = 0; i < floatingTasks.size(); i++) {
+			if (!floatingTasks.get(i).getDone()) {
+				undoneFloatingTasks.add(floatingTasks.get(i));
+			} else {
+				doneFloatingTasks.add(floatingTasks.get(i));
+			}
+		}
 	}
 
 	private void printTasks(ArrayList<Task> tasks) {
 		for (int i = 0; i < tasks.size(); i++) {
 			int num = i + 1;
 			Task currTask = tasks.get(i);
-			printTaskString(num, currTask);
+			System.out.print(num + ") ");
+			System.out.println(
+					currTask.getName() + " Due: " + currTask.getDueDate() + "\t[ID:" + currTask.getIndex() + "] ");
 		}
-	}
-
-	private void printTaskString(int num, Task currTask) {
-		System.out.print(num + ") ");
-		System.out
-				.println(currTask.getName() + " Due: " + currTask.getDueDate() + "\t[ID:" + currTask.getIndex() + "] ");
-	}
-
-	// view all tasks and all events
-	public void all() throws ParseException {
-		// events
-		splitEvents(date.getDate());
-		printAllEvents();
-
-		// tasks
-		printFloatingTasks(floatingTasks);
-		splitTasksByDates(date.getDate());
-		printTasksToday();
-		printUpcomingTasks();
-		printMissedTasks();
-	}
-
-	// view upcoming events
-	public boolean upcomingEvents() throws ParseException {
-		splitEvents(date.getDate());
-		printUpcomingEvents();
-		return false;
-
-	}
-
-	// view undone tasks
-	public boolean undoneTasks() {
-		ArrayList<Task> undoneTasks = new ArrayList<Task>();
-		ArrayList<FloatingTask> undoneFloatingTasks = new ArrayList<FloatingTask>();
-		// System.out.println("These are the tasks that are still undone:");
-		findUndoneTasks(undoneTasks);
-		findUndoneFloatingTasks(undoneFloatingTasks);
-		System.out.println(UNDONE_TASKS);
-		printTasks(undoneTasks);
-		printFloatingTasks(undoneFloatingTasks);
-
-		return false;
-	}
-
-	private void findUndoneFloatingTasks(ArrayList<FloatingTask> undoneFloatingTasks) {
-		for (int i = 0; i < floatingTasks.size(); i++) {
-			if (!floatingTasks.get(i).getDone()) {
-				addToUndoneFloatingTasks(undoneFloatingTasks, i);
-			}
-		}
-	}
-
-	private void findUndoneTasks(ArrayList<Task> undoneTasks) {
-		for (int i = 0; i < tasks.size(); i++) {
-			if (!tasks.get(i).getDone()) {
-				addToUndoneTasks(undoneTasks, i);
-			}
-		}
-	}
-
-	private void addToUndoneFloatingTasks(ArrayList<FloatingTask> undoneFloatingTasks, int i) {
-		undoneFloatingTasks.add(floatingTasks.get(i));
-	}
-
-	private void addToUndoneTasks(ArrayList<Task> undoneTasks, int i) {
-		undoneTasks.add(tasks.get(i));
-	}
-
-	public void today() throws ParseException {
-		splitEvents(date.getDate());
-		splitTasksByDates(date.getDate());
-		printEventsToday();
-		printTasksToday();
-
 	}
 
 	public void missedTasks() {
-		splitTasksByDates(date.getDate());
 		printMissedTasks();
 	}
 
@@ -515,10 +443,30 @@ public class Display {
 			printTasks(missedTasks);
 			printNewLine();
 		}
+	}
+	
+	public void undoneTasks(){
+		System.out.println(UNDONE_TASKS);
+		printTasks(undoneTasks);
+		printNewLine();
+		printFloatingTasks(undoneFloatingTasks);
+	}
+	
+	public void today() throws ParseException {
+		printTodayEvents();
+		printTodayTasks();
+	}
+	
+	public void all() throws ParseException {
+		// events
+		events();
 
+		// tasks
+		tasks();
+		
+		System.out.println(DONE_TASKS);
+		printTasks(doneTasks);
+		printFloatingTasks(doneFloatingTasks);
 	}
 
-	private static void printNewLine() {
-		System.out.println("");
-	}
 }
