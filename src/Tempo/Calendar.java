@@ -13,13 +13,13 @@ public class Calendar {
 	private IndexStore indexStore;
 
 	// display arguments
-	private final String ARG_EVENTS = "events";
-	private final String ARG_UPCOMING_EVENTS = "upcoming events";
-	private final String ARG_TASKS = "tasks";
-	private final String ARG_UNDONE_TASKS = "undone tasks";
-	private final String ARG_MISSED_TASKS = "missed tasks";
-	private final String ARG_TODAY = "today";
-	private final String ARGS_ALL = "all";
+//	private final String ARG_EVENTS = "events";
+//	private final String ARG_UPCOMING_EVENTS = "upcoming events";
+//	private final String ARG_TASKS = "tasks";
+//	private final String ARG_UNDONE_TASKS = "undone tasks";
+//	private final String ARG_MISSED_TASKS = "missed tasks";
+//	private final String ARG_TODAY = "today";
+//	private final String ARGS_ALL = "all";
 
 	// public Calendar() {
 	// eventsList = new ArrayList<Event>();
@@ -146,7 +146,7 @@ public class Calendar {
 		}
 	}
 
-	public void display(String displayType)  {
+	/*public void display(String displayType)  {
 		Display display = new Display(getEventsList(), getTasksList(), getFloatingTasksList());
 		
 		
@@ -183,7 +183,7 @@ public class Calendar {
 	
 		}
 		
-	}
+	}*/
 
 	public ArrayList<Event> getEventsList() {
 		return eventsList;

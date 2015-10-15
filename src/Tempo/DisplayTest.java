@@ -58,7 +58,7 @@ public class DisplayTest {
 		//dp.events();
 		//dp.tasks();
 		//dp.undoneTasks();
-		//dp.today();
+		dp.today();
 		//dp.upcomingEvents();		
 		
 	//	CurrentDateAndTime date = new CurrentDateAndTime();
