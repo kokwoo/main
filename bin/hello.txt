@@ -1,0 +1,8 @@
+--EVENTS--
+0!!Dinner with Dad!!23/09/2015!!19:00!!23/09/2015!!20:00
+--TASKS--
+3!!do CS2103 Assignment due 09/10/2015!!false!!09/10/2015
+--FLOATING TASKS--
+1!!Buy oranges!!false
+2!!Buy grapes!!false
+4!!Buy vodka!!false
