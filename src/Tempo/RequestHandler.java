@@ -1,7 +1,12 @@
 package Tempo;
 
+import java.io.IOException;
 import java.text.ParseException;
 import java.util.*;
+import java.util.logging.FileHandler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
 
 public class RequestHandler {
 
@@ -36,10 +41,33 @@ public class RequestHandler {
 
 	// such args list out all the events and tasks
 	private final String ARGS_ALL = "all";
+	
+	Logger logger;
+	FileHandler fh;
 
 	public RequestHandler(String fileName) {
 		parser = new ArgParser();
 		calendar = new Calendar(fileName);
+		
+		assert parser == null;
+		assert calendar == null;
+		
+		// This block configure the logger with handler and formatter
+		try {
+			logger = Logger.getLogger("TempoLog");
+			
+			fh = new FileHandler("TempoLog.log",true);
+			logger.addHandler(fh);
+			
+			SimpleFormatter formatter = new SimpleFormatter();
+			fh.setFormatter(formatter);
+		} catch (SecurityException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	public String readNextCommand() {
@@ -47,6 +75,9 @@ public class RequestHandler {
 		do {
 			Scanner sc = new Scanner(System.in);
 			String nextCommand = sc.nextLine();
+			
+			assert !nextCommand.equals("");
+			logger.info("User Entered: " + nextCommand);
 
 			if (nextCommand.equals("exit")) {
 				sc.close();
