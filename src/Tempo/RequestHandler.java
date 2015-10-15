@@ -49,8 +49,8 @@ public class RequestHandler {
 		parser = new ArgParser();
 		calendar = new Calendar(fileName);
 		
-		assert parser == null;
-		assert calendar == null;
+		assert parser != null;
+		assert calendar != null;
 		
 		// This block configure the logger with handler and formatter
 		try {
@@ -181,12 +181,7 @@ public class RequestHandler {
 			display.tasks();
 			break;
 		case (ARG_UPCOMING_EVENTS):
-			try {
-				display.upcomingEvents();
-			} catch (ParseException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			display.upcomingEvents();
 			break;
 		case (ARG_UNDONE_TASKS):
 			display.undoneTasks();

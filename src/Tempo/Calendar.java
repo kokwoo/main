@@ -82,6 +82,7 @@ public class Calendar {
 	}
 
 	private void removeEvent(int idx) {
+		assert indexStore.events.containsKey(idx);
 		for (int i = 0; i < eventsList.size(); i++) {
 			if (eventsList.get(i).getIndex() == idx) {
 				indexStore.removeEvent(eventsList.get(i).getIndex());
@@ -92,6 +93,7 @@ public class Calendar {
 	}
 
 	private void removeTask(int idx) {
+		assert indexStore.tasks.containsKey(idx);
 		for (int i = 0; i < tasksList.size(); i++) {
 			if (tasksList.get(i).getIndex() == idx) {
 				indexStore.removeTask(tasksList.get(i).getIndex());
@@ -102,6 +104,7 @@ public class Calendar {
 	}
 
 	private void removeFloatingTask(int idx) {
+		assert indexStore.tasks.containsKey(idx);
 		for (int i = 0; i < floatingTasksList.size(); i++) {
 			if (floatingTasksList.get(i).getIndex() == idx) {
 				indexStore.removeTask(floatingTasksList.get(i).getIndex());
@@ -123,6 +126,9 @@ public class Calendar {
 	}
 
 	private void updateEvent(int idx, ArrayList<String> fields, ArrayList<String> newValues) {
+		assert indexStore.events.containsKey(idx);
+		assert fields.size() == newValues.size();
+
 		int arrayListIndex = getArrayListIndexOfEvent(idx);
 		Event eventToUpdate = eventsList.get(arrayListIndex);
 		for (int i = 0; i < fields.size(); i++) {
@@ -131,6 +137,9 @@ public class Calendar {
 	}
 
 	private void updateTask(int idx, ArrayList<String> fields, ArrayList<String> newValues) {
+		assert indexStore.tasks.containsKey(idx);
+		assert fields.size() == newValues.size();
+		
 		int arrayListIndex = getArrayListIndexOfTask(idx);
 		Task taskToUpdate = tasksList.get(arrayListIndex);
 		for (int i = 0; i < fields.size(); i++) {
@@ -139,6 +148,9 @@ public class Calendar {
 	}
 
 	private void updateFloatingTask(int idx, ArrayList<String> fields, ArrayList<String> newValues) {
+		assert indexStore.tasks.containsKey(idx);
+		assert fields.size() == newValues.size();
+
 		int arrayListIndex = getArrayListIndexOfFloatingTask(idx);
 		FloatingTask taskToUpdate = floatingTasksList.get(arrayListIndex);
 		for (int i = 0; i < fields.size(); i++) {
