@@ -1,7 +1,6 @@
 package Tempo;
 
 import java.io.*;
-import java.text.ParseException;
 import java.util.*;
 
 public class Calendar {
@@ -146,7 +145,7 @@ public class Calendar {
 		}
 	}
 
-	public void display(String displayType) throws ParseException {
+	public void display(String displayType) {
 		Display display = new Display(getEventsList(), getTasksList(), getFloatingTasksList());
 
 		switch (displayType) {

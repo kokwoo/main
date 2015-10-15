@@ -1,6 +1,5 @@
 package Tempo;
 
-import java.text.ParseException;
 import java.util.*;
 
 public class RequestHandler {
@@ -41,7 +40,7 @@ public class RequestHandler {
 		calendar = new Calendar(fileName);
 	}
 
-	public String readNextCommand() throws IllegalArgumentException, ParseException {
+	public String readNextCommand() {
 		String cmd;
 		do {
 			Scanner sc = new Scanner(System.in);
@@ -64,7 +63,7 @@ public class RequestHandler {
 		return cmd;
 	}
 
-	public void execute(String command, String arguments) throws IllegalArgumentException, ParseException {
+	public void execute(String command, String arguments) throws IllegalArgumentException {
 		// I think if the command is invalid can go straight down to the default switch case
 		// aka display error message :/
 //		if (!isValidInput(command)) {
@@ -132,7 +131,7 @@ public class RequestHandler {
 		calendar.update(id, fields, newValues);
 	}
 
-	private void display(String command, String arguments) throws ParseException {
+	private void display(String command, String arguments) {
 		String args = arguments.toString().toLowerCase();
 
 		if (command.equalsIgnoreCase(CMD_HELP) | command.equalsIgnoreCase(CMD_MANUAL)) {
