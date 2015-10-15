@@ -1,12 +1,13 @@
 package Tempo;
 
 
+import java.text.ParseException;
 import java.util.ArrayList;
 
 
 public class DisplayTest {
 	
-	public static void main(String args[]) {
+	public static void main(String args[]) throws ParseException {
 		ArrayList<Event> events = new ArrayList<Event>();
 		ArrayList<Task> tasks = new ArrayList<Task>();
 		ArrayList<FloatingTask> floatingTasks = new ArrayList<FloatingTask>();
@@ -52,11 +53,12 @@ public class DisplayTest {
 		System.out.println(date.getSecond());
 		*/
 		
-		dp.all();
+		//dp.missedTasks();
+		//dp.all();
 		//dp.events();
 		//dp.tasks();
 		//dp.undoneTasks();
-		//dp.today();
+		dp.today();
 		//dp.upcomingEvents();		
 		
 	//	CurrentDateAndTime date = new CurrentDateAndTime();
