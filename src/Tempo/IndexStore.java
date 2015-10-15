@@ -5,8 +5,8 @@ import java.util.*;
 public class IndexStore {
 	private static int nextUnusedId;
 	private static LinkedList<Integer> recycledId;
-	private static HashMap<Integer, Event> events;
-	private static HashMap<Integer, FloatingTask> tasks;
+	public static HashMap<Integer, Event> events;
+	public static HashMap<Integer, FloatingTask> tasks;
 	
 	public IndexStore(ArrayList<Event> eventsList, ArrayList<Task> tasksList, 
 					  ArrayList<FloatingTask> floatingTasksList) {
