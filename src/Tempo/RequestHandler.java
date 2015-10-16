@@ -49,8 +49,8 @@ public class RequestHandler {
 		parser = new ArgParser();
 		calendar = new Calendar(fileName);
 		
-		assert parser == null;
-		assert calendar == null;
+		assert parser != null;
+		assert calendar != null;
 		
 		// This block configure the logger with handler and formatter
 		try {
