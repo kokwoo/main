@@ -5,6 +5,9 @@ import java.text.ParseException;
 import java.util.*;
 
 public class Calendar {
+	
+	
+	
 	private String _fileName;
 
 	private ArrayList<Event> eventsList;
@@ -157,7 +160,60 @@ public class Calendar {
 			taskToUpdate.update(fields.get(i), newValues.get(i));
 		}
 	}
+	
+	public ArrayList<String> searchId(int id){
+		ArrayList<String> idFoundLines = new ArrayList<String>();
+		if(!indexStore.isEvent(id) && !indexStore.isFloatingTask(id)){
+			idFoundLines.clear();
+		}
+		
+		else if(indexStore.isEvent(id)){
+			Event event = indexStore.getEventById(id);
+			idFoundLines.add(event.toString());
+		}
+		
+		else if(indexStore.isFloatingTask(id)){
+			FloatingTask task = indexStore.getTaskById(id);
+			idFoundLines.add(task.toString());
+		}
+		return idFoundLines;
+		
+	}
+	
+	public ArrayList<String> searchKeyWord(String keyword){
+		ArrayList<String> wordFoundLines = new ArrayList<String>();
+		for (int i = 0; i < eventsList.size(); i++) {
+			if (containWord(eventsList.get(i).toString(), keyword)) {
+				wordFoundLines.add(eventsList.get(i).toString());
+			}
+		}
+		
+		for (int i = 0; i < tasksList.size(); i++) {
+			if (containWord(tasksList.get(i).toString(), keyword)) {
+				wordFoundLines.add(tasksList.get(i).toString());
+			}
+		}
+		
+		for (int i = 0; i < floatingTasksList.size(); i++) {
+			if (containWord(floatingTasksList.get(i).toString(), keyword)) {
+				wordFoundLines.add(floatingTasksList.get(i).toString());
+			}
+		}
+		
+		return wordFoundLines;
 
+	}
+	
+	private boolean containWord (String content, String keyword) {
+		String[] splited = content.split("\\W");
+		for (int i = 0; i < splited.length; i++) {
+			if (splited[i].equalsIgnoreCase(keyword)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	/*public void display(String displayType)  {
 		Display display = new Display(getEventsList(), getTasksList(), getFloatingTasksList());
 		
