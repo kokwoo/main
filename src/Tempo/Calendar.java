@@ -6,13 +6,18 @@ import java.util.*;
 
 public class Calendar {
 	
-	
-	
 	private String _fileName;
+	
+	private int prevModIndex = -1;
+	private Event prevModEvent = null;
+	private Task prevModTask = null;
+	private FloatingTask prevModFloatingTask = null;
+	private String prevCommand = "disabled";
 
 	private ArrayList<Event> eventsList;
 	private ArrayList<Task> tasksList;
 	private ArrayList<FloatingTask> floatingTasksList;
+	
 	private IndexStore indexStore;
 
 	// display arguments
@@ -46,6 +51,115 @@ public class Calendar {
 
 		indexStore = new IndexStore(eventsList, tasksList, floatingTasksList);
 	}
+	
+	public void undo() {
+		switch (prevCommand) {
+			case "add":
+				undoAdd();
+				break;
+			case "remove":
+				undoRemove();
+				break;
+			case "update":
+				undoUpdate();
+				break;
+			default: 
+				System.out.println("Undo cannot be used here.");
+			// should not display here
+		}
+		
+		disableUndo();
+	}
+	
+	public void disableUndo() {
+		prevModIndex = -1;
+		prevCommand = "disabled";
+		prevModEvent = null;
+		prevModTask = null;
+		prevModFloatingTask = null;
+	}
+	
+	public void savePrevCmd(int index, Event event, Task task, 
+							FloatingTask floatingTask, String command) {
+		prevModIndex = index;
+		prevModEvent = event;
+		prevModTask = task;
+		prevModFloatingTask = floatingTask;
+		prevCommand = command;
+	}
+	
+	public void undoAdd() {
+		remove(prevModIndex);
+		exportToFile();
+	}
+	
+	public void undoRemove() {
+		if (prevModEvent != null) {
+			addBackEvent();
+		} else {
+			addBackTask();
+		}
+		exportToFile();
+	}
+	
+	public void undoUpdate() {
+		if (prevModEvent != null) {
+			undoUpdateEvent();
+		} else if (prevModFloatingTask != null) {
+			undoUpdateFloatingTask();
+		} else {
+			undoUpdateTask();
+		}
+		exportToFile();
+	}
+	
+	public void undoUpdateEvent() {
+		for (int i = 0; i < eventsList.size(); i++) {
+			if (eventsList.get(i).getIndex() == prevModIndex) {
+				eventsList.set(i, prevModEvent);
+				Collections.sort(eventsList);
+				indexStore.replaceEvent(prevModIndex, prevModEvent);
+			}
+		}
+	}
+	
+	public void undoUpdateFloatingTask() {
+		for (int i = 0; i < floatingTasksList.size(); i++) {
+			if (floatingTasksList.get(i).getIndex() == prevModIndex) {
+				floatingTasksList.set(i, prevModFloatingTask);
+				indexStore.replaceTask(prevModIndex, prevModFloatingTask);
+			}
+		}
+	}
+	
+	public void undoUpdateTask() {
+		for (int i = 0; i < tasksList.size(); i++) {
+			if (tasksList.get(i).getIndex() == prevModIndex) {
+				tasksList.set(i, prevModTask);
+				Collections.sort(tasksList);
+				indexStore.replaceTask(prevModIndex, prevModTask);
+			}
+		}	
+	}
+	
+	public void addBackEvent() {
+		eventsList.add(prevModEvent);
+		indexStore.addEvent(prevModIndex, prevModEvent);
+		Collections.sort(eventsList);
+		exportToFile();
+	}
+	
+	public void addBackTask() {
+		if (prevModFloatingTask != null) {
+			floatingTasksList.add(prevModFloatingTask);
+		} else {
+			tasksList.add(prevModTask);
+			Collections.sort(tasksList);
+		}
+		
+		indexStore.addTask(prevModIndex, prevModTask);
+		exportToFile();
+	}
 
 	public void addEvent(String name, String startDate, String startTime, String endDate, String endTime) {
 		int newEventIndex = indexStore.getNewId();
@@ -54,6 +168,8 @@ public class Calendar {
 		indexStore.addEvent(newEventIndex, newEvent);
 		Collections.sort(eventsList);
 		exportToFile();
+		
+		savePrevCmd(newEventIndex, newEvent, null, null, "add");	
 	}
 
 	public void addTask(String name, String dueDate) {
@@ -63,6 +179,8 @@ public class Calendar {
 		indexStore.addTask(newTaskIndex, newTask);
 		Collections.sort(tasksList);
 		exportToFile();
+		
+		savePrevCmd(newTaskIndex, null, newTask, null, "add");
 	}
 
 	public void addFloatingTask(String name) {
@@ -71,6 +189,8 @@ public class Calendar {
 		indexStore.addTask(newTaskIndex, newFloatingTask);
 		floatingTasksList.add(newFloatingTask);
 		exportToFile();
+		
+		savePrevCmd(newTaskIndex, null, null, newFloatingTask, "add");
 	}
 
 	public void remove(int idx) {
@@ -88,6 +208,7 @@ public class Calendar {
 		assert indexStore.events.containsKey(idx);
 		for (int i = 0; i < eventsList.size(); i++) {
 			if (eventsList.get(i).getIndex() == idx) {
+				savePrevCmd(idx, eventsList.get(i), null, null, "remove");
 				indexStore.removeEvent(eventsList.get(i).getIndex());
 				eventsList.remove(i);
 				break;
@@ -99,6 +220,7 @@ public class Calendar {
 		assert indexStore.tasks.containsKey(idx);
 		for (int i = 0; i < tasksList.size(); i++) {
 			if (tasksList.get(i).getIndex() == idx) {
+				savePrevCmd(idx, null, tasksList.get(i), null, "remove");				
 				indexStore.removeTask(tasksList.get(i).getIndex());
 				tasksList.remove(i);
 				break;
@@ -110,6 +232,7 @@ public class Calendar {
 		assert indexStore.tasks.containsKey(idx);
 		for (int i = 0; i < floatingTasksList.size(); i++) {
 			if (floatingTasksList.get(i).getIndex() == idx) {
+				savePrevCmd(idx, null, null, floatingTasksList.get(i), "remove");
 				indexStore.removeTask(floatingTasksList.get(i).getIndex());
 				floatingTasksList.remove(i);
 				break;
@@ -126,36 +249,42 @@ public class Calendar {
 			updateTask(idx, fields, newValues);
 		}
 		exportToFile();
+		
 	}
 
 	private void updateEvent(int idx, ArrayList<String> fields, ArrayList<String> newValues) {
-		assert indexStore.events.containsKey(idx);
-		assert fields.size() == newValues.size();
 
 		int arrayListIndex = getArrayListIndexOfEvent(idx);
 		Event eventToUpdate = eventsList.get(arrayListIndex);
+		
+		savePrevCmd(idx, eventToUpdate, null, null, "update");
+		
 		for (int i = 0; i < fields.size(); i++) {
 			eventToUpdate.update(fields.get(i), newValues.get(i));
 		}
+		
 	}
 
 	private void updateTask(int idx, ArrayList<String> fields, ArrayList<String> newValues) {
-		assert indexStore.tasks.containsKey(idx);
-		assert fields.size() == newValues.size();
 		
 		int arrayListIndex = getArrayListIndexOfTask(idx);
 		Task taskToUpdate = tasksList.get(arrayListIndex);
+		
+		savePrevCmd(idx, null, taskToUpdate, null, "update");
+		
 		for (int i = 0; i < fields.size(); i++) {
 			taskToUpdate.update(fields.get(i), newValues.get(i));
 		}
+		
 	}
 
 	private void updateFloatingTask(int idx, ArrayList<String> fields, ArrayList<String> newValues) {
-		assert indexStore.tasks.containsKey(idx);
-		assert fields.size() == newValues.size();
 
 		int arrayListIndex = getArrayListIndexOfFloatingTask(idx);
 		FloatingTask taskToUpdate = floatingTasksList.get(arrayListIndex);
+		
+		savePrevCmd(idx, null, null, taskToUpdate, "update");
+
 		for (int i = 0; i < fields.size(); i++) {
 			taskToUpdate.update(fields.get(i), newValues.get(i));
 		}
@@ -176,6 +305,7 @@ public class Calendar {
 			FloatingTask task = indexStore.getTaskById(id);
 			idFoundLines.add(task.toString());
 		}
+		disableUndo();
 		return idFoundLines;
 		
 	}
@@ -199,7 +329,7 @@ public class Calendar {
 				wordFoundLines.add(floatingTasksList.get(i).toString());
 			}
 		}
-		
+		disableUndo();
 		return wordFoundLines;
 
 	}
