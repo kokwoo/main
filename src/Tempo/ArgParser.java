@@ -7,14 +7,22 @@
  */
 package Tempo;
 
+import java.io.IOException;
 import java.util.*;
+import java.util.logging.FileHandler;
+import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
 
 public class ArgParser {
+	Logger log;
+	FileHandler fh;
+
 	private HashMap<ArrayList<String>, String> keywords;
 
 	public ArgParser() {
 		keywords = new HashMap<ArrayList<String>, String>();
 		initialiseKeywords();
+		initLogger();
 	}
 
 	public void initialiseKeywords() {
@@ -22,6 +30,13 @@ public class ArgParser {
 		addUpdateKeywords();
 		addDisplayKeywords();
 		addRemoveKeywords();
+		addSearchKeywords();
+	}
+
+	private void addSearchKeywords() {
+		ArrayList<String> search = new ArrayList<String>();
+		search.add("find");
+		keywords.put(search, "search");
 	}
 
 	private void addAddKeywords() {
@@ -30,6 +45,22 @@ public class ArgParser {
 		add.add("create");
 		add.add("new");
 		keywords.put(add, "add");
+	}
+
+	private void initLogger() {
+		try {
+			log = Logger.getLogger("TempoLog");
+
+			fh = new FileHandler("TempoLog.log", true);
+			log.addHandler(fh);
+
+			SimpleFormatter formatter = new SimpleFormatter();
+			fh.setFormatter(formatter);
+		} catch (SecurityException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	private void addUpdateKeywords() {
@@ -65,6 +96,22 @@ public class ArgParser {
 		return removeFirstWord(message);
 	}
 
+	public boolean containsId(String arguments) {
+		String[] splited = arguments.split("\\W");
+		for (int i = 0; i < splited.length; i++) {
+			if (splited[i].equalsIgnoreCase("id")){
+			return true;
+			}
+		}
+		return false;
+	}
+	
+	public int getIdToSearch(String arguments){
+		String[] splited = arguments.split("\\W");
+		int id = getId(splited[1]);
+		return id;
+	}
+
 	public int getId(String arguments) {
 		return Integer.parseInt(getFirstWord(arguments));
 	}
@@ -78,12 +125,18 @@ public class ArgParser {
 	// from <start date> at <start time> to <end date> at <end time>
 	public String getEventStartDate(String arguments) {
 		String[] parameters1 = arguments.split("from");
+		if (parameters1.length == 0) {
+			log.info("Parse Error. Cannot split date.");
+		}
 		String[] parameters2 = parameters1[1].trim().split("at");
 		return parameters2[0].trim();
 	}
 
 	public String getEventStartTime(String arguments) {
 		String[] parameters1 = arguments.split("at");
+		if (parameters1.length == 0) {
+
+		}
 		String[] parameters2 = parameters1[1].trim().split("to");
 		return parameters2[0].trim();
 	}
@@ -148,16 +201,16 @@ public class ArgParser {
 				}
 			}
 		} else {
-			
+
 			String[] split = arguments.split(":");
-			
-			if(split.length == 3){
+
+			if (split.length == 3) {
 				String timeString = split[1] + ":" + split[2];
 				newValues.add(timeString);
-			}else{
+			} else {
 				newValues.add(split[1]);
 			}
-			
+
 		}
 
 		return newValues; // DONE
@@ -165,13 +218,13 @@ public class ArgParser {
 
 	private String removeFirstWord(String message) {
 		String[] split = message.split(" ");
-		
+
 		String returnMessage = "";
-		
-		for(int i = 1; i < split.length; i++){
+
+		for (int i = 1; i < split.length; i++) {
 			returnMessage += split[i] + " ";
 		}
-		
+
 		returnMessage = returnMessage.trim();
 		return returnMessage;
 	}

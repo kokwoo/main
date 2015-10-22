@@ -24,6 +24,7 @@ public class RequestHandler {
 	private final String CMD_EXIT = "EXIT";
 	private final String CMD_HELP = "help";
 	private final String CMD_MANUAL = "manual";
+	private final String CMD_SEARCH = "search";
 
 	private final String[] VALID_COMMANDS = { CMD_ADD, CMD_REMOVE, CMD_EXIT, CMD_UPDATE };
 
@@ -34,6 +35,7 @@ public class RequestHandler {
 	private final String ARG_TASKS = "tasks";
 	private final String ARG_UNDONE_TASKS = "undone tasks";
 	private final String ARG_MISSED_TASKS = "missed tasks";
+	// private final String ARG_SEARCH = "search";
 
 	// display based on days
 	private final String ARG_TODAY = "today";
@@ -41,24 +43,34 @@ public class RequestHandler {
 
 	// such args list out all the events and tasks
 	private final String ARGS_ALL = "all";
-	
+
+	private final String MSG_SEARCH_RESULTS = "These are your search results";
+	private final String MSG_NO_SEARCH_RESULTS = "We are unable to match any of your search";
+
 	Logger logger;
 	FileHandler fh;
 
 	public RequestHandler(String fileName) {
 		parser = new ArgParser();
 		calendar = new Calendar(fileName);
+<<<<<<< HEAD
 		
 		assert parser != null;
 		assert calendar != null;
 		
+=======
+
+		assert parser != null;
+		assert calendar != null;
+
+>>>>>>> 7342fd778a5e1738d670b54cc604485975b0d2ef
 		// This block configure the logger with handler and formatter
 		try {
 			logger = Logger.getLogger("TempoLog");
-			
-			fh = new FileHandler("TempoLog.log",true);
+
+			fh = new FileHandler("TempoLog.log", true);
 			logger.addHandler(fh);
-			
+
 			SimpleFormatter formatter = new SimpleFormatter();
 			fh.setFormatter(formatter);
 		} catch (SecurityException e) {
@@ -75,7 +87,7 @@ public class RequestHandler {
 		do {
 			Scanner sc = new Scanner(System.in);
 			String nextCommand = sc.nextLine();
-			
+
 			assert !nextCommand.equals("");
 			logger.info("User Entered: " + nextCommand);
 
@@ -114,6 +126,9 @@ public class RequestHandler {
 		case CMD_DISPLAY:
 			display(command, arguments);
 			break;
+		case CMD_SEARCH:
+			search(arguments);
+			break;
 		case CMD_EXIT:
 			exit();
 			break;
@@ -121,6 +136,37 @@ public class RequestHandler {
 			display(command, arguments);
 			break;
 		// exit();
+		}
+	}
+
+	private void search(String argument) {
+		ArrayList<String> wordFoundLines = new ArrayList<String>();
+		ArrayList<String> idFoundLines = new ArrayList<String>();
+		if(parser.containsId(argument)){
+			int id = parser.getIdToSearch(argument);
+			idFoundLines = calendar.searchId(id);
+			printSearchResults(idFoundLines);
+			return;
+		}
+		
+		else{
+		String keyword = argument;
+		wordFoundLines = calendar.searchKeyWord(keyword);
+		printSearchResults(wordFoundLines);
+		}
+	}
+
+	private void printSearchResults(ArrayList<String> foundLines) {
+
+		if (foundLines.isEmpty()) {
+			System.out.println(MSG_NO_SEARCH_RESULTS);
+		}
+
+		else {
+			System.out.println(MSG_SEARCH_RESULTS);
+			for (int i = 0; i < foundLines.size(); i++) {
+				System.out.println(foundLines.get(i));
+			}
 		}
 	}
 
@@ -181,18 +227,17 @@ public class RequestHandler {
 			display.tasks();
 			break;
 		case (ARG_UPCOMING_EVENTS):
-			try {
-				display.upcomingEvents();
-			} catch (ParseException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			display.upcomingEvents();
 			break;
 		case (ARG_UNDONE_TASKS):
 			display.undoneTasks();
 			break;
 		case (ARG_MISSED_TASKS):
 			display.missedTasks();
+			break;
+		// case (ARG_SEARCH):
+		// display.search();
+		// break;
 		case (ARG_TODAY):
 			try {
 				display.today();
