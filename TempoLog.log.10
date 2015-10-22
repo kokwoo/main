@@ -1,0 +1,32 @@
+Oct 22, 2015 11:17:25 PM Tempo.RequestHandler readNextCommand
+INFO: User Entered: add task buy welfare pack
+Oct 22, 2015 11:17:27 PM Tempo.RequestHandler readNextCommand
+INFO: User Entered: display all
+Oct 22, 2015 11:17:36 PM Tempo.RequestHandler readNextCommand
+INFO: User Entered: add task buy food due 31/10/2015
+Oct 22, 2015 11:17:38 PM Tempo.RequestHandler readNextCommand
+INFO: User Entered: display all
+Oct 22, 2015 11:17:42 PM Tempo.RequestHandler readNextCommand
+INFO: User Entered: undo
+Oct 22, 2015 11:17:44 PM Tempo.RequestHandler readNextCommand
+INFO: User Entered: display all
+Oct 22, 2015 11:17:48 PM Tempo.RequestHandler readNextCommand
+INFO: User Entered: remove 0
+Oct 22, 2015 11:17:50 PM Tempo.RequestHandler readNextCommand
+INFO: User Entered: display all
+Oct 22, 2015 11:17:52 PM Tempo.RequestHandler readNextCommand
+INFO: User Entered: undo
+Oct 22, 2015 11:17:53 PM Tempo.RequestHandler readNextCommand
+INFO: User Entered: display all
+Oct 22, 2015 11:18:01 PM Tempo.RequestHandler readNextCommand
+INFO: User Entered: update 0 name:shopping
+Oct 22, 2015 11:20:31 PM Tempo.RequestHandler readNextCommand
+INFO: User Entered: display all
+Oct 22, 2015 11:20:37 PM Tempo.RequestHandler readNextCommand
+INFO: User Entered: update 0 name:shopping
+Oct 22, 2015 11:20:40 PM Tempo.RequestHandler readNextCommand
+INFO: User Entered: display all
+Oct 22, 2015 11:20:42 PM Tempo.RequestHandler readNextCommand
+INFO: User Entered: undo
+Oct 22, 2015 11:20:44 PM Tempo.RequestHandler readNextCommand
+INFO: User Entered: display all

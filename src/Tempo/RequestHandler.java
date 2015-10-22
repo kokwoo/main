@@ -25,6 +25,7 @@ public class RequestHandler {
 	private final String CMD_HELP = "help";
 	private final String CMD_MANUAL = "manual";
 	private final String CMD_SEARCH = "search";
+	private final String CMD_UNDO = "undo";
 
 	private final String[] VALID_COMMANDS = { CMD_ADD, CMD_REMOVE, CMD_EXIT, CMD_UPDATE };
 
@@ -53,6 +54,7 @@ public class RequestHandler {
 	public RequestHandler(String fileName) {
 		parser = new ArgParser();
 		calendar = new Calendar(fileName);
+
 
 		assert parser != null;
 		assert calendar != null;
@@ -122,6 +124,9 @@ public class RequestHandler {
 		case CMD_SEARCH:
 			search(arguments);
 			break;
+		case CMD_UNDO:
+			undo(arguments);
+			break;
 		case CMD_EXIT:
 			exit();
 			break;
@@ -163,6 +168,14 @@ public class RequestHandler {
 		}
 	}
 
+	private void undo(String arguments) {
+		if (!arguments.equals("")) {
+			// error handling TODO:
+		}
+		
+		calendar.undo();
+	}
+	
 	// WORKING
 	private void add(String arguments) {
 		if (parser.isEvent(arguments)) {

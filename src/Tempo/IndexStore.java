@@ -83,6 +83,16 @@ public class IndexStore {
 		recycledId.add(index);
 	}
 	
+	public void replaceEvent(int index, Event event) {
+		removeEvent(index);
+		addEvent(index, event);
+	}
+	
+	public void replaceTask(int index, FloatingTask task) {
+		removeTask(index);
+		addTask(index, task);
+	}
+	
 	public int getNewId() {
 		int id;
 		if (recycledId.isEmpty()) {
