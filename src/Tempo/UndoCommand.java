@@ -3,14 +3,14 @@ package Tempo;
 import java.util.ArrayList;
 
 public class UndoCommand implements Command{
-	private Calendar calendar;
+	private Calendar cal;
 	
-	public UndoCommand(Calendar calendar){
-		this.calendar  = calendar;
+	public UndoCommand(Calendar cal){
+		this.cal  = cal;
 	}
 
 	public ArrayList<String> execute() {
-		return calendar.undo();
+		return cal.undo();
 	}
 	
 }
