@@ -75,7 +75,7 @@ public class CommandParser {
 			case COMMAND_UPDATE :
 			case COMMAND_EDIT :
 			case COMMAND_CHANGE :
-				return null;
+				return processUpdateCommand(arguments);
 
 			// Mark as Done Function
 			case COMMAND_DONE :
@@ -254,6 +254,22 @@ public class CommandParser {
 			//DISPLAY ERROR MESSAGE (TO-DO)
 			return null;
 		}
+	}
+	
+	private Command processUpdateCommand(String arguments){
+		int idx = getId(getFirstWord(arguments));
+		
+		ArrayList<String> fields = getFieldsList(arguments);
+		ArrayList<String> newValues = getNewValuesList(arguments);
+		
+		if(idx != -1){
+			Command command = new UpdateCommand(calendar, indexStore, idx, fields, newValues);
+			return command;
+		}else{
+			//DISPLAY ERROR MESSAGE
+			return null;
+		}
+		
 	}
 	
 	private Command processUndoCommand(){
