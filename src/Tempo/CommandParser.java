@@ -399,7 +399,7 @@ public class CommandParser {
 		// }
 
 		String commandString1 = "add event Dinner with mum from today 9pm to tomorrow 10pm";
-		String commandString2 = "add event eat from 23/08/1999 at 19:00 to 23/08/1999 at 20:00";
+		String commandString2 = "add event eat from";
 		String commandString3 = "add task cs2103 Assignment due 23.09.2015";
 		String commandString4 = "add task lalalalalala";
 		String commandString5 = "remove aaaa";
