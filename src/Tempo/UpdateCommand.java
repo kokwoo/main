@@ -5,6 +5,8 @@ import java.util.*;
 public class UpdateCommand implements Command {
 	private static Calendar cal;
 	private static IndexStore indexStore;
+	
+	private static final String MSG_INVALID_ID = "Index provided is invalid!";
 	private int idx;
 	private ArrayList<String> fields;
 	private ArrayList<String> newValues;
@@ -23,9 +25,17 @@ public class UpdateCommand implements Command {
 			return cal.updateEvent(idx, fields, newValues);
 		} else if (isFloatingTask()) {
 			return cal.updateFloatingTask(idx, fields, newValues);
-		} else {
+		} else if (isTask()){
 			return cal.updateTask(idx, fields, newValues);
+		} else {
+			return handleInvalidUpdate();
 		}
+	}
+	
+	private ArrayList<String> handleInvalidUpdate() {
+		ArrayList<String> feedback = new ArrayList<String>();
+		feedback.add(MSG_INVALID_ID);
+		return feedback;
 	}
 	
 	private boolean isEvent() {
@@ -36,4 +46,8 @@ public class UpdateCommand implements Command {
 		return indexStore.isFloatingTask(idx);
 	}
 	
+	private boolean isTask() {
+		return indexStore.isTask(idx);
+	}
+		
 }

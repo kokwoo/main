@@ -110,20 +110,16 @@ public class IndexStore {
 	}
 	
 	public boolean isEvent(int id) {
-		if (events.containsKey(id)) {
-			return true;
-		} else {
-			return false;
-		}
+		return events.containsKey(id);
 	}
 	
 	public boolean isFloatingTask(int id) {
 		FloatingTask task = getTaskById(id);
-		if (task.isFloatingTask()) {
-			return true;
-		} else {
-			return false;
-		}
+		return task.isFloatingTask();
+	}
+	
+	public boolean isTask(int id) {
+		return (!isEvent(id) && !isFloatingTask(id));
 	}
 	
 	public Event getEventById(int id) {
