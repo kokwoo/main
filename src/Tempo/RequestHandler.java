@@ -53,7 +53,8 @@ public class RequestHandler {
 
 	public RequestHandler(String fileName) {
 		parser = new ArgParser();
-		calendar = new Calendar(fileName);
+		calendar = Calendar.getInstance();
+		calendar.createFile(fileName);
 
 
 	/*	assert parser != null;

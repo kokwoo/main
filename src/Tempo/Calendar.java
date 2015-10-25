@@ -5,6 +5,8 @@ import java.text.ParseException;
 import java.util.*;
 
 public class Calendar {
+	
+	private static Calendar instance = new Calendar();
 
 	private String _fileName;
 
@@ -35,21 +37,25 @@ public class Calendar {
 	// floatingTasksList = new ArrayList<FloatingTask>();
 	// }
 
-	public Calendar(String fileName) {
-		_fileName = fileName;
+	private Calendar() {
 		eventsList = new ArrayList<Event>();
 		tasksList = new ArrayList<Task>();
 		floatingTasksList = new ArrayList<FloatingTask>();
-
+		indexStore = new IndexStore(eventsList, tasksList, floatingTasksList);
+	}
+	
+	public static Calendar getInstance() {
+		return instance;
+	}
+	
+	public void createFile(String fileName) {
+		_fileName = fileName;
 		File file = new File(_fileName);
-
 		// if the file exists, import the existing data from file
 		// else ignore
 		if (file.exists()) {
 			importFromFile();
 		}
-
-		indexStore = new IndexStore(eventsList, tasksList, floatingTasksList);
 	}
 
 	public void undo() {
@@ -160,9 +166,9 @@ public class Calendar {
 		exportToFile();
 	}
 
-	public void addEvent(String name, String startDate, String startTime, String endDate, String endTime) {
+	public void addEvent(String name, String start, String end) {
 		int newEventIndex = indexStore.getNewId();
-		Event newEvent = new Event(newEventIndex, name, startDate, startTime, endDate, endTime);
+		Event newEvent = new Event(newEventIndex, name, start, end);
 		eventsList.add(newEvent);
 		indexStore.addEvent(newEventIndex, newEvent);
 		Collections.sort(eventsList);
