@@ -9,6 +9,34 @@ import com.joestelmach.natty.*;
 public class CommandParser {
 	private static CommandParser instance = new CommandParser();
 	
+	private static final String COMMAND_ADD = "add";
+	private static final String COMMAND_CREATE = "create";
+	private static final String COMMAND_NEW = "new";
+	
+	private static final String COMMAND_REMOVE = "remove";
+	private static final String COMMAND_DELETE = "delete";
+	private static final String COMMAND_CANCEL = "cancel";
+	
+	private static final String COMMAND_UPDATE = "update";
+	private static final String COMMAND_EDIT = "edit";
+	private static final String COMMAND_CHANGE = "change";
+	
+	private static final String COMMAND_DONE = "done";
+	private static final String COMMAND_COMPLETED = "completed";
+	private static final String COMMAND_FINISHED = "finished";
+	
+	private static final String COMMAND_VIEW = "view";
+	private static final String COMMAND_DISPLAY = "display";
+	
+	private static final String COMMAND_SEARCH = "search";
+	private static final String COMMAND_FIND = "find";
+	
+	private static final String COMMAND_UNDO = "undo";
+	
+	private static final String COMMAND_HELP = "help";
+	
+	private static final String COMMAND_EXIT = "exit";
+	
 	private Calendar calendar = Calendar.getInstance();
 	private IndexStore indexStore = IndexStore.getInstance();
 	private Display display = Display.getInstance();
@@ -32,49 +60,49 @@ public class CommandParser {
 		// process add, process update, process remove
 		switch (commandType.toLowerCase()) {
 			// Add Function
-			case "add" :
-			case "create" :
-			case "new" :
+			case COMMAND_ADD :
+			case COMMAND_CREATE :
+			case COMMAND_NEW :
 				return processAddCommand(arguments);
 
 			// Remove Function
-			case "delete" :
-			case "remove" :
-			case "cancel" :
+			case COMMAND_REMOVE :
+			case COMMAND_DELETE :
+			case COMMAND_CANCEL :
 				 return processRemoveCommand(arguments); 
 
 			// Update Function
-			case "update" :
-			case "edit" :
-			case "change" :
+			case COMMAND_UPDATE :
+			case COMMAND_EDIT :
+			case COMMAND_CHANGE :
 				return null;
 
 			// Mark as Done Function
-			case "done" :
-			case "finished" :
-			case "completed" :
+			case COMMAND_DONE :
+			case COMMAND_FINISHED :
+			case COMMAND_COMPLETED :
 				return null;
 
 			// Display Function
-			case "view" :
-			case "display" :
+			case COMMAND_VIEW :
+			case COMMAND_DISPLAY :
 				return null;
 
 			// Search Function
-			case "search" :
-			case "find" :
+			case COMMAND_SEARCH :
+			case COMMAND_FIND :
 				return null;
 			
 			// Undo Function
-			case "undo":
+			case COMMAND_UNDO:
 				return processUndoCommand();
 			
 			// Display help/manual
-			case "help":
+			case COMMAND_HELP:
 				return null;
 				
 			// Exit command	
-			case "exit":
+			case COMMAND_EXIT:
 				return processExitCommand();
 
 			// Generate Error Command Message
@@ -102,11 +130,11 @@ public class CommandParser {
 		
 		Command command;
 		
-		if(addType.equalsIgnoreCase("event")){
+		if(addType.equalsIgnoreCase("event")) {
 			args = processAddEventCommand(argumentString);
-		}else if (addType.equalsIgnoreCase("task")){
+		} else if (addType.equalsIgnoreCase("task")) {
 			args = processAddTaskCommand(argumentString);
-		}else{
+		} else {
 			//TO-DO DISPLAY ERROR HERE
 		}
 		
