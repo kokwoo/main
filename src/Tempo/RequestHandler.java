@@ -48,15 +48,15 @@ public class RequestHandler {
 	private final String MSG_SEARCH_RESULTS = "These are your search results";
 	private final String MSG_NO_SEARCH_RESULTS = "We are unable to match any of your search";
 
-	Logger logger;
-	FileHandler fh;
+	//Logger logger;
+	//FileHandler fh;
 
 	public RequestHandler(String fileName) {
 		parser = new ArgParser();
 		calendar = new Calendar(fileName);
 
 
-		assert parser != null;
+	/*	assert parser != null;
 		assert calendar != null;
 
 		// This block configure the logger with handler and formatter
@@ -74,7 +74,7 @@ public class RequestHandler {
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		}*/
 	}
 
 	public String readNextCommand() {
@@ -84,7 +84,7 @@ public class RequestHandler {
 			String nextCommand = sc.nextLine();
 
 			assert !nextCommand.equals("");
-			logger.info("User Entered: " + nextCommand);
+			//logger.info("User Entered: " + nextCommand);
 
 			if (nextCommand.equals("exit")) {
 				sc.close();
