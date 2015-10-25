@@ -3,7 +3,7 @@ package Tempo;
 import java.util.*;
 
 public class AddCommand implements Command {
-	private static Calendar cal;
+	private Calendar cal;
 	private ArrayList<String> params;
 	
 	private static final int LENGTH_ADD_EVENT_PARAMS = 3;
@@ -21,8 +21,11 @@ public class AddCommand implements Command {
 			return addEvent();
 		} else if (params.size() == LENGTH_ADD_TASK_PARAMS) {
 			return addTask();
-		} else {
+		} else if (params.size() == LENGTH_ADD_FLOATING_TASK_PARAMS){
 			return addFloatingTask();		
+		}else{
+			//This shouldn't happen
+			return null;
 		}
 	}
 	
