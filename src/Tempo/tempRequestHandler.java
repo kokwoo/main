@@ -3,7 +3,7 @@ package Tempo;
 import java.util.*;
 
 public class tempRequestHandler {
-	private static tempRequestHandler theOne = new tempRequestHandler();
+	private static tempRequestHandler instance = new tempRequestHandler();
 	
 	private CommandParser parser;
 	private Calendar calendar;
@@ -14,7 +14,7 @@ public class tempRequestHandler {
 	}
 	
 	public static tempRequestHandler getInstance(){
-		return theOne;
+		return instance;
 	}
 	
 	public ArrayList<String> processCommand(String commandString){
