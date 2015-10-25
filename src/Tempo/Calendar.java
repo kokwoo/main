@@ -16,19 +16,22 @@ public class Calendar {
 	private static final String MSG_UPDATED_EVENT = "Your event has been updated.";
 	private static final String MSG_UPDATED_TASK = "Your task has been updated.";
 	private static final String MSG_UNDO_UPDATE = "Your updates have been reverted.";
-	private static final String MSG_UNDO_INVALID = "Your previous operation cannot be undone.";
+	private static final String MSG_UNDO_INVALID = "Error: Cannot undo previous operation.";
 	
 	private static final String COMMAND_ADD = "add";
 	private static final String COMMAND_REMOVE = "remove";
 	private static final String COMMAND_UPDATE = "update";
+	private static final String COMMAND_INVALID_UNDO = "invalid undo";
+	
+	private static final int INDEX_INVALID;
 
 	private String _fileName;
 
-	private int prevModIndex = -1;
+	private int prevModIndex = INDEX_INVALID;
 	private Event prevModEvent = null;
 	private Task prevModTask = null;
 	private FloatingTask prevModFloatingTask = null;
-	private String prevCommand = "disabled";
+	private String prevCommand = COMMAND_INVALID_UNDO;
 
 	private ArrayList<Event> eventsList;
 	private ArrayList<Task> tasksList;
@@ -216,7 +219,7 @@ public class Calendar {
 		Task taskToUpdate = tasksList.get(arrayListIndex);
 		Task originalTask = taskToUpdate;
 
-		savePrevCmd(idx, null, originalTask, null, UPDATE_TASK);
+		savePrevCmd(idx, null, originalTask, null, COMMAND_UPDATE);
 
 		for (int i = 0; i < fields.size(); i++) {
 			taskToUpdate.update(fields.get(i), newValues.get(i));
@@ -273,8 +276,8 @@ public class Calendar {
 	}
 
 	private void disableUndo() {
-		prevModIndex = -1;
-		prevCommand = "disabled";
+		prevModIndex = INDEX_INVALID;
+		prevCommand = COMMAND_INVALID_UNDO;
 		prevModEvent = null;
 		prevModTask = null;
 		prevModFloatingTask = null;

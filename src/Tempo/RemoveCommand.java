@@ -3,38 +3,45 @@ package Tempo;
 import java.util.*;
 
 public class RemoveCommand implements Command {
-	private Calendar calendar;
+	private Calendar cal;
 	private IndexStore indexStore;
 	private int idx;
 	
-	private final String DISPLAY_ERROR = "Error: The display command entered is invalid!";
+	private static final String MSG_INVALID_ID = "Error: Index provided is invalid!";
 	
-	public RemoveCommand(Calendar calendar, IndexStore indexStore, int idx) {
-		this.calendar = calendar;
+	public RemoveCommand(Calendar cal, IndexStore indexStore, int idx) {
+		this.cal = cal;
 		this.indexStore = indexStore;
 		this.idx = idx;
 	}
 	
 	public ArrayList<String> execute(){
-		if(idx != -1){
-			if (isEvent(idx)) {
-				return calendar.removeEvent(idx);
-			} else if (isFloatingTask(idx)) {
-				return calendar.removeFloatingTask(idx);
-			} else {
-				return calendar.removeTask(idx);
-			}
-		}else{
-			ArrayList<String> returnArray = new ArrayList<String>();
-			
+		if (isEvent()) {
+			return cal.removeEvent(idx);
+		} else if (isFloatingTask()) {
+			return cal.removeFloatingTask(idx);
+		} else if (isTask()) {
+			return cal.removeTask(idx);
+		} else {
+			return handleInvalidRemove();
 		}
 	}
 	
-	private boolean isEvent(int idx){
+	private ArrayList<String> handleInvalidRemove() {
+		ArrayList<String> feedback = new ArrayList<String>();
+		feedback.add(MSG_INVALID_ID);
+		return feedback;
+	}
+	
+	private boolean isEvent(){
 		return indexStore.isEvent(idx);
 	}
 	
-	private boolean isFloatingTask(int idx){
+	private boolean isFloatingTask(){
 		return indexStore.isFloatingTask(idx);
+	}
+
+	private boolean isTask() {
+		return indexStore.isTask(idx);
 	}
 }
