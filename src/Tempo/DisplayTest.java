@@ -24,7 +24,7 @@ public class DisplayTest {
 		events.add(newEvent2);
 		events.add(newEvent3);
 		
-		Task newTask = new Task(1, "Cs2103 display", "07/10/2015");
+	/*	Task newTask = new Task(1, "Cs2103 display", "07/10/2015");
 	//	Task newTask1 = new Task("Cs2103 display", "10/06/2015");
 		Task newTask2 = new Task(1, "Cs2103 display", "10/11/2015");
 	//	Task newTask3 = new Task("Cs2103 display", "10/06/2015");
@@ -41,7 +41,7 @@ public class DisplayTest {
 		floatingTasks.add(newFT);
 	//	floatingTasks.add(newFT1);
 	//	floatingTasks.add(newFT2);
-		
+	*/	
 		
 	/*	
 	 * CurrentDateAndTime date = new CurrentDateAndTime();
@@ -58,7 +58,7 @@ public class DisplayTest {
 		//dp.events();
 		//dp.tasks();
 		//dp.undoneTasks();
-		dp.today();
+		//dp.today();
 		//dp.upcomingEvents();		
 		
 	//	CurrentDateAndTime date = new CurrentDateAndTime();
