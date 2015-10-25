@@ -3,21 +3,25 @@ package Tempo;
 import java.util.*;
 
 public class IndexStore {
+	private static IndexStore instance = new IndexStore();
+	
 	private static int nextUnusedId;
 	private static LinkedList<Integer> recycledId;
 	public static HashMap<Integer, Event> events;
 	public static HashMap<Integer, FloatingTask> tasks;
 	
-	public IndexStore(ArrayList<Event> eventsList, ArrayList<Task> tasksList, 
-					  ArrayList<FloatingTask> floatingTasksList) {
+	private IndexStore() {
 		nextUnusedId = 0;
 		recycledId = new LinkedList<Integer>();
 		events = new HashMap<Integer, Event>();
 		tasks = new HashMap<Integer, FloatingTask>();
-		initialiseStore(eventsList, tasksList, floatingTasksList);
 	}
 	
-	private void initialiseStore(ArrayList<Event> eventsList, ArrayList<Task> tasksList, 
+	public static IndexStore getInstance() {
+		return instance;
+	}
+		
+	public void initialiseStore(ArrayList<Event> eventsList, ArrayList<Task> tasksList, 
 			  					ArrayList<FloatingTask> floatingTasksList) {
 		initialiseEventsMap(eventsList);
 		initialiseTasksMap(tasksList, floatingTasksList);
