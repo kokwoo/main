@@ -3,7 +3,6 @@ package Tempo;
 import java.util.*;
 
 public class AddCommand implements Command {
-	
 	private static Calendar cal;
 	private ArrayList<String> params;
 	

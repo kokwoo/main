@@ -1,5 +1,8 @@
 package Tempo;
 
-public interface Command {
-	   void execute();
+import java.util.*;
+
+
+public interface Command {	   
+	   ArrayList<String> execute();
 }
