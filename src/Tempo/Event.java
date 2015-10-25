@@ -150,7 +150,7 @@ public class Event implements Comparable<Event>{
 	}
 	
 	public String toString(){
-		return getIndex() + DELIMETER + getName() + getStartDate() + DELIMETER2 + getStartTime() + DELIMETER + getEndDate()+ DELIMETER2 +getEndDate(); 
+		return getIndex() + DELIMETER + getName() + DELIMETER + getStartDate() + DELIMETER2 + getStartTime() + DELIMETER + getEndDate()+ DELIMETER2 +getEndTime(); 
 	}
 	
 //	public boolean clashesWith(Event e){
