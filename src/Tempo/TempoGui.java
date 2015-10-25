@@ -70,7 +70,7 @@ public class TempoGui extends Application{
 	    			refreshCalander(fname);
 	    			clear();
 	    			initTree(calendar,eventTree,floatingTaskTree,taskTree,fname);
-	    			tree.refresh();
+	    			//tree.refresh();
 	    			
 
 	                
