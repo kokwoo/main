@@ -16,44 +16,44 @@ public class RequestHandler {
 
 	// private final String MSG_CMD_NOT_VALID = "Why don't you try entering an
 	// actual command?";
-	private final String MSG_ARG_NOT_VALID = "Invalid command! Please refer to help";
-	private final String CMD_ADD = "add";
-	private final String CMD_REMOVE = "remove";
-	private final String CMD_UPDATE = "update";
-	private final String CMD_DISPLAY = "display";
-	private final String CMD_EXIT = "EXIT";
-	private final String CMD_HELP = "help";
-	private final String CMD_MANUAL = "manual";
-	private final String CMD_SEARCH = "search";
-	private final String CMD_UNDO = "undo";
+	private static final String MSG_ARG_NOT_VALID = "Invalid command! Please refer to help";
+	private static final String CMD_ADD = "add";
+	private static final String CMD_REMOVE = "remove";
+	private static final String CMD_UPDATE = "update";
+	private static final String CMD_DISPLAY = "display";
+	private static final String CMD_EXIT = "EXIT";
+	private static final String CMD_HELP = "help";
+	private static final String CMD_MANUAL = "manual";
+	private static final String CMD_SEARCH = "search";
+	private static final String CMD_UNDO = "undo";
 
-	private final String[] VALID_COMMANDS = { CMD_ADD, CMD_REMOVE, CMD_EXIT, CMD_UPDATE };
+	private static final String[] VALID_COMMANDS = { CMD_ADD, CMD_REMOVE, CMD_EXIT, CMD_UPDATE };
 
 	// display args
-	private final String ARG_MANUAL = "manual";
-	private final String ARG_EVENTS = "events";
-	private final String ARG_UPCOMING_EVENTS = "upcoming events";
-	private final String ARG_TASKS = "tasks";
-	private final String ARG_UNDONE_TASKS = "undone tasks";
-	private final String ARG_MISSED_TASKS = "missed tasks";
-	// private final String ARG_SEARCH = "search";
+	private static final String ARG_MANUAL = "manual";
+	private static final String ARG_EVENTS = "events";
+	private static final String ARG_UPCOMING_EVENTS = "upcoming events";
+	private static final String ARG_TASKS = "tasks";
+	private static final String ARG_UNDONE_TASKS = "undone tasks";
+	private static final String ARG_MISSED_TASKS = "missed tasks";
 
 	// display based on days
-	private final String ARG_TODAY = "today";
+	private static final String ARG_TODAY = "today";
 	// private final String ARG_WEEK = "week";
 
 	// such args list out all the events and tasks
-	private final String ARGS_ALL = "all";
+	private static final String ARGS_ALL = "all";
 
-	private final String MSG_SEARCH_RESULTS = "These are your search results";
-	private final String MSG_NO_SEARCH_RESULTS = "We are unable to match any of your search";
+	private static final String MSG_SEARCH_RESULTS = "These are your search results";
+	private static final String MSG_NO_SEARCH_RESULTS = "We are unable to match any of your search";
 
 	//Logger logger;
 	//FileHandler fh;
 
 	public RequestHandler(String fileName) {
 		parser = new ArgParser();
-		calendar = new Calendar(fileName);
+		calendar = Calendar.getInstance();
+		calendar.createFile(fileName);
 
 
 	/*	assert parser != null;

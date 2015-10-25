@@ -4,71 +4,76 @@ import java.text.*;
 import java.util.*;
 
 public class Event implements Comparable<Event>{
-	protected String _name;
-	protected Date _startDateTime;
-	protected Date _endDateTime;
-	protected int _index;
+	protected String name;
+	protected Date startDateTime;
+	protected Date endDateTime;
+	protected int index;
 	
 	private static final String DELIMETER = "!!";
+	private static final String PARAM_NAME = "name";
+	private static final String PARAM_START_DATE = "start date";
+	private static final String PARAM_START_TIME = "start time";
+	private static final String PARAM_END_DATE = "end date";
+	private static final String PARAM_END_TIME = "end time";
+	
 	private SimpleDateFormat dateFormatter = new SimpleDateFormat("dd/MM/yyyy/HH:mm");
 
 	
-	public Event(int index, String name, String startDate, String startTime, String endDate, String endTime){
-		_index = index;
-		_name = name;		
-		setStartDateTime(startDate, startTime);
-		setEndDateTime(endDate, endTime);
+	public Event(int index, String name, String start, String end){
+		this.index = index;
+		this.name = name;		
+		setStartDateTime(start);
+		setEndDateTime(end);
 	}
 	
 	public void update(String field, String newValue) {
 		switch(field) {
-			case "name": 
+			case PARAM_NAME: 
 				setName(newValue);
 				break;
-			case "start date":
+			case PARAM_START_DATE:
 				setStartDate(newValue);
 				break;
-			case "start time":
+			case PARAM_START_TIME:
 				setStartTime(newValue);
 				break;
-			case "end date":
+			case PARAM_END_DATE:
 				setEndDate(newValue);
 				break;
-			case "end time":
+			case PARAM_END_TIME:
 				setEndTime(newValue);
 				break;
 		}
 	}
 	
 	private void setName(String newName) {
-		_name = newName;
+		this.name = newName;
 	}
 	
-	private void setStartDateTime(String startDate, String startTime) {
-		String startDateTimeString = startDate + "/" + startTime;
-		
+	private void setStartDateTime(String start) {
 		try {
-			_startDateTime = dateFormatter.parse(startDateTimeString);
+			startDateTime = dateFormatter.parse(start);
 		} catch (ParseException e) {
 			System.out.println("Unable to format Start Date/Time!");
 		}
 	}
 	
+	
 	private void setStartDate(String newStartDate) {
 		String startTime = getStartTime();
-		setStartDateTime(newStartDate, startTime);
+		String newStartDateTime = newStartDate + "/" + startTime;
+		setStartDateTime(newStartDateTime);
 	}
 	
 	private void setStartTime(String newStartTime) {
 		String startDate = getStartDate();
-		setStartDateTime(startDate, newStartTime);
+		String newStartDateTime = startDate + "/" + newStartTime;
+		setStartDateTime(newStartDateTime);
 	}
 	
-	private void setEndDateTime(String endDate, String endTime) {
-		String endDateTimeString = endDate + "/" + endTime;
-		
+	private void setEndDateTime(String end) {
 		try {
-			_endDateTime = dateFormatter.parse(endDateTimeString);
+			endDateTime = dateFormatter.parse(end);
 		} catch (ParseException e) {
 			System.out.println("Unable to format End Date/Time!");
 		}
@@ -76,58 +81,60 @@ public class Event implements Comparable<Event>{
 	
 	private void setEndDate(String newEndDate) {
 		String endTime = getEndTime();
-		setEndDateTime(newEndDate, endTime);
+		String newEndDateTime = newEndDate + "/" + endTime;
+		setEndDateTime(newEndDateTime);
 	}
 	
 	private void setEndTime(String newEndTime) {
 		String endDate = getEndDate();
-		setEndDateTime(endDate, newEndTime);
+		String newEndDateTime = endDate + "/" + newEndTime;
+		setEndDateTime(newEndDateTime);
 	}
 	
 	public int getIndex() {
-		return _index;
+		return index;
 	}
 	
 	public String getName(){
-		return _name;
+		return name;
 	}
 	
 	public String getStartDate(){
 		SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-		return formatter.format(_startDateTime);
+		return formatter.format(startDateTime);
 	}
 	
 	public String getStartTime(){
 		SimpleDateFormat formatter = new SimpleDateFormat("HH:mm");
-		return formatter.format(_startDateTime);
+		return formatter.format(startDateTime);
 	}
 	
 	public String getStartDateTime(){
 		SimpleDateFormat formatter = new SimpleDateFormat("EEEE, dd/MM/yyyy HH:mm");
-		return formatter.format(_startDateTime);
+		return formatter.format(startDateTime);
 	}
 	
 	public String getEndDate(){
 		SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
-		return formatter.format(_endDateTime);
+		return formatter.format(endDateTime);
 	}
 	
 	public String getEndTime(){
 		SimpleDateFormat formatter = new SimpleDateFormat("HH:mm");
-		return formatter.format(_endDateTime);
+		return formatter.format(endDateTime);
 	}
 	
 	public String getEndDateTime(){
 		SimpleDateFormat formatter = new SimpleDateFormat("EEEE, dd/MM/yyyy HH:mm");
-		return formatter.format(_endDateTime);
+		return formatter.format(endDateTime);
 	}
 	
 	public long getStartTimeInMilli(){
-		return _startDateTime.getTime();
+		return startDateTime.getTime();
 	}
 	
 	public long getEndTimeInMilli(){
-		return _endDateTime.getTime();
+		return endDateTime.getTime();
 	}
 	
 	public int compareTo(Event e){
