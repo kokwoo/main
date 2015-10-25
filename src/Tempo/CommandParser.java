@@ -4,14 +4,14 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
-
 import com.joestelmach.natty.*;
 
 public class CommandParser {
 	private static CommandParser instance = new CommandParser();
-
-	private boolean errorBit;
+	
+	private CommandParser(){
+		
+	}
 
 	public static CommandParser getInstance() {
 		return instance;

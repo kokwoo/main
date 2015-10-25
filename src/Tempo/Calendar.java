@@ -7,41 +7,42 @@ import java.util.*;
 public class Calendar {
 	
 	private static Calendar instance = new Calendar();
+	private static IndexStore indexStore;
+	
+	private static final String MSG_ADDED_EVENT = "Event %1$s has been added.";
+	private static final String MSG_ADDED_TASK = "Task %1$s has been added.";
+	private static final String MSG_REMOVED_EVENT = "Event %1$s has been removed.";
+	private static final String MSG_REMOVED_TASK = "Task %1$s has been removed.";
+	private static final String MSG_UPDATED_EVENT = "Your event has been updated.";
+	private static final String MSG_UPDATED_TASK = "Your task has been updated.";
+	private static final String MSG_UNDO_UPDATE = "Your updates have been reverted.";
+	private static final String MSG_UNDO_INVALID = "Error: Cannot undo previous operation.";
+	
+	private static final String COMMAND_ADD = "add";
+	private static final String COMMAND_REMOVE = "remove";
+	private static final String COMMAND_UPDATE = "update";
+	private static final String COMMAND_INVALID_UNDO = "invalid undo";
+	
+	private static final int INDEX_INVALID;
 
 	private String _fileName;
 
-	private int prevModIndex = -1;
+	private int prevModIndex = INDEX_INVALID;
 	private Event prevModEvent = null;
 	private Task prevModTask = null;
 	private FloatingTask prevModFloatingTask = null;
-	private String prevCommand = "disabled";
+	private String prevCommand = COMMAND_INVALID_UNDO;
 
 	private ArrayList<Event> eventsList;
 	private ArrayList<Task> tasksList;
 	private ArrayList<FloatingTask> floatingTasksList;
 
-	private IndexStore indexStore;
-
-	// display arguments
-	private final String ARG_EVENTS = "events";
-	private final String ARG_UPCOMING_EVENTS = "upcoming events";
-	private final String ARG_TASKS = "tasks";
-	private final String ARG_UNDONE_TASKS = "undone tasks";
-	private final String ARG_MISSED_TASKS = "missed tasks";
-	private final String ARG_TODAY = "today";
-	private final String ARGS_ALL = "all";
-
-	// public Calendar() {
-	// eventsList = new ArrayList<Event>();
-	// tasksList = new ArrayList<Task>();
-	// floatingTasksList = new ArrayList<FloatingTask>();
-	// }
-
 	private Calendar() {
 		eventsList = new ArrayList<Event>();
 		tasksList = new ArrayList<Task>();
 		floatingTasksList = new ArrayList<FloatingTask>();
-		indexStore = new IndexStore(eventsList, tasksList, floatingTasksList);
+		indexStore = IndexStore.getInstance();
+		indexStore.initialiseStore(eventsList, tasksList, floatingTasksList);
 	}
 	
 	public static Calendar getInstance() {
@@ -51,122 +52,24 @@ public class Calendar {
 	public void createFile(String fileName) {
 		_fileName = fileName;
 		File file = new File(_fileName);
-		// if the file exists, import the existing data from file
-		// else ignore
 		if (file.exists()) {
 			importFromFile();
 		}
 	}
-
-	public void undo() {
-		switch (prevCommand) {
-		case "add":
-			undoAdd();
-			break;
-		case "remove":
-			undoRemove();
-			break;
-		case "update":
-			undoUpdate();
-			break;
-		default:
-			System.out.println("Undo cannot be used here.");
-			// should not display here
-		}
-
-		disableUndo();
+	
+	/***** ADD COMMAND EXECUTION ******/
+	
+	public ArrayList<String> addEvent(Event newEvent) {
+		eventsList.add(newEvent);
+		indexStore.addEvent(newEvent.getIndex(), newEvent);
+		Collections.sort(eventsList);	
+		
+		ArrayList<String> feedback = new ArrayList<String>();
+		feedback.add(String.format(MSG_ADDED_EVENT, newEvent.getName()));
+		return feedback;
 	}
-
-	public void disableUndo() {
-		prevModIndex = -1;
-		prevCommand = "disabled";
-		prevModEvent = null;
-		prevModTask = null;
-		prevModFloatingTask = null;
-	}
-
-	public void savePrevCmd(int index, Event event, Task task, FloatingTask floatingTask, String command) {
-		prevModIndex = index;
-		prevModEvent = event;
-		prevModTask = task;
-		prevModFloatingTask = floatingTask;
-		prevCommand = command;
-	}
-
-	public void undoAdd() {
-		remove(prevModIndex);
-		exportToFile();
-	}
-
-	public void undoRemove() {
-		if (prevModEvent != null) {
-			addBackEvent();
-		} else {
-			addBackTask();
-		}
-		exportToFile();
-	}
-
-	public void undoUpdate() {
-		if (prevModEvent != null) {
-			undoUpdateEvent();
-		} else if (prevModFloatingTask != null) {
-			undoUpdateFloatingTask();
-		} else {
-			undoUpdateTask();
-		}
-		exportToFile();
-	}
-
-	public void undoUpdateEvent() {
-		for (int i = 0; i < eventsList.size(); i++) {
-			if (eventsList.get(i).getIndex() == prevModIndex) {
-				eventsList.set(i, prevModEvent);
-				Collections.sort(eventsList);
-				indexStore.replaceEvent(prevModIndex, prevModEvent);
-			}
-		}
-	}
-
-	public void undoUpdateFloatingTask() {
-		for (int i = 0; i < floatingTasksList.size(); i++) {
-			if (floatingTasksList.get(i).getIndex() == prevModIndex) {
-				floatingTasksList.set(i, prevModFloatingTask);
-				indexStore.replaceTask(prevModIndex, prevModFloatingTask);
-			}
-		}
-	}
-
-	public void undoUpdateTask() {
-		for (int i = 0; i < tasksList.size(); i++) {
-			if (tasksList.get(i).getIndex() == prevModIndex) {
-				tasksList.set(i, prevModTask);
-				Collections.sort(tasksList);
-				indexStore.replaceTask(prevModIndex, prevModTask);
-			}
-		}
-	}
-
-	public void addBackEvent() {
-		eventsList.add(prevModEvent);
-		indexStore.addEvent(prevModIndex, prevModEvent);
-		Collections.sort(eventsList);
-		exportToFile();
-	}
-
-	public void addBackTask() {
-		if (prevModFloatingTask != null) {
-			floatingTasksList.add(prevModFloatingTask);
-		} else {
-			tasksList.add(prevModTask);
-			Collections.sort(tasksList);
-		}
-
-		indexStore.addTask(prevModIndex, prevModTask);
-		exportToFile();
-	}
-
-	public void addEvent(String name, String start, String end) {
+	
+	public ArrayList<String> addEvent(String name, String start, String end) {
 		int newEventIndex = indexStore.getNewId();
 		Event newEvent = new Event(newEventIndex, name, start, end);
 		eventsList.add(newEvent);
@@ -174,10 +77,25 @@ public class Calendar {
 		Collections.sort(eventsList);
 		exportToFile();
 
-		savePrevCmd(newEventIndex, newEvent, null, null, "add");
+		savePrevCmd(newEventIndex, newEvent, null, null, COMMAND_ADD);
+		
+		ArrayList<String> feedback = new ArrayList<String>();
+		feedback.add(String.format(MSG_ADDED_EVENT, name));
+		return feedback;
+	}
+	
+	public ArrayList<String> addTask(Task newTask) {
+		tasksList.add(newTask);
+		indexStore.addTask(newTask.getIndex(), newTask);
+		Collections.sort(tasksList);	
+		
+		ArrayList<String> feedback = new ArrayList<String>();
+		feedback.add(String.format(MSG_ADDED_TASK, newTask.getName()));
+		return feedback;
 	}
 
-	public void addTask(String name, String dueDate) {
+	
+	public ArrayList<String> addTask(String name, String dueDate) {
 		int newTaskIndex = indexStore.getNewId();
 		Task newTask = new Task(newTaskIndex, name, dueDate);
 		tasksList.add(newTask);
@@ -185,128 +103,281 @@ public class Calendar {
 		Collections.sort(tasksList);
 		exportToFile();
 
-		savePrevCmd(newTaskIndex, null, newTask, null, "add");
+		savePrevCmd(newTaskIndex, null, newTask, null, COMMAND_ADD);
+		
+		ArrayList<String> feedback = new ArrayList<String>();
+		feedback.add(String.format(MSG_ADDED_TASK, name));
+		return feedback;	
+	}
+	
+	public ArrayList<String> addFloatingTask(FloatingTask newTask) {
+		floatingTasksList.add(newTask);
+		indexStore.addTask(newTask.getIndex(), newTask);
+		
+		ArrayList<String> feedback = new ArrayList<String>();
+		feedback.add(String.format(MSG_ADDED_TASK, newTask.getName()));
+		return feedback;
 	}
 
-	public void addFloatingTask(String name) {
+	public ArrayList<String> addFloatingTask(String name) {
 		int newTaskIndex = indexStore.getNewId();
 		FloatingTask newFloatingTask = new FloatingTask(newTaskIndex, name);
 		indexStore.addTask(newTaskIndex, newFloatingTask);
 		floatingTasksList.add(newFloatingTask);
 		exportToFile();
 
-		savePrevCmd(newTaskIndex, null, null, newFloatingTask, "add");
+		savePrevCmd(newTaskIndex, null, null, newFloatingTask, COMMAND_ADD);
+		
+		ArrayList<String> feedback = new ArrayList<String>();
+		feedback.add(String.format(MSG_ADDED_TASK, name));
+		return feedback;	
 	}
-
-	public void remove(int idx) {
-		if (indexStore.isEvent(idx)) {
-			removeEvent(idx);
-		} else if (indexStore.isFloatingTask(idx)) {
-			removeFloatingTask(idx);
-		} else {
-			removeTask(idx);
-		}
-		exportToFile();
-	}
-
-	private void removeEvent(int idx) {
-		assert indexStore.events.containsKey(idx);
+	
+	/***** REMOVE COMMAND EXECUTION ******/
+	
+	public ArrayList<String> removeEvent(int idx) {
+		String eventName = new String();
+		
 		for (int i = 0; i < eventsList.size(); i++) {
 			if (eventsList.get(i).getIndex() == idx) {
-				savePrevCmd(idx, eventsList.get(i), null, null, "remove");
+				savePrevCmd(idx, eventsList.get(i), null, null, COMMAND_REMOVE);
+				eventName = eventsList.get(i).getName();
 				indexStore.removeEvent(eventsList.get(i).getIndex());
 				eventsList.remove(i);
 				break;
 			}
 		}
+		exportToFile();
+		
+		ArrayList<String> feedback = new ArrayList<String>();
+		feedback.add(String.format(MSG_REMOVED_EVENT, eventName));
+		
+		return feedback;
 	}
 
-	private void removeTask(int idx) {
-		assert indexStore.tasks.containsKey(idx);
+	public ArrayList<String> removeTask(int idx) {
+		String taskName = new String();
 		for (int i = 0; i < tasksList.size(); i++) {
 			if (tasksList.get(i).getIndex() == idx) {
-				savePrevCmd(idx, null, tasksList.get(i), null, "remove");
+				savePrevCmd(idx, null, tasksList.get(i), null, COMMAND_REMOVE);
+				taskName = tasksList.get(i).getName();
 				indexStore.removeTask(tasksList.get(i).getIndex());
 				tasksList.remove(i);
 				break;
 			}
 		}
+		exportToFile();
+		
+		ArrayList<String> feedback = new ArrayList<String>();
+		feedback.add(String.format(MSG_REMOVED_TASK, taskName));
+		
+		return feedback;
 	}
 
-	private void removeFloatingTask(int idx) {
-		assert indexStore.tasks.containsKey(idx);
+	public ArrayList<String> removeFloatingTask(int idx) {
+		String taskName = new String();
 		for (int i = 0; i < floatingTasksList.size(); i++) {
 			if (floatingTasksList.get(i).getIndex() == idx) {
-				savePrevCmd(idx, null, null, floatingTasksList.get(i), "remove");
+				savePrevCmd(idx, null, null, floatingTasksList.get(i), COMMAND_REMOVE);
+				taskName = tasksList.get(i).getName();
 				indexStore.removeTask(floatingTasksList.get(i).getIndex());
 				floatingTasksList.remove(i);
 				break;
 			}
 		}
-	}
-
-	public void update(int idx, ArrayList<String> fields, ArrayList<String> newValues) {
-		if (indexStore.isEvent(idx)) {
-			updateEvent(idx, fields, newValues);
-		} else if (indexStore.isFloatingTask(idx)) {
-			updateFloatingTask(idx, fields, newValues);
-		} else {
-			updateTask(idx, fields, newValues);
-		}
 		exportToFile();
-
+		
+		ArrayList<String> feedback = new ArrayList<String>();
+		feedback.add(String.format(MSG_REMOVED_TASK, taskName));
+		
+		return feedback;
 	}
-
-	private void updateEvent(int idx, ArrayList<String> fields, ArrayList<String> newValues) {
-
+	
+	/***** UPDATE COMMAND EXECUTION ******/
+	
+	public ArrayList<String> updateEvent(int idx, ArrayList<String> fields, ArrayList<String> newValues) {
 		int arrayListIndex = getArrayListIndexOfEvent(idx);
 		Event eventToUpdate = eventsList.get(arrayListIndex);
+		Event originalEvent = eventToUpdate;
 
-		savePrevCmd(idx, eventToUpdate, null, null, "update");
+		savePrevCmd(idx, originalEvent, null, null, COMMAND_UPDATE);
 
 		for (int i = 0; i < fields.size(); i++) {
 			eventToUpdate.update(fields.get(i), newValues.get(i));
 		}
-
+		
+		exportToFile();
+		
+		ArrayList<String> feedback = new ArrayList<String>();
+		feedback.add(MSG_UPDATED_EVENT);
+		
+		return feedback;
 	}
 
-	private void updateTask(int idx, ArrayList<String> fields, ArrayList<String> newValues) {
-
+	public ArrayList<String> updateTask(int idx, ArrayList<String> fields, ArrayList<String> newValues) {
 		int arrayListIndex = getArrayListIndexOfTask(idx);
 		Task taskToUpdate = tasksList.get(arrayListIndex);
+		Task originalTask = taskToUpdate;
 
-		savePrevCmd(idx, null, taskToUpdate, null, "update");
+		savePrevCmd(idx, null, originalTask, null, COMMAND_UPDATE);
 
 		for (int i = 0; i < fields.size(); i++) {
 			taskToUpdate.update(fields.get(i), newValues.get(i));
 		}
+		exportToFile();
+		
+		ArrayList<String> feedback = new ArrayList<String>();
+		feedback.add(MSG_UPDATED_TASK);
+		
+		return feedback;
 
 	}
 
-	private void updateFloatingTask(int idx, ArrayList<String> fields, ArrayList<String> newValues) {
+	public ArrayList<String> updateFloatingTask(int idx, ArrayList<String> fields, ArrayList<String> newValues) {
 
 		int arrayListIndex = getArrayListIndexOfFloatingTask(idx);
 		FloatingTask taskToUpdate = floatingTasksList.get(arrayListIndex);
+		FloatingTask originalTask = taskToUpdate;
 
-		savePrevCmd(idx, null, null, taskToUpdate, "update");
+		savePrevCmd(idx, null, null, originalTask, COMMAND_UPDATE);
 
 		for (int i = 0; i < fields.size(); i++) {
 			taskToUpdate.update(fields.get(i), newValues.get(i));
 		}
+		exportToFile();
+		
+		ArrayList<String> feedback = new ArrayList<String>();
+		feedback.add(MSG_UPDATED_TASK);
+		
+		return feedback;
 	}
+
+	/***** UNDO COMMAND EXECUTION ******/
+
+	public ArrayList<String> undo() {
+		ArrayList<String> feedback = executeUndo();
+		disableUndo();
+		exportToFile();
+		
+		return feedback;
+	}
+	
+	private ArrayList<String> executeUndo() {
+		switch (prevCommand) {
+		case COMMAND_ADD:
+			return undoAdd();
+		case COMMAND_REMOVE:
+			return undoRemove();
+		case COMMAND_UPDATE:
+			return undoUpdate();
+		default:
+			return handleInvalidUndo();
+		}
+	}
+
+	private void disableUndo() {
+		prevModIndex = INDEX_INVALID;
+		prevCommand = COMMAND_INVALID_UNDO;
+		prevModEvent = null;
+		prevModTask = null;
+		prevModFloatingTask = null;
+	}
+
+	private void savePrevCmd(int index, Event event, Task task, FloatingTask floatingTask, String command) {
+		prevModIndex = index;
+		prevModEvent = event;
+		prevModTask = task;
+		prevModFloatingTask = floatingTask;
+		prevCommand = command;
+	}
+
+	private ArrayList<String> undoAdd() {
+		if (isEvent(prevModIndex)) {
+			return removeEvent(prevModIndex);
+		} else if (isFloatingTask(prevModIndex)) {
+			return removeFloatingTask(prevModIndex);
+		} else {
+			return removeTask(prevModIndex);
+		}
+	}
+
+	private ArrayList<String> undoRemove() {
+		if (isEvent(prevModIndex)) {
+			return addEvent(prevModEvent);
+		} else if (isFloatingTask(prevModIndex)) {
+			return addFloatingTask(prevModFloatingTask);
+		} else {
+			return addTask(prevModTask);
+		}
+	}
+
+	private ArrayList<String> undoUpdate() {
+		if (isEvent(prevModIndex)) {
+			undoUpdateEvent();
+		} else if (isFloatingTask(prevModIndex)) {
+			undoUpdateFloatingTask();
+		} else {
+			undoUpdateTask();
+		}
+		
+		ArrayList<String> feedback = new ArrayList<String>();
+		feedback.add(MSG_UNDO_UPDATE);
+		return feedback;
+	}
+
+	private void undoUpdateEvent() {
+		for (int i = 0; i < eventsList.size(); i++) {
+			if (eventsList.get(i).getIndex() == prevModIndex) {
+				eventsList.remove(i);
+				eventsList.add(i, prevModEvent);
+				Collections.sort(eventsList);
+				indexStore.replaceEvent(prevModIndex, prevModEvent);
+			}
+		}
+	}
+
+	private void undoUpdateFloatingTask() {
+		for (int i = 0; i < floatingTasksList.size(); i++) {
+			if (floatingTasksList.get(i).getIndex() == prevModIndex) {
+				floatingTasksList.remove(i);
+				floatingTasksList.add(i, prevModFloatingTask);
+				indexStore.replaceTask(prevModIndex, prevModFloatingTask);
+			}
+		}
+	}
+
+	private void undoUpdateTask() {
+		for (int i = 0; i < tasksList.size(); i++) {
+			if (tasksList.get(i).getIndex() == prevModIndex) {
+				tasksList.remove(i);
+				tasksList.add(i, prevModTask);
+				Collections.sort(tasksList);
+				indexStore.replaceTask(prevModIndex, prevModTask);
+			}
+		}
+	}
+	
+	private ArrayList<String> handleInvalidUndo() {
+		ArrayList<String> feedback = new ArrayList<String>();
+		
+		feedback.add(MSG_UNDO_INVALID);
+		return feedback;
+	}
+	
+	/***** SEARCH COMMAND EXECUTION ******/
 
 	public ArrayList<String> searchId(int id) {
 		ArrayList<String> idFoundLines = new ArrayList<String>();
-		if (!indexStore.isEvent(id) && !indexStore.isFloatingTask(id)) {
+		if (!isEvent(id) && !isFloatingTask(id)) {
 			idFoundLines.clear();
 		}
 
-		else if (indexStore.isEvent(id)) {
+		else if (isEvent(id)) {
 			Event event = indexStore.getEventById(id);
 			idFoundLines.add(event.toString());
 		}
 
-		else if (indexStore.isFloatingTask(id)) {
+		else if (isFloatingTask(id)) {
 			FloatingTask task = indexStore.getTaskById(id);
 			idFoundLines.add(task.toString());
 		}
@@ -318,19 +389,19 @@ public class Calendar {
 	public ArrayList<String> searchKeyWord(String keyword) {
 		ArrayList<String> wordFoundLines = new ArrayList<String>();
 		for (int i = 0; i < eventsList.size(); i++) {
-			if (containWord(eventsList.get(i).toString(), keyword)) {
+			if (containsWord(eventsList.get(i).toString(), keyword)) {
 				wordFoundLines.add(eventsList.get(i).toString());
 			}
 		}
 
 		for (int i = 0; i < tasksList.size(); i++) {
-			if (containWord(tasksList.get(i).toString(), keyword)) {
+			if (containsWord(tasksList.get(i).toString(), keyword)) {
 				wordFoundLines.add(tasksList.get(i).toString());
 			}
 		}
 
 		for (int i = 0; i < floatingTasksList.size(); i++) {
-			if (containWord(floatingTasksList.get(i).toString(), keyword)) {
+			if (containsWord(floatingTasksList.get(i).toString(), keyword)) {
 				wordFoundLines.add(floatingTasksList.get(i).toString());
 			}
 		}
@@ -339,7 +410,7 @@ public class Calendar {
 
 	}
 
-	private boolean containWord(String content, String keyword) {
+	private boolean containsWord(String content, String keyword) {
 		String[] splited = content.split("\\W");
 		for (int i = 0; i < splited.length; i++) {
 			if (splited[i].equalsIgnoreCase(keyword)) {
@@ -347,39 +418,6 @@ public class Calendar {
 			}
 		}
 		return false;
-	}
-
-	public void display(String displayType) {
-		Display display = new Display(getEventsList(), getTasksList(), getFloatingTasksList());
-
-		switch (displayType) {
-		case (ARG_EVENTS):
-			display.events();
-		case (ARG_TASKS):
-			display.tasks();
-		case (ARG_UPCOMING_EVENTS):
-			display.upcomingEvents();
-		case (ARG_UNDONE_TASKS):
-			display.undoneTasks();
-		case (ARG_MISSED_TASKS):
-			display.missedTasks();
-		case (ARG_TODAY):
-			try {
-				display.today();
-			} catch (ParseException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-		case (ARGS_ALL):
-			try {
-				display.all();
-			} catch (ParseException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
-		}
-
 	}
 
 	public ArrayList<Event> getEventsList() {
@@ -447,5 +485,11 @@ public class Calendar {
 
 		return index;
 	}
-
+	
+	private boolean isEvent(int id) {
+		return indexStore.isEvent(id);
+	}
+	private boolean isFloatingTask(int id) {
+		return indexStore.isFloatingTask(id);
+	}
 }
