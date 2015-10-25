@@ -10,8 +10,10 @@ import com.joestelmach.natty.*;
 
 public class CommandParser {
 	private static CommandParser instance = new CommandParser();
-
-	private boolean errorBit;
+	
+	private CommandParser(){
+		
+	}
 
 	public static CommandParser getInstance() {
 		return instance;
