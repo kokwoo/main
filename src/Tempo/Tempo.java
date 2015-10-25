@@ -1,20 +1,24 @@
 package Tempo;
 
-import java.text.*;
-import java.util.*;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Scanner;
 
 public class Tempo {
-	private tempRequestHandler tempRH = tempRequestHandler.getInstance();
+	private tempRequestHandler handler = tempRequestHandler.getInstance();
 
 	private static Scanner sc;
-	private static boolean run;
+	private static boolean isRunning;
 
-	private static final String WELCOME_MESSAGE = "Welcome to Tempo! Type manual for instructions";
-	private static final String GOODBYE_MESSAGE = "Thank you for using Tempo!";
-	private static final String EXIT_CMD = "exit";
-	private static final String GOOD_MORNING = "Good Morning! ";
-	private static final String GOOD_AFTERNOON = "Good Afternoon! ";
-	private static final String GOOD_EVENING = "Good evening! ";
+	private static final String MESSAGE_WELCOME = "Welcome to Tempo! Type manual for instructions";
+	private static final String MESSAGE_GOODBYE = "Thank you for using Tempo!";
+	private static final String COMMAND_EXIT = "exit";
+	private static final String MESSAGE_GOOD_MORNING = "Good Morning! ";
+	private static final String MESSAGE_GOOD_AFTERNOON = "Good Afternoon! ";
+	private static final String MESSAGE_GOOD_EVENING = "Good evening! ";
+	private static final String FORMAT_DATE = "EEEE, dd/MM/yyyy HH:mm";
 
 	private static Tempo Tempo = new Tempo();
 
@@ -37,20 +41,20 @@ public class Tempo {
 
 	private void run(String fileName) {
 		printWelcomeMsg();
-		System.out.println(tempRH.initialize(fileName));
+		System.out.println(handler.initialize(fileName));
 		sc = new Scanner(System.in);
 
-		run = true;
+		isRunning = true;
 
-		while (run) {
+		while (isRunning) {
 			ArrayList<String> output = listenForInput();
 
 			for (String line : output) {
 				System.out.println(line);
 
-				if (output.equals(EXIT_CMD)) {
-					run = false;
-					System.out.println(GOODBYE_MESSAGE);
+				if (output.equals(COMMAND_EXIT)) {
+					isRunning = false;
+					System.out.println(MESSAGE_GOODBYE);
 				}
 			}
 		}
@@ -59,28 +63,28 @@ public class Tempo {
 	private void printWelcomeMsg() {
 		printGreetings();
 		printDate();
-		System.out.println(WELCOME_MESSAGE);
+		System.out.println(MESSAGE_WELCOME);
 	}
 
 	private void printGreetings() {
-		DateFormat df = new SimpleDateFormat("HH");
+		DateFormat dateFormat = new SimpleDateFormat("HH");
 
-		String timeString = df.format(getTime());
+		String timeString = dateFormat.format(getTime());
 
 		int hour = Integer.parseInt(timeString);
 
 		if (hour > 4 && hour <= 12) {
-			System.out.print(GOOD_MORNING);
+			System.out.print(MESSAGE_GOOD_MORNING);
 		} else if (hour > 12 && hour <= 16) {
-			System.out.print(GOOD_AFTERNOON);
+			System.out.print(MESSAGE_GOOD_AFTERNOON);
 		} else {
-			System.out.print(GOOD_EVENING);
+			System.out.print(MESSAGE_GOOD_EVENING);
 		}
 	}
 
 	private void printDate() {
-		DateFormat df = new SimpleDateFormat("EEEE, dd/MM/yyyy HH:mm");
-		System.out.println("Today's date : " + df.format(getTime()));
+		DateFormat dateFormat = new SimpleDateFormat(FORMAT_DATE);
+		System.out.println("Today's date : " + dateFormat.format(getTime()));
 	}
 
 	private Date getTime() {
@@ -88,6 +92,6 @@ public class Tempo {
 	}
 
 	private ArrayList<String> listenForInput() {
-		return tempRH.processCommand(sc.nextLine());
+		return handler.processCommand(sc.nextLine());
 	}
 }
