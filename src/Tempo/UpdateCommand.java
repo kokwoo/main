@@ -6,7 +6,7 @@ public class UpdateCommand implements Command {
 	private static Calendar cal;
 	private static IndexStore indexStore;
 	
-	private static final String MSG_INVALID_ID = "Index provided is invalid!";
+	private static final String MSG_INVALID_ID = "Error: Index provided is invalid!";
 	private int idx;
 	private ArrayList<String> fields;
 	private ArrayList<String> newValues;
