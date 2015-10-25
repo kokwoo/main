@@ -1,4 +1,4 @@
-package Tempo;
+	package Tempo;
 
 import java.util.ArrayList;
 import java.text.ParseException;
@@ -40,6 +40,46 @@ public class Display {
 	private String UPCOMING_EVENTS = "These are the list of upcoming events";
 	private String NO_UPCOMING_EVENTS = "You have no upcoming event";
 	private String DONE_TASKS = "These are all the tasks that are done";
+	
+	public ArrayList<Event> getEventsToday(){
+		return eventsToday;
+	}
+	
+	public ArrayList<Event> getUpcomingEvents(){
+		return upcomingEvents;
+	}
+	
+	public ArrayList<Event> getPastEvents(){
+		return pastEvents;
+	}
+	
+	public ArrayList<Task> getTasksToday(){
+		return tasksToday;
+	}
+	
+	public ArrayList<Task> getUpcomingTasks(){
+		return upcomingTasks;
+	}
+	
+	public ArrayList<Task> getMissedTasks(){
+		return missedTasks;
+	}
+	
+	public ArrayList<Task> getUndoneTasks(){
+		return undoneTasks;
+	}
+	
+	public ArrayList<Task> getDoneTasks(){
+		return doneTasks;
+	}
+	
+	public ArrayList<FloatingTask> getUndoneFloatingTasks(){
+		return undoneFloatingTasks;
+	}
+	
+	public ArrayList<FloatingTask> getDoneFloatingTasks(){
+		return doneFloatingTasks;
+	}
 
 	public Display(ArrayList<Event> _events, ArrayList<Task> _tasks, ArrayList<FloatingTask> _floatingTasks) {
 		date = new CurrentDateAndTime();
@@ -232,7 +272,7 @@ public class Display {
 		System.out.println("");
 	}
 
-	// missing print upcoming events
+	
 	public boolean events() {
 
 		printUpcomingEvents();
