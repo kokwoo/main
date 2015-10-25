@@ -23,7 +23,7 @@ public class Calendar {
 	private static final String COMMAND_UPDATE = "update";
 	private static final String COMMAND_INVALID_UNDO = "invalid undo";
 	
-	private static final int INDEX_INVALID;
+	private static final int INDEX_INVALID = -1;
 
 	private String _fileName;
 
