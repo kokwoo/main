@@ -22,7 +22,7 @@ public class ArgParser {
 	public ArgParser() {
 		keywords = new HashMap<ArrayList<String>, String>();
 		initialiseKeywords();
-		initLogger();
+		//initLogger();
 	}
 
 	public void initialiseKeywords() {
@@ -47,7 +47,7 @@ public class ArgParser {
 		keywords.put(add, "add");
 	}
 
-	private void initLogger() {
+/*	private void initLogger() {
 		try {
 			log = Logger.getLogger("TempoLog");
 
@@ -61,7 +61,7 @@ public class ArgParser {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-	}
+	}*/
 
 	private void addUpdateKeywords() {
 		ArrayList<String> update = new ArrayList<String>();
