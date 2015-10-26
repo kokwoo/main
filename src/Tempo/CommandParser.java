@@ -81,7 +81,7 @@ public class CommandParser {
 			case COMMAND_DONE :
 			case COMMAND_FINISHED :
 			case COMMAND_COMPLETED :
-				return null;
+				return processDoneCommand(arguments);
 
 			// Display Function
 			case COMMAND_VIEW :
@@ -270,6 +270,21 @@ public class CommandParser {
 			return null;
 		}
 		
+	}
+	
+	private Command processDoneCommand(String argumentString){
+		int idx;
+		Command command;
+		
+		idx = getId(argumentString);
+		
+		if(idx != -1){
+			command = new DoneCommand(calendar,indexStore, idx);
+			return command;	
+		}else{
+			//DISPLAY ERROR MESSAGE (TO-DO)
+			return null;
+		}
 	}
 	
 	private Command processUndoCommand(){

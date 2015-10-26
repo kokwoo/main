@@ -5,6 +5,8 @@ import java.util.*;
 public class tempRequestHandler {
 	private static tempRequestHandler instance = new tempRequestHandler();
 	
+	private static final String MSG_INVALID_COMMAND = "Sorry, we are unable to process your command. Please try again.";
+	
 	private CommandParser parser;
 	private Calendar calendar;
 	
@@ -19,7 +21,18 @@ public class tempRequestHandler {
 	
 	public ArrayList<String> processCommand(String commandString){
 		Command command = parser.parse(commandString);
-		return command.execute();
+		if(command != null){
+			return command.execute();
+		}else{
+			
+		}return handleInvalidCommand();
+		
+	}
+	
+	private ArrayList<String> handleInvalidCommand() {
+		ArrayList<String> feedback = new ArrayList<String>();
+		feedback.add(MSG_INVALID_COMMAND);
+		return feedback;
 	}
 	
 	public String initialize(String filename){
