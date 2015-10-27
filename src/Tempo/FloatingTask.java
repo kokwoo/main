@@ -37,7 +37,7 @@ public class FloatingTask{
 		return _name;
 	}
 
-	public boolean getDone() {
+	public boolean isDone() {
 		return _done;
 	}
 
@@ -45,11 +45,15 @@ public class FloatingTask{
 		_done = true;
 	}
 	
+	public void markAsUndone() {
+		_done = false;
+	}
+	
 	public boolean isFloatingTask() {
 		return true;
 	}
 	
 	public String toString(){
-		return getIndex() + DELIMETER + getName() + DELIMETER + getDone();
+		return getIndex() + DELIMETER + getName() + DELIMETER + isDone();
 	}
 }
