@@ -75,13 +75,13 @@ public class CommandParser {
 			case COMMAND_UPDATE :
 			case COMMAND_EDIT :
 			case COMMAND_CHANGE :
-				return null;
+				return processUpdateCommand(arguments);
 
 			// Mark as Done Function
 			case COMMAND_DONE :
 			case COMMAND_FINISHED :
 			case COMMAND_COMPLETED :
-				return null;
+				return processDoneCommand(arguments);
 
 			// Display Function
 			case COMMAND_VIEW :
@@ -249,6 +249,37 @@ public class CommandParser {
 		
 		if(idx != -1){
 			command = new RemoveCommand(calendar,indexStore, idx);
+			return command;	
+		}else{
+			//DISPLAY ERROR MESSAGE (TO-DO)
+			return null;
+		}
+	}
+	
+	private Command processUpdateCommand(String arguments){
+		int idx = getId(getFirstWord(arguments));
+		
+		ArrayList<String> fields = getFieldsList(arguments);
+		ArrayList<String> newValues = getNewValuesList(arguments);
+		
+		if(idx != -1){
+			Command command = new UpdateCommand(calendar, indexStore, idx, fields, newValues);
+			return command;
+		}else{
+			//DISPLAY ERROR MESSAGE
+			return null;
+		}
+		
+	}
+	
+	private Command processDoneCommand(String argumentString){
+		int idx;
+		Command command;
+		
+		idx = getId(argumentString);
+		
+		if(idx != -1){
+			command = new DoneCommand(calendar,indexStore, idx);
 			return command;	
 		}else{
 			//DISPLAY ERROR MESSAGE (TO-DO)
