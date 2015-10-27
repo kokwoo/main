@@ -199,7 +199,7 @@ public class Calendar {
 	public ArrayList<String> updateEvent(int idx, ArrayList<String> fields, ArrayList<String> newValues) {
 		int arrayListIndex = getArrayListIndexOfEvent(idx);
 		Event eventToUpdate = eventsList.get(arrayListIndex);
-		Event originalEvent = eventToUpdate;
+		Event originalEvent = copyEvent(eventToUpdate);
 
 		savePrevCmd(idx, originalEvent, null, null, COMMAND_UPDATE);
 
@@ -214,11 +214,19 @@ public class Calendar {
 
 		return feedback;
 	}
+	
+	private Event copyEvent(Event event) {
+		int idx = event.getIndex();
+		String eventName = event.getName();
+		String startDateTime = event.getStartDateTimeSimplified();
+		String endDateTime = event.getEndDateTimeSimplified();
+		return new Event(idx, eventName, startDateTime, endDateTime);
+	}
 
 	public ArrayList<String> updateTask(int idx, ArrayList<String> fields, ArrayList<String> newValues) {
 		int arrayListIndex = getArrayListIndexOfTask(idx);
 		Task taskToUpdate = tasksList.get(arrayListIndex);
-		Task originalTask = taskToUpdate;
+		Task originalTask = copyTask(taskToUpdate);
 
 		savePrevCmd(idx, null, originalTask, null, COMMAND_UPDATE);
 
@@ -232,6 +240,14 @@ public class Calendar {
 
 		return feedback;
 
+	}
+	
+	private Task copyTask(Task task) {
+		int idx = task.getIndex();
+		String taskName = task.getName();
+		String taskDoneStatus = String.valueOf(task.isDone());
+		String dueDate = task.getDueDateSimplified();
+		return new Task(idx, taskName, taskDoneStatus, dueDate);
 	}
 
 	/***** DONE COMMAND EXECUTION ******/
@@ -289,7 +305,7 @@ public class Calendar {
 
 		int arrayListIndex = getArrayListIndexOfFloatingTask(idx);
 		FloatingTask taskToUpdate = floatingTasksList.get(arrayListIndex);
-		FloatingTask originalTask = taskToUpdate;
+		FloatingTask originalTask = copyFloatingTask(taskToUpdate);
 
 		savePrevCmd(idx, null, null, originalTask, COMMAND_UPDATE);
 
@@ -300,8 +316,15 @@ public class Calendar {
 
 		ArrayList<String> feedback = new ArrayList<String>();
 		feedback.add(MSG_UPDATED_TASK);
-
+		
 		return feedback;
+	}
+	
+	private FloatingTask copyFloatingTask(FloatingTask task) {
+		int idx = task.getIndex();
+		String taskName = task.getName();
+		String taskDoneStatus = String.valueOf(task.isDone());
+		return new FloatingTask(idx, taskName, taskDoneStatus);
 	}
 
 	/***** UNDO COMMAND EXECUTION ******/
