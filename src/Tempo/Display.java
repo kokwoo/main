@@ -145,7 +145,7 @@ public class Display {
 
 	private void splitFtasks() {
 		for (int i = 0; i < floatingTasks.size(); i++) {
-			if (!floatingTasks.get(i).getDone()) {
+			if (!floatingTasks.get(i).isDone()) {
 				undoneFloatingTasks.add(floatingTasks.get(i));
 			} else {
 				doneFloatingTasks.add(floatingTasks.get(i));
@@ -155,7 +155,7 @@ public class Display {
 
 	private void splitTasks() {
 		for (int i = 0; i < tasks.size(); i++) {
-			if (!tasks.get(i).getDone()) {
+			if (!tasks.get(i).isDone()) {
 				undoneTasks.add(tasks.get(i));
 			} else {
 				doneTasks.add(tasks.get(i));

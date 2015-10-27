@@ -520,7 +520,7 @@ public class TempDisplay {
 
 	private void splitTasks() {
 		for (int i = 0; i < tasks.size(); i++) {
-			if (!tasks.get(i).getDone()) {
+			if (!tasks.get(i).isDone()) {
 				undoneTasks.add(tasks.get(i));
 			} else {
 				doneTasks.add(tasks.get(i));
