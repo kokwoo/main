@@ -1,6 +1,0 @@
---EVENTS--
-0!!eat!!11/12/2015/11:00!!12/12/2015/12:00
---TASKS--
-0!!play game!!false!!12/02/2015
---FLOATING TASKS--
-0!!dance!!false

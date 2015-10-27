@@ -1,7 +1,0 @@
---EVENTS--
-0!!eat lunch with mum!!11/12/2015/11:00!!12/12/2015/12:00
---TASKS--
-2!!cfg quiz!!false!!18/11/2015
---FLOATING TASKS--
-1!!do cs2103 v0.3!!true
-3!!watch movie!!false
