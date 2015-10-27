@@ -1,29 +1,31 @@
 package Tempo;
 
 import java.io.*;
-import java.text.ParseException;
 import java.util.*;
 
 public class Calendar {
-	
+
 	private static Calendar instance = new Calendar();
 	private static IndexStore indexStore;
-	
+
 	private static final String MSG_ADDED_EVENT = "Event %1$s has been added.";
 	private static final String MSG_ADDED_TASK = "Task %1$s has been added.";
 	private static final String MSG_REMOVED_EVENT = "Event %1$s has been removed.";
 	private static final String MSG_REMOVED_TASK = "Task %1$s has been removed.";
 	private static final String MSG_UPDATED_EVENT = "Your event has been updated.";
 	private static final String MSG_UPDATED_TASK = "Your task has been updated.";
+	private static final String MSG_DONE_TASK = "Task %1$s has been marked as done.";
+	private static final String MSG_DONE_ERR = "Err: Task %1$s is alr marked as done!";
 	private static final String MSG_UNDO_UPDATE = "Your updates have been reverted.";
 	private static final String MSG_UNDO_INVALID = "Error: Cannot undo previous operation.";
-	
+
 	private static final String COMMAND_ADD = "add";
 	private static final String COMMAND_REMOVE = "remove";
 	private static final String COMMAND_UPDATE = "update";
+	private static final String COMMAND_DONE = "done";
 	private static final String COMMAND_INVALID_UNDO = "invalid undo";
-	
-	private static final int INDEX_INVALID;
+
+	private static final int INDEX_INVALID = -1;
 
 	private String _fileName;
 
@@ -44,11 +46,11 @@ public class Calendar {
 		indexStore = IndexStore.getInstance();
 		indexStore.initialiseStore(eventsList, tasksList, floatingTasksList);
 	}
-	
+
 	public static Calendar getInstance() {
 		return instance;
 	}
-	
+
 	public void createFile(String fileName) {
 		_fileName = fileName;
 		File file = new File(_fileName);
@@ -56,19 +58,19 @@ public class Calendar {
 			importFromFile();
 		}
 	}
-	
+
 	/***** ADD COMMAND EXECUTION ******/
-	
+
 	public ArrayList<String> addEvent(Event newEvent) {
 		eventsList.add(newEvent);
 		indexStore.addEvent(newEvent.getIndex(), newEvent);
-		Collections.sort(eventsList);	
-		
+		Collections.sort(eventsList);
+
 		ArrayList<String> feedback = new ArrayList<String>();
 		feedback.add(String.format(MSG_ADDED_EVENT, newEvent.getName()));
 		return feedback;
 	}
-	
+
 	public ArrayList<String> addEvent(String name, String start, String end) {
 		int newEventIndex = indexStore.getNewId();
 		Event newEvent = new Event(newEventIndex, name, start, end);
@@ -78,23 +80,22 @@ public class Calendar {
 		exportToFile();
 
 		savePrevCmd(newEventIndex, newEvent, null, null, COMMAND_ADD);
-		
+
 		ArrayList<String> feedback = new ArrayList<String>();
 		feedback.add(String.format(MSG_ADDED_EVENT, name));
 		return feedback;
 	}
-	
+
 	public ArrayList<String> addTask(Task newTask) {
 		tasksList.add(newTask);
 		indexStore.addTask(newTask.getIndex(), newTask);
-		Collections.sort(tasksList);	
-		
+		Collections.sort(tasksList);
+
 		ArrayList<String> feedback = new ArrayList<String>();
 		feedback.add(String.format(MSG_ADDED_TASK, newTask.getName()));
 		return feedback;
 	}
 
-	
 	public ArrayList<String> addTask(String name, String dueDate) {
 		int newTaskIndex = indexStore.getNewId();
 		Task newTask = new Task(newTaskIndex, name, dueDate);
@@ -104,16 +105,16 @@ public class Calendar {
 		exportToFile();
 
 		savePrevCmd(newTaskIndex, null, newTask, null, COMMAND_ADD);
-		
+
 		ArrayList<String> feedback = new ArrayList<String>();
 		feedback.add(String.format(MSG_ADDED_TASK, name));
-		return feedback;	
+		return feedback;
 	}
-	
+
 	public ArrayList<String> addFloatingTask(FloatingTask newTask) {
 		floatingTasksList.add(newTask);
 		indexStore.addTask(newTask.getIndex(), newTask);
-		
+
 		ArrayList<String> feedback = new ArrayList<String>();
 		feedback.add(String.format(MSG_ADDED_TASK, newTask.getName()));
 		return feedback;
@@ -127,17 +128,17 @@ public class Calendar {
 		exportToFile();
 
 		savePrevCmd(newTaskIndex, null, null, newFloatingTask, COMMAND_ADD);
-		
+
 		ArrayList<String> feedback = new ArrayList<String>();
 		feedback.add(String.format(MSG_ADDED_TASK, name));
-		return feedback;	
+		return feedback;
 	}
-	
+
 	/***** REMOVE COMMAND EXECUTION ******/
-	
+
 	public ArrayList<String> removeEvent(int idx) {
 		String eventName = new String();
-		
+
 		for (int i = 0; i < eventsList.size(); i++) {
 			if (eventsList.get(i).getIndex() == idx) {
 				savePrevCmd(idx, eventsList.get(i), null, null, COMMAND_REMOVE);
@@ -148,10 +149,10 @@ public class Calendar {
 			}
 		}
 		exportToFile();
-		
+
 		ArrayList<String> feedback = new ArrayList<String>();
 		feedback.add(String.format(MSG_REMOVED_EVENT, eventName));
-		
+
 		return feedback;
 	}
 
@@ -167,10 +168,10 @@ public class Calendar {
 			}
 		}
 		exportToFile();
-		
+
 		ArrayList<String> feedback = new ArrayList<String>();
 		feedback.add(String.format(MSG_REMOVED_TASK, taskName));
-		
+
 		return feedback;
 	}
 
@@ -186,15 +187,15 @@ public class Calendar {
 			}
 		}
 		exportToFile();
-		
+
 		ArrayList<String> feedback = new ArrayList<String>();
 		feedback.add(String.format(MSG_REMOVED_TASK, taskName));
-		
+
 		return feedback;
 	}
-	
+
 	/***** UPDATE COMMAND EXECUTION ******/
-	
+
 	public ArrayList<String> updateEvent(int idx, ArrayList<String> fields, ArrayList<String> newValues) {
 		int arrayListIndex = getArrayListIndexOfEvent(idx);
 		Event eventToUpdate = eventsList.get(arrayListIndex);
@@ -205,12 +206,12 @@ public class Calendar {
 		for (int i = 0; i < fields.size(); i++) {
 			eventToUpdate.update(fields.get(i), newValues.get(i));
 		}
-		
+
 		exportToFile();
-		
+
 		ArrayList<String> feedback = new ArrayList<String>();
 		feedback.add(MSG_UPDATED_EVENT);
-		
+
 		return feedback;
 	}
 
@@ -225,13 +226,44 @@ public class Calendar {
 			taskToUpdate.update(fields.get(i), newValues.get(i));
 		}
 		exportToFile();
-		
+
 		ArrayList<String> feedback = new ArrayList<String>();
 		feedback.add(MSG_UPDATED_TASK);
-		
+
 		return feedback;
 
 	}
+
+	/***** DONE COMMAND EXECUTION ******/
+
+	public ArrayList<String> markTaskAsDone(int idx) {
+
+		int arrayListIndex = getArrayListIndexOfFloatingTask(idx);
+		FloatingTask taskToMark = floatingTasksList.get(arrayListIndex);
+		FloatingTask originalTask = taskToMark;
+
+		String taskName = taskToMark.getName();
+
+		if (taskToMark.getDone()) {
+			ArrayList<String> feedback = new ArrayList<String>();
+			feedback.add(String.format(MSG_DONE_ERR, taskName));
+			return feedback;
+		} else {
+			savePrevCmd(idx, null, null, originalTask, COMMAND_DONE);
+
+			taskToMark.markAsDone();
+
+			exportToFile();
+
+			ArrayList<String> feedback = new ArrayList<String>();
+			feedback.add(String.format(MSG_DONE_TASK, taskName));
+
+			return feedback;
+
+		}
+	}
+
+	/***** UPDATE COMMAND EXECUTION ******/
 
 	public ArrayList<String> updateFloatingTask(int idx, ArrayList<String> fields, ArrayList<String> newValues) {
 
@@ -245,10 +277,10 @@ public class Calendar {
 			taskToUpdate.update(fields.get(i), newValues.get(i));
 		}
 		exportToFile();
-		
+
 		ArrayList<String> feedback = new ArrayList<String>();
 		feedback.add(MSG_UPDATED_TASK);
-		
+
 		return feedback;
 	}
 
@@ -258,20 +290,20 @@ public class Calendar {
 		ArrayList<String> feedback = executeUndo();
 		disableUndo();
 		exportToFile();
-		
+
 		return feedback;
 	}
-	
+
 	private ArrayList<String> executeUndo() {
 		switch (prevCommand) {
-		case COMMAND_ADD:
-			return undoAdd();
-		case COMMAND_REMOVE:
-			return undoRemove();
-		case COMMAND_UPDATE:
-			return undoUpdate();
-		default:
-			return handleInvalidUndo();
+			case COMMAND_ADD :
+				return undoAdd();
+			case COMMAND_REMOVE :
+				return undoRemove();
+			case COMMAND_UPDATE :
+				return undoUpdate();
+			default :
+				return handleInvalidUndo();
 		}
 	}
 
@@ -319,7 +351,7 @@ public class Calendar {
 		} else {
 			undoUpdateTask();
 		}
-		
+
 		ArrayList<String> feedback = new ArrayList<String>();
 		feedback.add(MSG_UNDO_UPDATE);
 		return feedback;
@@ -356,14 +388,14 @@ public class Calendar {
 			}
 		}
 	}
-	
+
 	private ArrayList<String> handleInvalidUndo() {
 		ArrayList<String> feedback = new ArrayList<String>();
-		
+
 		feedback.add(MSG_UNDO_INVALID);
 		return feedback;
 	}
-	
+
 	/***** SEARCH COMMAND EXECUTION ******/
 
 	public ArrayList<String> searchId(int id) {
@@ -465,7 +497,7 @@ public class Calendar {
 
 		for (int i = 0; i < tasksList.size(); i++) {
 			if (tasksList.get(i).getIndex() == id) {
-				//i = index;
+				// i = index;
 				index = i;
 			}
 		}
@@ -478,17 +510,18 @@ public class Calendar {
 
 		for (int i = 0; i < floatingTasksList.size(); i++) {
 			if (floatingTasksList.get(i).getIndex() == id) {
-				//i = index;
+				// i = index;
 				index = i;
 			}
 		}
 
 		return index;
 	}
-	
+
 	private boolean isEvent(int id) {
 		return indexStore.isEvent(id);
 	}
+
 	private boolean isFloatingTask(int id) {
 		return indexStore.isFloatingTask(id);
 	}

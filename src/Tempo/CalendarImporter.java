@@ -37,8 +37,7 @@ public class CalendarImporter {
 				if(split.length == 6){
 					//events
 					int eventIndex = Integer.parseInt(split[0]);
-					Event newEvent  = new Event(eventIndex, split[1], split[2], 
-												split[3], split[4], split[5]);
+					Event newEvent  = new Event(eventIndex, split[1], split[2], split[3]);
 					events.add(newEvent);
 					Collections.sort(events);
 				}else if(split.length == 4){
