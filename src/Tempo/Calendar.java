@@ -15,7 +15,7 @@ public class Calendar {
 	private static final String MSG_UPDATED_EVENT = "Your event has been updated.";
 	private static final String MSG_UPDATED_TASK = "Your task has been updated.";
 	private static final String MSG_DONE_TASK = "Task %1$s has been marked as done.";
-	private static final String MSG_DONE_ERR = "Err: Task %1$s is alr marked as done!";
+	private static final String MSG_DONE_INVALID = "Err: Task %1$s is alr marked as done!";
 	private static final String MSG_UNDO_UPDATE = "Your updates have been reverted.";
 	private static final String MSG_UNDO_INVALID = "Error: Cannot undo previous operation.";
 
@@ -180,7 +180,7 @@ public class Calendar {
 		for (int i = 0; i < floatingTasksList.size(); i++) {
 			if (floatingTasksList.get(i).getIndex() == idx) {
 				savePrevCmd(idx, null, null, floatingTasksList.get(i), COMMAND_REMOVE);
-				taskName = tasksList.get(i).getName();
+				taskName = floatingTasksList.get(i).getName();
 				indexStore.removeTask(floatingTasksList.get(i).getIndex());
 				floatingTasksList.remove(i);
 				break;
@@ -199,7 +199,7 @@ public class Calendar {
 	public ArrayList<String> updateEvent(int idx, ArrayList<String> fields, ArrayList<String> newValues) {
 		int arrayListIndex = getArrayListIndexOfEvent(idx);
 		Event eventToUpdate = eventsList.get(arrayListIndex);
-		Event originalEvent = eventToUpdate;
+		Event originalEvent = copyEvent(eventToUpdate);
 
 		savePrevCmd(idx, originalEvent, null, null, COMMAND_UPDATE);
 
@@ -214,11 +214,19 @@ public class Calendar {
 
 		return feedback;
 	}
+	
+	private Event copyEvent(Event event) {
+		int idx = event.getIndex();
+		String eventName = event.getName();
+		String startDateTime = event.getStartDateTimeSimplified();
+		String endDateTime = event.getEndDateTimeSimplified();
+		return new Event(idx, eventName, startDateTime, endDateTime);
+	}
 
 	public ArrayList<String> updateTask(int idx, ArrayList<String> fields, ArrayList<String> newValues) {
 		int arrayListIndex = getArrayListIndexOfTask(idx);
 		Task taskToUpdate = tasksList.get(arrayListIndex);
-		Task originalTask = taskToUpdate;
+		Task originalTask = copyTask(taskToUpdate);
 
 		savePrevCmd(idx, null, originalTask, null, COMMAND_UPDATE);
 
@@ -233,34 +241,62 @@ public class Calendar {
 		return feedback;
 
 	}
+	
+	private Task copyTask(Task task) {
+		int idx = task.getIndex();
+		String taskName = task.getName();
+		String taskDoneStatus = String.valueOf(task.isDone());
+		String dueDate = task.getDueDateSimplified();
+		return new Task(idx, taskName, taskDoneStatus, dueDate);
+	}
 
 	/***** DONE COMMAND EXECUTION ******/
 
 	public ArrayList<String> markTaskAsDone(int idx) {
-
-		int arrayListIndex = getArrayListIndexOfFloatingTask(idx);
-		FloatingTask taskToMark = floatingTasksList.get(arrayListIndex);
-		FloatingTask originalTask = taskToMark;
+		if (isFloatingTask(idx)) {
+			return markFloatingTaskAsDone(idx);
+		}
+		
+		int arrayListIndex = getArrayListIndexOfTask(idx);
+		Task taskToMark = tasksList.get(arrayListIndex);
+		Task originalTask = taskToMark;
+		ArrayList<String> feedback = new ArrayList<String>();
 
 		String taskName = taskToMark.getName();
 
-		if (taskToMark.getDone()) {
-			ArrayList<String> feedback = new ArrayList<String>();
-			feedback.add(String.format(MSG_DONE_ERR, taskName));
-			return feedback;
+		if (taskToMark.isDone()) {
+			feedback.add(String.format(MSG_DONE_INVALID, taskName));
+			disableUndo();
 		} else {
-			savePrevCmd(idx, null, null, originalTask, COMMAND_DONE);
-
+			savePrevCmd(taskToMark.getIndex(), null, originalTask, null, COMMAND_DONE);
 			taskToMark.markAsDone();
-
 			exportToFile();
-
-			ArrayList<String> feedback = new ArrayList<String>();
 			feedback.add(String.format(MSG_DONE_TASK, taskName));
-
-			return feedback;
-
 		}
+		
+		return feedback;
+
+	}
+	
+	public ArrayList<String> markFloatingTaskAsDone(int idx) {
+		int arrayListIndex = getArrayListIndexOfFloatingTask(idx);
+		FloatingTask taskToMark = floatingTasksList.get(arrayListIndex);
+		FloatingTask originalTask = taskToMark;
+		ArrayList<String> feedback = new ArrayList<String>();
+
+		String taskName = taskToMark.getName();
+
+		if (taskToMark.isDone()) {
+			feedback.add(String.format(MSG_DONE_INVALID, taskName));
+			disableUndo();
+		} else {
+			savePrevCmd(taskToMark.getIndex(), null, null, originalTask, COMMAND_DONE);
+			taskToMark.markAsDone();
+			exportToFile();
+			feedback.add(String.format(MSG_DONE_TASK, taskName));
+		}
+		
+		return feedback;
 	}
 
 	/***** UPDATE COMMAND EXECUTION ******/
@@ -269,7 +305,7 @@ public class Calendar {
 
 		int arrayListIndex = getArrayListIndexOfFloatingTask(idx);
 		FloatingTask taskToUpdate = floatingTasksList.get(arrayListIndex);
-		FloatingTask originalTask = taskToUpdate;
+		FloatingTask originalTask = copyFloatingTask(taskToUpdate);
 
 		savePrevCmd(idx, null, null, originalTask, COMMAND_UPDATE);
 
@@ -280,8 +316,15 @@ public class Calendar {
 
 		ArrayList<String> feedback = new ArrayList<String>();
 		feedback.add(MSG_UPDATED_TASK);
-
+		
 		return feedback;
+	}
+	
+	private FloatingTask copyFloatingTask(FloatingTask task) {
+		int idx = task.getIndex();
+		String taskName = task.getName();
+		String taskDoneStatus = String.valueOf(task.isDone());
+		return new FloatingTask(idx, taskName, taskDoneStatus);
 	}
 
 	/***** UNDO COMMAND EXECUTION ******/
@@ -302,6 +345,8 @@ public class Calendar {
 				return undoRemove();
 			case COMMAND_UPDATE :
 				return undoUpdate();
+			case COMMAND_DONE :
+				return undoMarkTaskAsDone();
 			default :
 				return handleInvalidUndo();
 		}
@@ -364,6 +409,7 @@ public class Calendar {
 				eventsList.add(i, prevModEvent);
 				Collections.sort(eventsList);
 				indexStore.replaceEvent(prevModIndex, prevModEvent);
+				break;
 			}
 		}
 	}
@@ -374,6 +420,7 @@ public class Calendar {
 				floatingTasksList.remove(i);
 				floatingTasksList.add(i, prevModFloatingTask);
 				indexStore.replaceTask(prevModIndex, prevModFloatingTask);
+				break;
 			}
 		}
 	}
@@ -385,8 +432,32 @@ public class Calendar {
 				tasksList.add(i, prevModTask);
 				Collections.sort(tasksList);
 				indexStore.replaceTask(prevModIndex, prevModTask);
+				break;
 			}
 		}
+	}
+	
+	private ArrayList<String> undoMarkTaskAsDone() {
+		if (prevModTask != null) {
+			for (int i = 0; i < tasksList.size(); i++) {
+				if (tasksList.get(i).getIndex() == prevModIndex) {
+					tasksList.get(i).markAsUndone();
+					indexStore.replaceTask(prevModIndex, tasksList.get(i));
+					break;
+				}
+			}
+		} else {
+			for (int i = 0; i < floatingTasksList.size(); i++) {
+				if (floatingTasksList.get(i).getIndex() == prevModIndex) {
+					floatingTasksList.get(i).markAsUndone();
+					indexStore.replaceTask(prevModIndex, floatingTasksList.get(i));
+					break;
+				}
+			}
+		}
+		ArrayList<String> feedback = new ArrayList<String>();
+		feedback.add(MSG_UNDO_UPDATE);
+		return feedback;
 	}
 
 	private ArrayList<String> handleInvalidUndo() {
