@@ -10,6 +10,7 @@ public class Event implements Comparable<Event>{
 	protected int index;
 	
 	private static final String DELIMETER = "!!";
+	private static final String DELIMETER2 = "/";
 	private static final String PARAM_NAME = "name";
 	private static final String PARAM_START_DATE = "start date";
 	private static final String PARAM_START_TIME = "start time";
@@ -149,7 +150,7 @@ public class Event implements Comparable<Event>{
 	}
 	
 	public String toString(){
-		return getIndex() + DELIMETER + getName() + DELIMETER + getStartDate() + DELIMETER + getStartTime() + DELIMETER + getEndDate() + DELIMETER + getEndTime(); 
+		return getIndex() + DELIMETER + getName() + DELIMETER + getStartDate() + DELIMETER2 + getStartTime() + DELIMETER + getEndDate()+ DELIMETER2 +getEndTime(); 
 	}
 	
 //	public boolean clashesWith(Event e){
