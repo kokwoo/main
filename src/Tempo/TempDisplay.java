@@ -62,19 +62,7 @@ public class TempDisplay {
 	private final String MSG_SEARCH_RESULTS = "These are your search results";
 	private final String MSG_NO_SEARCH_RESULTS = "We are unable to match any of your search";
 
-	// create an object of SingleObject
-	private static Display instance = new Display();
-
-	// make the constructor private so that this class cannot be
-	// instantiated
-	private Display() {
-	}
-
-	// Get the only object available
-	public static Display getInstance() {
-		return instance;
-	}
-
+	
 	private void refresh() {
 		events = cal.getEventsList();
 		tasks = cal.getTasksList();
@@ -158,10 +146,6 @@ public class TempDisplay {
 		}
 	}
 
-	public Display(ArrayList<String> _wordFoundLines) {
-		wordFoundLines = new ArrayList<String>();
-		wordFoundLines = _wordFoundLines;
-	}
 
 	/*
 	 * public Display(ArrayList<Event> _events, ArrayList<Task> _tasks,
@@ -530,7 +514,7 @@ public class TempDisplay {
 
 	private void splitFtasks() {
 		for (int i = 0; i < floatingTasks.size(); i++) {
-			if (!floatingTasks.get(i).getDone()) {
+			if (!floatingTasks.get(i).isDone()) {
 				undoneFloatingTasks.add(floatingTasks.get(i));
 			} else {
 				doneFloatingTasks.add(floatingTasks.get(i));
