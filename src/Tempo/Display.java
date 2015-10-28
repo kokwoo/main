@@ -16,7 +16,6 @@ getUndoneTasks
 getDoneTasks
 getUndoneFloatingTasks
 getDoneFloatingTasks
-
 getAll
 getEvents
 getTasks
@@ -291,7 +290,7 @@ public class Display {
 		}
 		return undoneFTasksStr;
 	}
-	
+
 	public ArrayList<String> getDoneFloatingTasks() {
 		refresh();
 		ArrayList<String> doneFTasksStr = new ArrayList<String>();
@@ -312,7 +311,7 @@ public class Display {
 		}
 		return fTasksStr;
 	}
-	
+
 	public ArrayList<String> getEvents() {
 		refresh();
 		ArrayList<String> eventsStr = new ArrayList<String>();
@@ -321,7 +320,7 @@ public class Display {
 		eventsStr.addAll(getPastEvents());
 		return eventsStr;
 	}
-	
+
 	public ArrayList<String> getTasks() {
 		refresh();
 		ArrayList<String> tasksStr = new ArrayList<String>();
@@ -332,7 +331,7 @@ public class Display {
 		tasksStr.addAll(getMissedTasks());
 		return tasksStr;
 	}
-	
+
 	public ArrayList<String> getAll() {
 		refresh();
 		ArrayList<String> all = new ArrayList<String>();
@@ -340,7 +339,10 @@ public class Display {
 		all.addAll(getTasks());
 		return all;
 	}
-	
-		
-		
+
+	public ArrayList<String> getToday() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

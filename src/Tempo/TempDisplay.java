@@ -1,4 +1,4 @@
-package Tempo;
+/*package Tempo;
 
 import java.util.ArrayList;
 import java.text.ParseException;
@@ -19,7 +19,7 @@ getDoneFloatingTasks
 getSearchResults
 getAll
 getEvents
-getTasks*/
+getTasks
 
 public class TempDisplay {
 
@@ -176,7 +176,7 @@ public class TempDisplay {
 	 * splitTasks(); 
 	 * //splitting the dated undone tasks 
 	 * splitDatedTask(); }
-	 */
+	 
 
 	public static boolean manual() {
 		// INTRO
@@ -572,3 +572,4 @@ public class TempDisplay {
 	}
 
 }
+*/
