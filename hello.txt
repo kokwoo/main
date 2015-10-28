@@ -1,0 +1,11 @@
+--EVENTS--
+--TASKS--
+--FLOATING TASKS--
+0!!lol!!false
+1!!do cs2103!!false
+0!!do hmwk!!false
+0!!lol!!false
+1!!lol!!false
+0!!okok!!false
+0!!pls!!false
+0!!eee!!false
