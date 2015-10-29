@@ -55,7 +55,7 @@ public class Display {
 	private final String NO_PAST_EVENTS = "You have no past event";
 	private final String TODAY_TASKS = "Tasks due today";
 	private final String NO_TODAY_TASKS = "You have no task today";
-	private final String UPCOMING_TASKS = "These are the list of upcoming tasks today";
+	private final String UPCOMING_TASKS = "These are the list of upcoming tasks";
 	private final String NO_UPCOMING_TASKS = "You have no upcoming task";
 	private final String MISSED_TASKS = "These are the tasks you missed";
 	private final String NO_MISSED_TASKS = "You have no missed task";
@@ -82,7 +82,6 @@ public class Display {
 	}
 
 	private void refresh() {
-	
 		
 		events = cal.getEventsList();
 		tasks = cal.getTasksList();
@@ -103,12 +102,8 @@ public class Display {
 		doneTasks = new ArrayList<Task>();
 		doneFloatingTasks = new ArrayList<FloatingTask>();
 		
-		
-		//testing
-		for(int i=0;i<events.size(); i++){
-			System.out.println(events.get(i));
-	}
-		
+	//	System.out.println(events.size());
+	//	System.out.println(cal.getEventsList().get(0).getStartDate());
 		
 		splitsEvents();
 		// splitting (floating) done and undone tasks
@@ -122,6 +117,7 @@ public class Display {
 	private void splitsEvents() {
 		String currentDate = date.getDate();
 		Date dateCurr = getDateInDateFormat(currentDate);
+	//	System.out.println(currentDate);
 		for (int i = 0; i < events.size(); i++) {
 			Date dateCompare = getDateInDateFormat(events.get(i).getStartDate());
 			if (dateCurr.compareTo(dateCompare) == 0) {
@@ -188,7 +184,7 @@ public class Display {
 			upcomingEventsStr.add(NO_UPCOMING_EVENTS);
 		} else {
 			upcomingEventsStr.add(UPCOMING_EVENTS);
-			upcomingEventsStr = addStrEventToArray(upcomingEventsStr, eventsToday);
+			upcomingEventsStr = addStrEventToArray(upcomingEventsStr, upcomingEvents);
 		}
 		return upcomingEventsStr;
 	}

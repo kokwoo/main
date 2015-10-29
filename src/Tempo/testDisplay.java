@@ -18,7 +18,17 @@ public class testDisplay {
 		
 		System.out.println(newEvent.getIndex());
 		
+	
 		
 	}
 
 }
+
+/* 
+add task Do Homework
+add task Do dishes
+add task Eat Lunch due 25/12/2015
+add task eat lunch due 29/10/2015
+add task eat breakfast due 28/10/2015
+*/
+// add event hackathon from 20/12/2015 at 19:00 to 24/12/2015 at 19:00 
