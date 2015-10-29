@@ -23,9 +23,9 @@ public class Event implements Comparable<Event>{
 	public Event(int index, String name, String start, String end){
 		this.index = index;
 		this.name = name;		
-		setStartDateTime(start);
-		setEndDateTime(end);
-	}
+		setStartDateTime(start.trim());
+		setEndDateTime(end.trim());
+		}
 	
 	public void update(String field, String newValue) {
 		switch(field) {
