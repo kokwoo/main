@@ -82,10 +82,34 @@ public class Display {
 	}
 
 	private void refresh() {
+	
+		
 		events = cal.getEventsList();
 		tasks = cal.getTasksList();
 		floatingTasks = cal.getFloatingTasksList();
 		date = new CurrentDateAndTime();
+
+		eventsToday = new ArrayList<Event>();
+		upcomingEvents = new ArrayList<Event>();
+		pastEvents = new ArrayList<Event>();
+
+		tasksToday = new ArrayList<Task>();
+		upcomingTasks = new ArrayList<Task>();
+		missedTasks = new ArrayList<Task>();
+
+		undoneTasks = new ArrayList<Task>();
+		undoneFloatingTasks = new ArrayList<FloatingTask>();
+
+		doneTasks = new ArrayList<Task>();
+		doneFloatingTasks = new ArrayList<FloatingTask>();
+		
+		
+		//testing
+		for(int i=0;i<events.size(); i++){
+			System.out.println(events.get(i));
+	}
+		
+		
 		splitsEvents();
 		// splitting (floating) done and undone tasks
 		splitFtasks();
@@ -334,6 +358,7 @@ public class Display {
 
 	public ArrayList<String> getAll() {
 		refresh();
+
 		ArrayList<String> all = new ArrayList<String>();
 		all.addAll(getEvents());
 		all.addAll(getTasks());
