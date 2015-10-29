@@ -3,11 +3,11 @@ package Tempo;
 import java.util.ArrayList;
 
 public class ExitCommand implements Command{
-	
+	private static final String GOODBYE_MESSAGE = "Thank you for using Tempo!";
 	public ArrayList<String> execute() {
-		ArrayList<String> exit = new ArrayList<String>();
-		exit.add("exit");
-		return exit;
+		System.out.println(GOODBYE_MESSAGE);
+		System.exit(0);
+		return null;
 	}
 	
 }
