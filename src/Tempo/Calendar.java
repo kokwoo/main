@@ -381,6 +381,7 @@ public class Calendar {
 	}
 
 	private ArrayList<String> undoRemove() {
+		indexStore.removeRecycledId(prevModIndex);
 		if (prevModEvent != null) {
 			return addEvent(prevModEvent);
 		} else if (prevModFloatingTask != null) {
