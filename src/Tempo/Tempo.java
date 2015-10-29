@@ -10,8 +10,6 @@ public class Tempo {
 	private static boolean run;
 
 	private static final String WELCOME_MESSAGE = "Welcome to Tempo! Type manual for instructions";
-	private static final String GOODBYE_MESSAGE = "Thank you for using Tempo!";
-	private static final String EXIT_CMD = "exit";
 	private static final String GOOD_MORNING = "Good Morning! ";
 	private static final String GOOD_AFTERNOON = "Good Afternoon! ";
 	private static final String GOOD_EVENING = "Good evening! ";
@@ -46,12 +44,7 @@ public class Tempo {
 			ArrayList<String> output = listenForInput();
 
 			for (String line : output) {
-				System.out.println(output);
-
-				if (output.equals(EXIT_CMD)) {
-					run = false;
-					System.out.println(GOODBYE_MESSAGE);
-				}
+				System.out.println(line);
 			}
 		}
 	}

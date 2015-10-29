@@ -8,47 +8,46 @@ import com.joestelmach.natty.*;
 
 public class CommandParser {
 	private static CommandParser instance = new CommandParser();
-	
+
 	private static final String COMMAND_ADD = "add";
 	private static final String COMMAND_CREATE = "create";
 	private static final String COMMAND_NEW = "new";
-	
+
 	private static final String COMMAND_REMOVE = "remove";
 	private static final String COMMAND_DELETE = "delete";
 	private static final String COMMAND_CANCEL = "cancel";
-	
+
 	private static final String COMMAND_UPDATE = "update";
 	private static final String COMMAND_EDIT = "edit";
 	private static final String COMMAND_CHANGE = "change";
-	
+
 	private static final String COMMAND_DONE = "done";
 	private static final String COMMAND_COMPLETED = "completed";
 	private static final String COMMAND_FINISHED = "finished";
-	
+
 	private static final String COMMAND_VIEW = "view";
 	private static final String COMMAND_DISPLAY = "display";
-	
+
 	private static final String COMMAND_SEARCH = "search";
 	private static final String COMMAND_FIND = "find";
-	
+
 	private static final String COMMAND_UNDO = "undo";
-	
+
 	private static final String COMMAND_HELP = "help";
-	
+
 	private static final String COMMAND_EXIT = "exit";
-	
+
 	private Calendar calendar = Calendar.getInstance();
 	private IndexStore indexStore = IndexStore.getInstance();
 	private Display display = Display.getInstance();
-	
-	private CommandParser(){
-		
+
+	private CommandParser() {
+
 	}
 
 	public static CommandParser getInstance() {
 		return instance;
 	}
-
 
 	// UPDATE: update <id> <field name>:<new value>
 	// REMOVE: remove <id>
@@ -59,55 +58,55 @@ public class CommandParser {
 		String arguments = getArguments(commandString);
 		// process add, process update, process remove
 		switch (commandType.toLowerCase()) {
-			// Add Function
-			case COMMAND_ADD :
-			case COMMAND_CREATE :
-			case COMMAND_NEW :
-				return processAddCommand(arguments);
+		// Add Function
+		case COMMAND_ADD:
+		case COMMAND_CREATE:
+		case COMMAND_NEW:
+			return processAddCommand(arguments);
 
-			// Remove Function
-			case COMMAND_REMOVE :
-			case COMMAND_DELETE :
-			case COMMAND_CANCEL :
-				 return processRemoveCommand(arguments); 
+		// Remove Function
+		case COMMAND_REMOVE:
+		case COMMAND_DELETE:
+		case COMMAND_CANCEL:
+			return processRemoveCommand(arguments);
 
-			// Update Function
-			case COMMAND_UPDATE :
-			case COMMAND_EDIT :
-			case COMMAND_CHANGE :
-				return processUpdateCommand(arguments);
+		// Update Function
+		case COMMAND_UPDATE:
+		case COMMAND_EDIT:
+		case COMMAND_CHANGE:
+			return processUpdateCommand(arguments);
 
-			// Mark as Done Function
-			case COMMAND_DONE :
-			case COMMAND_FINISHED :
-			case COMMAND_COMPLETED :
-				return processDoneCommand(arguments);
+		// Mark as Done Function
+		case COMMAND_DONE:
+		case COMMAND_FINISHED:
+		case COMMAND_COMPLETED:
+			return processDoneCommand(arguments);
 
-			// Display Function
-			case COMMAND_VIEW :
-			case COMMAND_DISPLAY :
-				return null;
+		// Display Function
+		case COMMAND_VIEW:
+		case COMMAND_DISPLAY:
+			return processDisplayCommand(arguments);
 
-			// Search Function
-			case COMMAND_SEARCH :
-			case COMMAND_FIND :
-				return null;
-			
-			// Undo Function
-			case COMMAND_UNDO:
-				return processUndoCommand();
-			
-			// Display help/manual
-			case COMMAND_HELP:
-				return null;
-				
-			// Exit command	
-			case COMMAND_EXIT:
-				return processExitCommand();
+		// Search Function
+		case COMMAND_SEARCH:
+		case COMMAND_FIND:
+			return null;
 
-			// Generate Error Command Message
-			default :
-				return null;
+		// Undo Function
+		case COMMAND_UNDO:
+			return processUndoCommand();
+
+		// Display help/manual
+		case COMMAND_HELP:
+			return null;
+
+		// Exit command
+		case COMMAND_EXIT:
+			return processExitCommand();
+
+		// Generate Error Command Message
+		default:
+			return null;
 		}
 	}
 
@@ -119,36 +118,36 @@ public class CommandParser {
 		return removeFirstWord(message);
 	}
 
-	// ADD EVENT: add event <name> from <start date> at <start time> to <end date> at <end time> repeat:<frequency of occurrence>
+	// ADD EVENT: add event <name> from <start date> at <start time> to <end
+	// date> at <end time> repeat:<frequency of occurrence>
 	// ADD TASK: add task <name> due <due date>
 	// ADD FLOATING: add task <name>
 	private Command processAddCommand(String argumentString) {
 		String addType = getFirstWord(argumentString);
 		argumentString = removeFirstWord(argumentString);
-		
 		ArrayList<String> args = null;
-		
+
 		Command command;
-		
-		if(addType.equalsIgnoreCase("event")) {
+
+		if (addType.equalsIgnoreCase("event")) {
 			args = processAddEventCommand(argumentString);
 		} else if (addType.equalsIgnoreCase("task")) {
 			args = processAddTaskCommand(argumentString);
 		} else {
-			//TO-DO DISPLAY ERROR HERE
+			// TO-DO DISPLAY ERROR HERE
 		}
-		
+
 		command = new AddCommand(calendar, args);
 		return command;
 	}
-	
-	private ArrayList<String> processAddEventCommand(String argumentString){
+
+	private ArrayList<String> processAddEventCommand(String argumentString) {
 		String nameString = "";
 		Date startDateTime = null;
 		Date endDateTime = null;
-		
+
 		ArrayList<String> returnList = new ArrayList<String>();
-		
+
 		if (argumentString.contains("from")) {
 			nameString = getEventName(argumentString);
 			argumentString = argumentString.split(nameString)[1].trim();
@@ -180,38 +179,38 @@ public class CommandParser {
 				nameString = argumentString.split(dateString)[0].trim();
 			}
 		}
-		
+
 		SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy/HH:mm");
-		
+
 		String startTimeString = "null";
 		String endTimeString = "null";
-		
-		if(startDateTime != null){
+
+		if (startDateTime != null) {
 			startTimeString = df.format(startDateTime);
 		}
-		
-		if(endDateTime != null){
+
+		if (endDateTime != null) {
 			endTimeString = df.format(endDateTime);
 		}
-		
+
 		returnList.add(nameString);
 		returnList.add(startTimeString);
 		returnList.add(endTimeString);
-		
+
 		return returnList;
 	}
-	
-	private ArrayList<String> processAddTaskCommand(String argumentString){
+
+	private ArrayList<String> processAddTaskCommand(String argumentString) {
 		String nameString = null;
 		Date dueDate = null;
 		String dueDateString = null;
-		
-		ArrayList<String> returnList =  new ArrayList<String>();
-		
-		if(argumentString.toLowerCase().contains("due")){
+
+		ArrayList<String> returnList = new ArrayList<String>();
+
+		if (argumentString.toLowerCase().contains("due")) {
 			nameString = getTaskName(argumentString);
 			dueDate = getTaskDueDate(argumentString);
-		}else{
+		} else {
 			// Try parsing on natty
 			DateGroup dateGroup = parseDateTimeString(argumentString);
 
@@ -220,78 +219,107 @@ public class CommandParser {
 
 				String dateString = dateGroup.getText();
 				nameString = argumentString.split(dateString)[0].trim();
-			}else{
-				//Floating Task
+			} else {
+				// Floating Task
 				nameString = argumentString.trim();
 				returnList.add(nameString);
-				
+
 				return returnList;
 			}
 		}
-		
+
 		SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy/HH:mm");
-		
-		if(dueDate != null){
+
+		if (dueDate != null) {
 			dueDateString = df.format(dueDate);
 		}
-		
+
 		returnList.add(nameString);
 		returnList.add(dueDateString);
-		
+
 		return returnList;
 	}
-	
-	private Command processRemoveCommand(String argumentString){
+
+	private Command processRemoveCommand(String argumentString) {
 		int idx;
 		Command command;
-		
+
 		idx = getId(argumentString);
-		
-		if(idx != -1){
-			command = new RemoveCommand(calendar,indexStore, idx);
-			return command;	
-		}else{
-			//DISPLAY ERROR MESSAGE (TO-DO)
+
+		if (idx != -1) {
+			command = new RemoveCommand(calendar, indexStore, idx);
+			return command;
+		} else {
+			// DISPLAY ERROR MESSAGE (TO-DO)
 			return null;
 		}
 	}
-	
-	private Command processUpdateCommand(String arguments){
+
+	private Command processUpdateCommand(String arguments) {
 		int idx = getId(getFirstWord(arguments));
-		
+
 		ArrayList<String> fields = getFieldsList(arguments);
 		ArrayList<String> newValues = getNewValuesList(arguments);
-		
-		if(idx != -1){
+
+		if (idx != -1) {
 			Command command = new UpdateCommand(calendar, indexStore, idx, fields, newValues);
 			return command;
-		}else{
-			//DISPLAY ERROR MESSAGE
+		} else {
+			// DISPLAY ERROR MESSAGE
 			return null;
 		}
-		
+
 	}
-	
-	private Command processDoneCommand(String argumentString){
+
+	private Command processDoneCommand(String argumentString) {
 		int idx;
 		Command command;
-		
+
 		idx = getId(argumentString);
-		
-		if(idx != -1){
-			command = new DoneCommand(calendar,indexStore, idx);
-			return command;	
-		}else{
-			//DISPLAY ERROR MESSAGE (TO-DO)
+
+		if (idx != -1) {
+			command = new DoneCommand(calendar, indexStore, idx);
+			return command;
+		} else {
+			// DISPLAY ERROR MESSAGE (TO-DO)
 			return null;
 		}
 	}
-	
-	private Command processUndoCommand(){
+
+	private Command processDisplayCommand(String arguments) {
+		Command command;
+	//	System.out.println("got it!");
+	//	System.out.println(arguments);
+		command = new DisplayCommand(display, arguments);
+		if (checkArguments(arguments)) {
+			return command;
+		} else {
+			// DISPLAY ERROR MSG
+			return null;
+		}
+
+	}
+
+	private boolean checkArguments(String arguments) {
+		switch (arguments) {
+		case ("events"):
+		case ("tasks"):
+		case ("upcoming events"):
+		case ("undone tasks"):
+		case ("missed tasks"):
+		case ("today"):
+		case ("all"):
+			return true;
+		default:
+			return false;
+		}
+	}
+
+	private Command processUndoCommand() {
 		return new UndoCommand(calendar);
 	}
-	
-	private Command processExitCommand(){
+
+	private Command processExitCommand() {
 		return new ExitCommand();
 	}
 
@@ -304,8 +332,8 @@ public class CommandParser {
 				SimpleDateFormat dateFormat;
 				DateGroup dateGroup = null;
 				Date date = null;
-				
-				//splits date according to 
+
+				// splits date according to
 				if (dateString.contains("/")) {
 					dateFormat = new SimpleDateFormat("dd/MM/yyyy");
 					date = dateFormat.parse(dateString);
@@ -348,8 +376,8 @@ public class CommandParser {
 				SimpleDateFormat dateFormat;
 				DateGroup dateGroup = null;
 				Date date = null;
-				
-				//splits date according to 
+
+				// splits date according to
 				if (dateTimeString.contains("/")) {
 					dateFormat = new SimpleDateFormat("dd/MM/yyyy");
 					date = dateFormat.parse(dateTimeString);
@@ -368,7 +396,7 @@ public class CommandParser {
 						date = null;
 					}
 				}
-				
+
 				return date;
 			}
 		} catch (Exception e) {
@@ -379,13 +407,13 @@ public class CommandParser {
 
 	// FOR REMOVE/MARK AS DONE FUNCTION
 	private int getId(String arguments) {
-		try{
+		try {
 			int id = Integer.parseInt(arguments);
 			return id;
-		}catch(NumberFormatException e){
+		} catch (NumberFormatException e) {
 			return -1;
 		}
-		
+
 	}
 
 	// FOR ADD EVENTS FUNCTION
@@ -399,7 +427,7 @@ public class CommandParser {
 		String[] parameters1 = arguments.split("due");
 		return parameters1[0].trim();
 	}
-	
+
 	private Date getTaskDueDate(String arguments) {
 		String[] parameters1 = arguments.split("due");
 		String dueDateString = parameters1[1].trim();
