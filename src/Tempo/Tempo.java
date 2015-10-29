@@ -46,7 +46,7 @@ public class Tempo {
 			ArrayList<String> output = listenForInput();
 
 			for (String line : output) {
-				System.out.println(output);
+				System.out.println(line);
 
 				if (output.equals(EXIT_CMD)) {
 					run = false;

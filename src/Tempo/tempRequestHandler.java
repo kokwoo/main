@@ -24,7 +24,6 @@ public class tempRequestHandler {
 		if(command != null){
 			return command.execute();
 		}else{
-			
 		}return handleInvalidCommand();
 		
 	}

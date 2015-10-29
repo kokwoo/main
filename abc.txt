@@ -1,0 +1,17 @@
+--EVENTS--
+0!!kokwoo!!20/12/2015/19:00!!24/12/2015/19:00
+--TASKS--
+4!!eat brkfast!!false!!20/01/2015
+3!!eat lunch!!false!!29/10/2015
+0!!hackathon!!false!!24/12/2015
+0!!hackathon!!false!!24/12/2015
+0!!hackathon!!false!!24/12/2015
+0!!hackathon!!false!!24/12/2015
+0!!hackathon!!false!!24/12/2015
+2!!hackathon!!false!!24/12/2015
+2!!eat dinner!!false!!25/12/2015
+--FLOATING TASKS--
+0!!Do homework!!false
+1!!Do dishes!!false
+0!!shopping!!false
+1!!driving lessom!!false
