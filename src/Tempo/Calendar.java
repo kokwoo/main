@@ -7,6 +7,7 @@ public class Calendar {
 
 	private static Calendar instance = new Calendar();
 	private static IndexStore indexStore;
+	private static CalendarImporter importer;
 
 	private static final String MSG_ADDED_EVENT = "Event %1$s has been added.";
 	private static final String MSG_ADDED_TASK = "Task %1$s has been added.";
@@ -44,7 +45,7 @@ public class Calendar {
 		tasksList = new ArrayList<Task>();
 		floatingTasksList = new ArrayList<FloatingTask>();
 		indexStore = IndexStore.getInstance();
-		indexStore.initialiseStore(eventsList, tasksList, floatingTasksList);
+		importer = CalendarImporter.getInstance();
 	}
 
 	public static Calendar getInstance() {
@@ -56,6 +57,7 @@ public class Calendar {
 		File file = new File(_fileName);
 		if (file.exists()) {
 			importFromFile();
+			indexStore.initialiseStore(eventsList, tasksList, floatingTasksList);
 		}
 	}
 
@@ -544,11 +546,14 @@ public class Calendar {
 
 	public void importFromFile() {
 		System.out.println("Importing: " + _fileName);
-		CalendarImporter importer = new CalendarImporter(_fileName);
-		eventsList = importer.getEventsList();
-		tasksList = importer.getTasksList();
-		floatingTasksList = importer.getFloatingTasksList();
-		System.out.println("Import Sucessful!");
+		if(importer.importFromFile(_fileName)){
+			eventsList = importer.getEventsList();
+			tasksList = importer.getTasksList();
+			floatingTasksList = importer.getFloatingTasksList();
+			System.out.println("Import Sucessful!");
+		}else{
+			System.out.println("Import failed!");
+		}
 	}
 
 	private int getArrayListIndexOfEvent(int id) {
