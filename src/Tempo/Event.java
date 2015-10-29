@@ -116,7 +116,7 @@ public class Event implements Comparable<Event>{
 	}
 	
 	public String getStartDateTimeSimplified(){
-		SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+		SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy/HH:mm");
 		return formatter.format(startDateTime);
 	}
 	
@@ -136,7 +136,7 @@ public class Event implements Comparable<Event>{
 	}
 	
 	public String getEndDateTimeSimplified(){
-		SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+		SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy/HH:mm");
 		return formatter.format(endDateTime);
 	}
 
