@@ -9,7 +9,7 @@ public class Tempo {
 	private static Scanner sc;
 	private static boolean run;
 
-	private static final String WELCOME_MESSAGE = "lcome to Tempo! Type manual for instructions";
+	private static final String WELCOME_MESSAGE = "Welcome to Tempo! Type manual for instructions";
 	private static final String GOODBYE_MESSAGE = "Thank you for using Tempo!";
 	private static final String EXIT_CMD = "exit";
 	private static final String GOOD_MORNING = "Good Morning! ";

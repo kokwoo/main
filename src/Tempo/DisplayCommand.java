@@ -28,7 +28,7 @@ public class DisplayCommand implements Command {
 		case (ARG_EVENTS):
 			return display.getEvents();
 		case (ARG_TASKS):
-			display.getTasks();
+			return display.getTasks();
 		case (ARG_UPCOMING_EVENTS):
 			return display.getUpcomingEvents();
 		case (ARG_UNDONE_TASKS):

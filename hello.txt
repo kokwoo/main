@@ -1,11 +1,10 @@
---EVENTS--
---TASKS--
---FLOATING TASKS--
-0!!lol!!false
-1!!do cs2103!!false
-0!!do hmwk!!false
-0!!lol!!false
-1!!lol!!false
-0!!okok!!false
-0!!pls!!false
-0!!eee!!false
+---EVENTS--		
+-0!!Dinner with Dad!!30/10/2015!!19:00!!23/09/2015!!20:00		
+---TASKS--		
+-3!!updated!!false!!09/10/2015		
+---FLOATING TASKS--		
+-1!!hello!!false		
+-2!!Buy grapes!!false		
+-4!!Dinner with mum!!false		
+-5!!hello!!false		
+-6!!updated!!false

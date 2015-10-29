@@ -288,7 +288,8 @@ public class CommandParser {
 
 	private Command processDisplayCommand(String arguments) {
 		Command command;
-		System.out.println("got it!");
+	//	System.out.println("got it!");
+	//	System.out.println(arguments);
 		command = new DisplayCommand(display, arguments);
 		if (checkArguments(arguments)) {
 			return command;
