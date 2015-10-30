@@ -381,9 +381,10 @@ public class Calendar {
 	}
 
 	private ArrayList<String> undoRemove() {
-		if (isEvent(prevModIndex)) {
+		indexStore.removeRecycledId(prevModIndex);
+		if (prevModEvent != null) {
 			return addEvent(prevModEvent);
-		} else if (isFloatingTask(prevModIndex)) {
+		} else if (prevModFloatingTask != null) {
 			return addFloatingTask(prevModFloatingTask);
 		} else {
 			return addTask(prevModTask);

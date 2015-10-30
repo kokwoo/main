@@ -90,11 +90,13 @@ public class IndexStore {
 	public void replaceEvent(int index, Event event) {
 		removeEvent(index);
 		addEvent(index, event);
+		removeRecycledId(index);
 	}
 	
 	public void replaceTask(int index, FloatingTask task) {
 		removeTask(index);
 		addTask(index, task);
+		removeRecycledId(index);
 	}
 	
 	public int getNewId() {
@@ -107,6 +109,15 @@ public class IndexStore {
 		}
 		
 		return id;
+	}
+	
+	public void removeRecycledId(int index) {
+		for (int i = 0; i < recycledId.size(); i++) {
+			if (recycledId.get(i) == index) {
+				recycledId.remove(i);
+				break;
+			}
+		}
 	}
 	
 	public boolean isEvent(int id) {
