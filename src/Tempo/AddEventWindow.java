@@ -53,7 +53,7 @@ public class AddEventWindow {
 			String startDateFormatted = formatDate(sMonth,sDay,sYear);
 			String endDateFormatted = formatDate(eMonth,eDay,eYear);
 
-			calendar.addEvent(eventName.getText(), startDateFormatted, startTime.getText(), endDateFormatted, endTime.getText());
+			//calendar.addEvent(eventName.getText(), startDateFormatted, startTime.getText(), endDateFormatted, endTime.getText());
 			window.close();
 
 		});
