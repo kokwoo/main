@@ -38,4 +38,8 @@ public class tempRequestHandler {
 		calendar.createFile(filename);
 		return filename + " is ready to use.";
 	}
+	
+	public Calendar getCalendar() {
+		return this.calendar;
+	}
 }
