@@ -19,6 +19,8 @@ public class Calendar {
 	private static final String MSG_DONE_INVALID = "Err: Task %1$s is alr marked as done!";
 	private static final String MSG_UNDO_UPDATE = "Your updates have been reverted.";
 	private static final String MSG_UNDO_INVALID = "Error: Cannot undo previous operation.";
+	private static final String MSG_SEARCH_RESULTS = "These are your search results";
+	private static final String MSG_NO_SEARCH_RESULTS = "(We do not have any results for your search)";
 
 	private static final String COMMAND_ADD = "add";
 	private static final String COMMAND_REMOVE = "remove";
@@ -216,7 +218,7 @@ public class Calendar {
 
 		return feedback;
 	}
-	
+
 	private Event copyEvent(Event event) {
 		int idx = event.getIndex();
 		String eventName = event.getName();
@@ -243,7 +245,7 @@ public class Calendar {
 		return feedback;
 
 	}
-	
+
 	private Task copyTask(Task task) {
 		int idx = task.getIndex();
 		String taskName = task.getName();
@@ -258,7 +260,7 @@ public class Calendar {
 		if (isFloatingTask(idx)) {
 			return markFloatingTaskAsDone(idx);
 		}
-		
+
 		int arrayListIndex = getArrayListIndexOfTask(idx);
 		Task taskToMark = tasksList.get(arrayListIndex);
 		Task originalTask = taskToMark;
@@ -275,11 +277,11 @@ public class Calendar {
 			exportToFile();
 			feedback.add(String.format(MSG_DONE_TASK, taskName));
 		}
-		
+
 		return feedback;
 
 	}
-	
+
 	public ArrayList<String> markFloatingTaskAsDone(int idx) {
 		int arrayListIndex = getArrayListIndexOfFloatingTask(idx);
 		FloatingTask taskToMark = floatingTasksList.get(arrayListIndex);
@@ -297,7 +299,7 @@ public class Calendar {
 			exportToFile();
 			feedback.add(String.format(MSG_DONE_TASK, taskName));
 		}
-		
+
 		return feedback;
 	}
 
@@ -318,10 +320,10 @@ public class Calendar {
 
 		ArrayList<String> feedback = new ArrayList<String>();
 		feedback.add(MSG_UPDATED_TASK);
-		
+
 		return feedback;
 	}
-	
+
 	private FloatingTask copyFloatingTask(FloatingTask task) {
 		int idx = task.getIndex();
 		String taskName = task.getName();
@@ -341,16 +343,16 @@ public class Calendar {
 
 	private ArrayList<String> executeUndo() {
 		switch (prevCommand) {
-			case COMMAND_ADD :
-				return undoAdd();
-			case COMMAND_REMOVE :
-				return undoRemove();
-			case COMMAND_UPDATE :
-				return undoUpdate();
-			case COMMAND_DONE :
-				return undoMarkTaskAsDone();
-			default :
-				return handleInvalidUndo();
+		case COMMAND_ADD:
+			return undoAdd();
+		case COMMAND_REMOVE:
+			return undoRemove();
+		case COMMAND_UPDATE:
+			return undoUpdate();
+		case COMMAND_DONE:
+			return undoMarkTaskAsDone();
+		default:
+			return handleInvalidUndo();
 		}
 	}
 
@@ -439,7 +441,7 @@ public class Calendar {
 			}
 		}
 	}
-	
+
 	private ArrayList<String> undoMarkTaskAsDone() {
 		if (prevModTask != null) {
 			for (int i = 0; i < tasksList.size(); i++) {
@@ -472,48 +474,99 @@ public class Calendar {
 
 	/***** SEARCH COMMAND EXECUTION ******/
 
-	public ArrayList<String> searchId(int id) {
-		ArrayList<String> idFoundLines = new ArrayList<String>();
-		if (!isEvent(id) && !isFloatingTask(id)) {
-			idFoundLines.clear();
+	/*
+	 * public ArrayList<String> searchId(int id) { ArrayList<String>
+	 * idFoundLines = new ArrayList<String>(); if (!isEvent(id) &&
+	 * !isFloatingTask(id)) { idFoundLines.clear(); }
+	 * 
+	 * else if (isEvent(id)) { Event event = indexStore.getEventById(id);
+	 * idFoundLines.add(event.toString()); }
+	 * 
+	 * else if (isFloatingTask(id)) { FloatingTask task =
+	 * indexStore.getTaskById(id); idFoundLines.add(task.toString()); }
+	 * disableUndo(); return idFoundLines;
+	 * 
+	 * }
+	 */
+
+	public ArrayList<String> search(String arguments) {
+
+		String[] splitedArg = arguments.split("\\s+");
+		ArrayList<String> wordFoundLines = new ArrayList<String>();
+		wordFoundLines.add(MSG_SEARCH_RESULTS);
+		int state = 0;
+		int num = 1;
+		for (int i = 0; i < eventsList.size(); i++) {
+			innerloop: while (state < splitedArg.length) {
+				if (containsWord(eventsList.get(i).toString(), splitedArg[state])) {
+					state++;
+					if (state == splitedArg.length) {
+						wordFoundLines = toDisplayEvent(wordFoundLines, eventsList.get(i), num);
+						num++;
+					}
+				} else {
+					break innerloop;
+				}
+			}
 		}
 
-		else if (isEvent(id)) {
-			Event event = indexStore.getEventById(id);
-			idFoundLines.add(event.toString());
+		state = 0;
+		for (int i = 0; i < tasksList.size(); i++) {
+			innerloop: while (state < splitedArg.length) {
+				if (containsWord(tasksList.get(i).toString(), splitedArg[state])) {
+					state++;
+					if (state == splitedArg.length) {
+						wordFoundLines = toDisplayTasks(wordFoundLines, tasksList.get(i), num);
+						num++;
+					}
+				} else {
+					break innerloop;
+				}
+			}
 		}
 
-		else if (isFloatingTask(id)) {
-			FloatingTask task = indexStore.getTaskById(id);
-			idFoundLines.add(task.toString());
+		state = 0;
+		for (int i = 0; i < floatingTasksList.size(); i++) {
+			innerloop: while (state < splitedArg.length) {
+				if (containsWord(floatingTasksList.get(i).toString(), splitedArg[state])) {
+					state++;
+					if (state == splitedArg.length) {
+						wordFoundLines = toDisplayFTasks(wordFoundLines, floatingTasksList.get(i), num);
+						num++;
+					}
+				} else {
+					break innerloop;
+				}
+			}
 		}
-		disableUndo();
-		return idFoundLines;
 
+		// Display error if no search results
+		if (num == 1) {
+			wordFoundLines.add(MSG_NO_SEARCH_RESULTS);
+		}
+
+		return wordFoundLines;
 	}
 
-	public ArrayList<String> searchKeyWord(String keyword) {
-		ArrayList<String> wordFoundLines = new ArrayList<String>();
-		for (int i = 0; i < eventsList.size(); i++) {
-			if (containsWord(eventsList.get(i).toString(), keyword)) {
-				wordFoundLines.add(eventsList.get(i).toString());
-			}
-		}
+	private ArrayList<String> toDisplayFTasks(ArrayList<String> wordFoundLines, FloatingTask floatingTask, int num) {
 
-		for (int i = 0; i < tasksList.size(); i++) {
-			if (containsWord(tasksList.get(i).toString(), keyword)) {
-				wordFoundLines.add(tasksList.get(i).toString());
-			}
-		}
-
-		for (int i = 0; i < floatingTasksList.size(); i++) {
-			if (containsWord(floatingTasksList.get(i).toString(), keyword)) {
-				wordFoundLines.add(floatingTasksList.get(i).toString());
-			}
-		}
-		disableUndo();
+		wordFoundLines.add(num + ") " + floatingTask.getName() + "\t[ID:" + floatingTask.getIndex() + "] ");
 		return wordFoundLines;
+	}
 
+	private ArrayList<String> toDisplayTasks(ArrayList<String> wordFoundLines, Task task, int num) {
+		wordFoundLines.add("Tasks");
+		wordFoundLines
+				.add(num + ") " + task.getName() + " Due: " + task.getDueDate() + "\t[ID:" + task.getIndex() + "] ");
+
+		return wordFoundLines;
+	}
+
+	private ArrayList<String> toDisplayEvent(ArrayList<String> wordFoundLines, Event event, int num) {
+		wordFoundLines.add("Events");
+		wordFoundLines.add(num + ") " + event.getName() + " From: " + event.getStartDateTime() + " To: "
+				+ event.getEndDateTime() + "\t[ID:" + event.getIndex() + "] ");
+		return wordFoundLines;
 	}
 
 	private boolean containsWord(String content, String keyword) {
@@ -547,12 +600,12 @@ public class Calendar {
 
 	public void importFromFile() {
 		System.out.println("Importing: " + _fileName);
-		if(importer.importFromFile(_fileName)){
+		if (importer.importFromFile(_fileName)) {
 			eventsList = importer.getEventsList();
 			tasksList = importer.getTasksList();
 			floatingTasksList = importer.getFloatingTasksList();
 			System.out.println("Import Sucessful!");
-		}else{
+		} else {
 			System.out.println("Import failed!");
 		}
 	}
