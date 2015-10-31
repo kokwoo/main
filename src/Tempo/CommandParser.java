@@ -90,7 +90,7 @@ public class CommandParser {
 		// Search Function
 		case COMMAND_SEARCH:
 		case COMMAND_FIND:
-			return null;
+			return processSearchCommand(arguments);
 
 		// Undo Function
 		case COMMAND_UNDO:
@@ -110,6 +110,7 @@ public class CommandParser {
 		}
 	}
 
+	
 	private String getCommandType(String commandString) {
 		return getFirstWord(commandString);
 	}
@@ -285,6 +286,15 @@ public class CommandParser {
 			return null;
 		}
 	}
+	
+	private Command processSearchCommand(String arguments) {
+		Command command;
+		
+		command = new SearchCommand(calendar, arguments);
+		
+		return command;
+	}
+
 
 	private Command processDisplayCommand(String arguments) {
 		Command command;
