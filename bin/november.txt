@@ -1,0 +1,23 @@
+--EVENTS--
+12!!MC halloween event!!30/10/2015/11:00!!30/10/2015/18:00
+0!!dinner with family!!31/10/2015/18:00!!31/10/2015/21:00
+5!!lunch with boss!!01/11/2015/12:00!!01/11/2015/15:00
+6!!cs2103 hackathon!!01/11/2015/16:00!!01/11/2015/22:00
+13!!lunch with bel!!04/11/2015/12:30!!04/11/2015/15:30
+--TASKS--
+1!!do cs2010 pyp 11/12!!false!!30/10/2015
+2!!do cs2010 pyp 12/13!!false!!30/10/2015
+3!!do cs2010 pyp 13/14!!false!!30/10/2015
+4!!do cs2010 pyp 14/15!!false!!30/10/2015
+19!!buy mummy a rose!!false!!31/10/2015
+9!!do fin2004 homework!!false!!02/11/2015
+11!!clock 5km!!false!!07/11/2015
+16!!cs2010 ps5!!false!!13/11/2015
+15!!cs2105 assignment 3!!false!!15/11/2015
+14!!fin2004 project!!false!!16/11/2015
+--FLOATING TASKS--
+7!!OSA1001 online quiz!!false
+8!!buy more meiji milk!!false
+10!!ab workout!!false
+17!!eat my cupcakes for breakfast!!false
+18!!take photo of cupcakes!!false
