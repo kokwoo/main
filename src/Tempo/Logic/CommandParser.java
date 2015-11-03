@@ -136,8 +136,23 @@ public class CommandParser {
 		String addType = getFirstWord(argumentString);
 		argumentString = removeFirstWord(argumentString);
 		ArrayList<String> args = null;
+		boolean isRecurring = false;
+		ArrayList<String> recurringArgs = null;
+		String recurringType = null;
+		String recurringDate = null;
 
 		Command command;
+		
+		if(argumentString.contains(" repeat ")){
+			String[] split = argumentString.split(" repeat ");
+			String recurringArgsString = split[split.length-1];
+			argumentString = getArgumentString(argumentString);
+			isRecurring = true;
+			recurringArgs = processRecurringArgs(recurringArgsString);
+			
+			recurringType = recurringArgs.get(0);
+			recurringDate = recurringArgs.get(1);
+		}
 
 		if (addType.equalsIgnoreCase("event")) {
 			args = processAddEventCommand(argumentString);
@@ -147,7 +162,7 @@ public class CommandParser {
 			// TO-DO DISPLAY ERROR HERE
 		}
 
-		command = new AddCommand(calendar, args);
+		command = new AddCommand(calendar, args, isRecurring, recurringType, recurringDate);
 		return command;
 	}
 
@@ -515,6 +530,45 @@ public class CommandParser {
 		}
 		return returnString;
 	}
+	
+	private String getArgumentString(String arguments){
+		String[] parameters = arguments.split(" repeat ");
+		String returnString = parameters[0];
+
+		for (int i = 1; i < parameters.length - 1; i++) {
+			returnString += " repeat " + parameters[i];
+		}
+		return returnString;
+	}
+	
+	private ArrayList<String> processRecurringArgs(String recurringArgs){
+		String recurringType = null;
+		Date recurringDate = null;
+		String recurringDateStr = null;
+		
+		ArrayList<String> args = new ArrayList<String>();
+		
+		if(recurringArgs.contains(" till ")){
+			String[] split = recurringArgs.split(" till ");
+			recurringType = split[0];
+			recurringDate = getDateTime(split[1]);
+			
+			SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy");
+			
+			try{
+				recurringDateStr = df.format(recurringDate);
+			}catch(Exception e){
+				recurringDateStr = null;
+			}
+		}else{
+			recurringType = recurringArgs;
+		}
+		
+		args.add(recurringType);
+		args.add(recurringDateStr);
+		
+		return args;
+	}
 
 	// FOR ADD TASK FUNCTION
 	private String getTaskName(String arguments) {
@@ -622,10 +676,6 @@ public class CommandParser {
 		List<DateGroup> groups = parser.parse(dateTimeString);
 		if (!groups.isEmpty()) {
 			DateGroup dateGroup = groups.get(0);
-			// String s = dateGroup.getText();
-			// System.out.println("dateGroup.getText(): " + s);
-			// List<Date> dates = dateGroup.getDates();
-
 			return dateGroup;
 		} else {
 			return null;
