@@ -3,10 +3,11 @@ package Tempo.UI;
 import java.text.*;
 import java.util.*;
 
-import Tempo.Logic.tempRequestHandler;
+import Tempo.Commands.Result;
+import Tempo.Logic.RequestHandler;
 
 public class Tempo {
-	private tempRequestHandler tempRH = tempRequestHandler.getInstance();
+	private RequestHandler requestHandler = RequestHandler.getInstance();
 
 	private static Scanner sc;
 	private static boolean run;
@@ -15,6 +16,8 @@ public class Tempo {
 	private static final String GOOD_MORNING = "Good Morning! ";
 	private static final String GOOD_AFTERNOON = "Good Afternoon! ";
 	private static final String GOOD_EVENING = "Good evening! ";
+	private static final String SUCCESSFUL_MESSAGE = "Command: '%1$s' was performed successfully.";
+	private static final String UNSUCESSFUL_MESSAGE = "Command: '%1$s' was not performed succesfully. Please refer to the help menu.";
 
 	private static Tempo Tempo = new Tempo();
 
@@ -37,16 +40,18 @@ public class Tempo {
 
 	private void run(String fileName) {
 		printWelcomeMsg();
-		System.out.println(tempRH.initialize(fileName));
+		System.out.println(requestHandler.initialize(fileName));
 		sc = new Scanner(System.in);
 
 		run = true;
 
 		while (run) {
-			ArrayList<String> output = listenForInput();
-
-			for (String line : output) {
-				System.out.println(line);
+			Result result = listenForInput();
+			
+			if(result.getIsSuccess()){
+				System.out.println(String.format(SUCCESSFUL_MESSAGE, result.getCommandPerformed()));
+			}else{
+				System.out.println(String.format(UNSUCESSFUL_MESSAGE, result.getCommandPerformed()));
 			}
 		}
 	}
@@ -82,11 +87,11 @@ public class Tempo {
 		return new Date();
 	}
 
-	private ArrayList<String> listenForInput() {
+	private Result listenForInput() {
 		String input = sc.nextLine();
 		
 		if(!input.equals("")){
-			return tempRH.processCommand(input);
+			return requestHandler.processCommand(input);
 	
 		}else{
 			return listenForInput();

@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
 
-import Tempo.Logic.tempRequestHandler;
+import Tempo.Logic.RequestHandler;
 import junit.framework.TestCase;
 
 public class TempoQualityTest extends TestCase {
@@ -27,14 +27,14 @@ public class TempoQualityTest extends TestCase {
 		assertEquals(fileExists,false);
 		Queue cmds = setupCommands();
 		Queue digests = setupSha1Checksums();
-		tempRequestHandler tempRH = tempRequestHandler.getInstance();
+		RequestHandler tempRH = RequestHandler.getInstance();
 		canOpenFile(filename,tempRH);
 		canRunCommands(filename,tempRH,cmds,digests);
 		checkDisplay(tempRH);
 	}
 	// CURRENT ISSUES WITH PARSER - LIST SHOULD BE RECOGNIZED AS EQUIVALENT OF DISPLAY. IT IS NOT.
 	// <KEY> TODAY SHOULD DISPLAY EVENTS OF TODAY. IT DOES NOT.
-	private static void checkDisplay(tempRequestHandler tempRH) {
+	private static void checkDisplay(RequestHandler tempRH) {
 		
 		Queue<Integer> digests = new LinkedList<Integer>();
 		Queue<String> cmds = new LinkedList<String>();
@@ -135,7 +135,7 @@ public class TempoQualityTest extends TestCase {
 		return commands;
 	}
 
-	private static void canRunCommands(String filename, tempRequestHandler tempRH,Queue<String> cmds,Queue<String> digests) {
+	private static void canRunCommands(String filename, RequestHandler tempRH,Queue<String> cmds,Queue<String> digests) {
 		File file = new File(filename);
 		while(!cmds.isEmpty()) {
 			tempRH.processCommand(cmds.poll());
@@ -183,7 +183,7 @@ public class TempoQualityTest extends TestCase {
 	}
 
 
-	private static void canOpenFile(String filename,tempRequestHandler tempRH) {
+	private static void canOpenFile(String filename,RequestHandler tempRH) {
 		assertEquals(tempRH.initialize(filename),"testfile.txt is ready to use.");
 	}
 

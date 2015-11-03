@@ -81,7 +81,7 @@ public class Calendar {
 		return feedback;
 	}
 
-	public ArrayList<String> addEvent(String name, String start, String end) {
+	public ArrayList<Event> addEvent(String name, String start, String end) {
 		int newEventIndex = indexStore.getNewId();
 		Event newEvent = new Event(newEventIndex, name, start, end);
 		eventsList.add(newEvent);
@@ -91,10 +91,13 @@ public class Calendar {
 
 		savePrevCmd(newEventIndex, newEvent, null, null, COMMAND_ADD);
 
-		ArrayList<String> feedback = new ArrayList<String>();
-		feedback.add(String.format(MSG_ADDED_EVENT, name));
-		return feedback;
+//		ArrayList<String> feedback = new ArrayList<String>();
+//		feedback.add(String.format(MSG_ADDED_EVENT, name));
+		return eventsList;
 	}
+	
+	public ArrayList<String> addRecurringEvent()
+
 
 	public ArrayList<String> addTask(Task newTask) {
 		tasksList.add(newTask);
@@ -105,6 +108,7 @@ public class Calendar {
 		feedback.add(String.format(MSG_ADDED_TASK, newTask.getName()));
 		return feedback;
 	}
+	
 
 	public ArrayList<String> addTask(String name, String dueDate) {
 		int newTaskIndex = indexStore.getNewId();
