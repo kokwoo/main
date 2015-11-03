@@ -8,6 +8,7 @@ public class Event implements Comparable<Event>{
 	protected Date startDateTime;
 	protected Date endDateTime;
 	protected int index;
+	protected int seriesIndex;
 	
 	private static final String DELIMETER = "!!";
 	private static final String DELIMETER2 = "/";
@@ -22,6 +23,14 @@ public class Event implements Comparable<Event>{
 	
 	public Event(int index, String name, String start, String end){
 		this.index = index;
+		this.name = name;		
+		setStartDateTime(start.trim());
+		setEndDateTime(end.trim());
+		}
+	
+	public Event(int index, int seriesIndex, String name, String start, String end){
+		this.index = index;
+		this.seriesIndex = seriesIndex;
 		this.name = name;		
 		setStartDateTime(start.trim());
 		setEndDateTime(end.trim());
@@ -94,6 +103,10 @@ public class Event implements Comparable<Event>{
 	
 	public int getIndex() {
 		return index;
+	}
+	
+	public int getSeriesIndex(){
+		return seriesIndex;
 	}
 	
 	public String getName(){
