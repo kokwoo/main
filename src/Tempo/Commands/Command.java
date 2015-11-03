@@ -4,5 +4,5 @@ import java.util.*;
 
 
 public interface Command {	   
-	   ArrayList<String> execute();
+	   Result execute();
 }
