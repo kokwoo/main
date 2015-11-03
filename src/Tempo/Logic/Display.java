@@ -50,7 +50,7 @@ public class Display {
 	private ArrayList<Task> doneTasks;
 	private ArrayList<FloatingTask> doneFloatingTasks;
 	// private ArrayList<String> wordFoundLines;
-	private CurrentDateAndTime date;
+	private CurrentTime date;
 
 	// Messages
 	private final String UPCOMING_EVENTS = "These are the list of upcoming events";
@@ -93,7 +93,7 @@ public class Display {
 		events = cal.getEventsList();
 		tasks = cal.getTasksList();
 		floatingTasks = cal.getFloatingTasksList();
-		date = new CurrentDateAndTime();
+		date = new CurrentTime();
 
 		eventsToday = new ArrayList<Event>();
 		upcomingEvents = new ArrayList<Event>();
