@@ -22,7 +22,6 @@ public class AddCommand implements Command {
 	private static final String ADD_EVENT = "Add Event %1$s";
 	private static final String ADD_TASK = "Add Task %1$s";
 	private static final String ADD_FLOATINGTASK = "Add Floating Task %1$s";
-	private static final String DEFAULT_NAME = "<NO NAME>";
 	private static final String DELIMETER_SPACE = " ";
 	private static final String DELIMETER_COLON = ":";
 	private static final String BLANK = "";
@@ -56,10 +55,15 @@ public class AddCommand implements Command {
 	}
 	
 	private Result addEvent() {
-		String name = replaceNullName(params.get(0));
-		String start = replaceNullStart(params.get(1));
-		String end = replaceNullEnd(params.get(2));
+		String name = params.get(0);
 		
+		if (!hasValidName(name)) {
+			return Result(String.format(ADD_EVENT, BLANK), false, null);
+		}
+		
+		String start = replaceNullStart(params.get(1));
+		String end = replaceNullEnd(start, params.get(2));
+	
 		String command = String.format(ADD_EVENT, name);
 		
 		HashMap<String, ArrayList<FloatingTask>> result = cal.addEvent(name, start, end);
@@ -68,12 +72,17 @@ public class AddCommand implements Command {
 	}
 	
 	private Result addRecurringEvent(){
-		
+		return new Result(null, false, null); // TODO:
 	}
 	
-	private ArrayList<String> addTask() {
-		String name = replaceNullName(params.get(0));
+	private Result addTask() {
+		String name = params.get(0);
 		String dueDate = params.get(1);
+		
+		if (!hasValidName(name)) {
+			return new Result(String.format(ADD_TASK, BLANK), false, null);
+		}
+		
 		return cal.addTask(name, dueDate);
 	}
 	
@@ -81,54 +90,56 @@ public class AddCommand implements Command {
 		
 	}
 	
-	private ArrayList<String> addFloatingTask() {
-		String name = replaceNullName(params.get(0));
+	private Result addFloatingTask() {
+		String name = params.get(0);
+		
+		if (!hasValidName(name)) {
+			return new Result(String.format(ADD_FLOATINGTASK, BLANK), false, null);
+		}
+		
 		return cal.addFloatingTask(name);
 	}
 	
-	private String replaceNullName(String name) {
-		if (isEmpty(name)) {
-			return DEFAULT_NAME;
-		}
-		return name;
-	}
-	
 	private String replaceNullStart(String dateWithTime) {
-		if (isEmpty(dateWithTime)) { 
-			// replace with current date and time
-			return dateTimeFormat.format(getCurrDateTime());
+		if (isEmptyInput(dateWithTime)) { 
+			return getCurrDateTimeStr();
 		}
 		return dateWithTime;
 	}
 	
-	private String replaceNullEnd(String dateWithTime) {
-		if (isEmpty(dateWithTime)) {
-			String currTime = timeFormat.format(getCurrDateTime());
-			String currDate = dateFormat.format(getCurrDateTime());
-			
-			currTime = addTwoHours(currTime);
-			
-			return currDate + DELIMETER_SPACE + currTime;
+	private String replaceNullEnd(String start, String end) {
+		if (isEmptyInput(end)) {
+			return addTwoHours(start);
 		}
-		return dateWithTime;
+		return end;
 	}
 	
-	private String addTwoHours(String time) {
-		String[] params = time.trim().split(DELIMETER_COLON);
-		int updatedHour = Integer.valueOf(params[1]) + 2;
-		
-		if (updatedHour >= NUM_HOURS_IN_A_DAY) {
-			updatedHour -= NUM_HOURS_IN_A_DAY;
-		}
-	
-		return updatedHour + DELIMETER_COLON + params[1];
+	private String addTwoHours(String start) {
+		// TODO: after we rename our Calendar class	
+		return "";
 	}
 	
-	private boolean isEmpty(String input) {
+	private boolean isEmptyInput(String input) {
 		return (input == null || input == BLANK);
+	}
+	
+	private boolean hasValidName(String name) {
+		return isEmptyInput(name);
 	}
 		
 	private Date getCurrDateTime() {
 		return new Date();
+	}
+	
+	private String getCurrDateTimeStr() {
+		return dateTimeFormat.format(getCurrDateTime());
+	}
+	
+	private String getCurrDateStr() {
+		return dateFormat.format(getCurrDateTime());
+	}
+	
+	private String getCurrTimeStr() {
+		return timeFormat.format(getCurrDateTime());
 	}
 }
