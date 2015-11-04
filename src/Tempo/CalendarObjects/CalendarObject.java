@@ -17,6 +17,10 @@ public class CalendarObject implements Comparable<CalendarObject> {
 		return ZERO;
 	}
 	
+	public int getSeriesIndex() {
+		return ZERO;
+	}
+	
 	public int compareTo(CalendarObject obj) {
 		return ZERO;
 	}

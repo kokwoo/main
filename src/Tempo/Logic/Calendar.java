@@ -20,24 +20,27 @@ public class Calendar {
 	private static CalendarImporter importer;
 	private static CalendarExporter exporter;
 
-	private static final String COMMAND_ADD = "add";
-	private static final String COMMAND_ADD_EVENT = "add event %1$s";
-	private static final String COMMAND_ADD_TASK = "add task %1$s";
-	private static final String COMMAND_ADD_FLOATING = "add floating task %1$s";
-	private static final String COMMAND_REMOVE = "remove";
-	private static final String COMMAND_REMOVE_EVENT = "remove event %1$s";
-	private static final String COMMAND_REMOVE_TASK = "remove task %1$s";
-	private static final String COMMAND_REMOVE_FLOATING = "remove floating task %1$s";
-	private static final String COMMAND_UPDATE = "update";
-	private static final String COMMAND_UPDATE_EVENT = "update event %1$s";
-	private static final String COMMAND_UPDATE_TASK = "update task %1$s";
-	private static final String COMMAND_UPDATE_FLOATING = "update floating task %1$s";
-	private static final String COMMAND_DONE = "done";
-	private static final String COMMAND_DONE_TASK = "done task %1$s";
-	private static final String COMMAND_DONE_FLOATING = "done floating task %1$s";
-	private static final String COMMAND_UNDO = "undo ";
-	private static final String COMMAND_INVALID_UNDO = "invalid undo";
-	private static final String COMMAND_SEARCH = "search %1$s";
+	private static final String CMD_ADD = "add";
+	private static final String CMD_ADD_EVENT = "add event %1$s";
+	private static final String CMD_ADD_RECURR_EVENT = "add recurring event %1$s";
+	private static final String CMD_ADD_TASK = "add task %1$s";
+	private static final String CMD_ADD_RECURR_TASK = "add recurring task %1$s";
+	private static final String CMD_ADD_FLOATING = "add floating task %1$s";
+	private static final String CMD_ADD_RECURR_FLOATING = "add recurring floating task %1$s";
+	private static final String CMD_REMOVE = "remove";
+	private static final String CMD_REMOVE_EVENT = "remove event %1$s";
+	private static final String CMD_REMOVE_TASK = "remove task %1$s";
+	private static final String CMD_REMOVE_FLOATING = "remove floating task %1$s";
+	private static final String CMD_UPDATE = "update";
+	private static final String CMD_UPDATE_EVENT = "update event %1$s";
+	private static final String CMD_UPDATE_TASK = "update task %1$s";
+	private static final String CMD_UPDATE_FLOATING = "update floating task %1$s";
+	private static final String CMD_DONE = "done";
+	private static final String CMD_DONE_TASK = "done task %1$s";
+	private static final String CMD_DONE_FLOATING = "done floating task %1$s";
+	private static final String CMD_UNDO = "undo ";
+	private static final String CMD_INVALID_UNDO = "invalid undo";
+	private static final String CMD_SEARCH = "search %1$s";
 
 	private static final String KEY_EVENTS = "events";
 	private static final String KEY_TASKS = "tasks";
@@ -59,7 +62,7 @@ public class Calendar {
 	private Event prevModEvent = null;
 	private Task prevModTask = null;
 	private FloatingTask prevModFloatingTask = null;
-	private String prevCommand = COMMAND_INVALID_UNDO;
+	private String prevCommand = CMD_INVALID_UNDO;
 
 	private ArrayList<CalendarObject> eventsList;
 	private ArrayList<CalendarObject> tasksList;
@@ -95,7 +98,7 @@ public class Calendar {
 		Collections.sort(eventsList);
 
 		String name = newEvent.getName();
-		String cmd = String.format(COMMAND_ADD_EVENT, name);
+		String cmd = String.format(CMD_ADD_EVENT, name);
 
 		return new Result(cmd, true, putInHashMap(KEY_EVENTS, eventsList));
 	}
@@ -108,15 +111,14 @@ public class Calendar {
 		Collections.sort(eventsList);
 		exportToFile();
 
-		savePrevCmd(newEventIndex, newEvent, null, null, COMMAND_ADD);
+		savePrevCmd(newEventIndex, newEvent, null, null, CMD_ADD);
 
-		String cmd = String.format(COMMAND_ADD_EVENT, name);
+		String cmd = String.format(CMD_ADD_EVENT, name);
 
 		return new Result(cmd, true, putInHashMap(KEY_EVENTS, eventsList));
 	}
 
-	//Szeying, can help me format this into a result and also the extra index from the index store...
-	public ArrayList<String> addRecurringEvent(String name, String start, String end, String recurringType, String recurringEnd) {
+	public Result addRecurringEvent(String name, String start, String end, String recurringType, String recurringEnd) {
 		int newEventIndex = indexStore.getNewId();
 		Event newEvent = new Event(newEventIndex, name, start, end);
 		eventsList.add(newEvent);
@@ -135,6 +137,8 @@ public class Calendar {
 		Collections.sort(eventsList);
 		exportToFile();
 
+		String cmd = String.format(CMD_ADD_RECURR_EVENT, name);
+		return new Result(cmd, true, putInHashMap(KEY_EVENTS, eventsList));
 		// TODO: UNDO METHOD
 	}
 
@@ -144,7 +148,7 @@ public class Calendar {
 		Collections.sort(tasksList);
 
 		String name = newTask.getName();
-		String cmd = String.format(COMMAND_ADD_TASK, name);
+		String cmd = String.format(CMD_ADD_TASK, name);
 
 		return new Result(cmd, true, putInHashMap(KEY_TASKS, tasksList));
 	}
@@ -157,13 +161,13 @@ public class Calendar {
 		Collections.sort(tasksList);
 		exportToFile();
 
-		savePrevCmd(newTaskIndex, null, newTask, null, COMMAND_ADD);
+		savePrevCmd(newTaskIndex, null, newTask, null, CMD_ADD);
 
-		String cmd = String.format(COMMAND_ADD_TASK, name);
+		String cmd = String.format(CMD_ADD_TASK, name);
 		return new Result(cmd, true, putInHashMap(KEY_TASKS, tasksList));
 	}
 	
-	public ArrayList<String> addRecurringTask(String name, String dueDate, String recurringType,String recurringEnd) {
+	public Result addRecurringTask(String name, String dueDate, String recurringType,String recurringEnd) {
 		int newTaskIndex = indexStore.getNewId();
 		Task newTask = new Task(newTaskIndex, name, dueDate);
 		tasksList.add(newTask);
@@ -181,6 +185,10 @@ public class Calendar {
 
 		Collections.sort(tasksList);
 		exportToFile();
+		
+		String cmd = String.format(CMD_ADD_RECURR_TASK, name);
+		return new Result(cmd, true, putInHashMap(KEY_TASKS, tasksList));
+
 
 		// TODO: UNDO METHOD
 	}
@@ -190,7 +198,7 @@ public class Calendar {
 		indexStore.addTask(newTask.getIndex(), newTask);
 
 		String name = newTask.getName();
-		String cmd = String.format(COMMAND_ADD_FLOATING, name);
+		String cmd = String.format(CMD_ADD_FLOATING, name);
 
 		return new Result(cmd, true, putInHashMap(KEY_FLOATING, floatingTasksList));
 	}
@@ -202,9 +210,9 @@ public class Calendar {
 		floatingTasksList.add(newFloatingTask);
 		exportToFile();
 
-		savePrevCmd(newTaskIndex, null, null, newFloatingTask, COMMAND_ADD);
+		savePrevCmd(newTaskIndex, null, null, newFloatingTask, CMD_ADD);
 
-		String cmd = String.format(COMMAND_ADD_FLOATING, name);
+		String cmd = String.format(CMD_ADD_FLOATING, name);
 		return new Result(cmd, true, putInHashMap(KEY_FLOATING, floatingTasksList));
 	}
 
@@ -215,7 +223,7 @@ public class Calendar {
 
 		for (int i = 0; i < eventsList.size(); i++) {
 			if (eventsList.get(i).getIndex() == idx) {
-				savePrevCmd(idx, eventsList.get(i), null, null, COMMAND_REMOVE);
+				savePrevCmd(idx, eventsList.get(i), null, null, CMD_REMOVE);
 				eventName = eventsList.get(i).getName();
 				indexStore.removeEvent(eventsList.get(i).getIndex());
 				eventsList.remove(i);
@@ -224,7 +232,7 @@ public class Calendar {
 		}
 		exportToFile();
 
-		String cmd = String.format(COMMAND_REMOVE_EVENT, eventName);
+		String cmd = String.format(CMD_REMOVE_EVENT, eventName);
 		return new Result(cmd, true, putInHashMap(KEY_EVENTS, eventsList));
 	}
 
@@ -232,7 +240,7 @@ public class Calendar {
 		String taskName = new String();
 		for (int i = 0; i < tasksList.size(); i++) {
 			if (tasksList.get(i).getIndex() == idx) {
-				savePrevCmd(idx, null, tasksList.get(i), null, COMMAND_REMOVE);
+				savePrevCmd(idx, null, tasksList.get(i), null, CMD_REMOVE);
 				taskName = tasksList.get(i).getName();
 				indexStore.removeTask(tasksList.get(i).getIndex());
 				tasksList.remove(i);
@@ -241,7 +249,7 @@ public class Calendar {
 		}
 		exportToFile();
 
-		String cmd = String.format(COMMAND_REMOVE_TASK, taskName);
+		String cmd = String.format(CMD_REMOVE_TASK, taskName);
 		return new Result(cmd, true, putInHashMap(KEY_TASKS, tasksList));
 	}
 
@@ -249,7 +257,7 @@ public class Calendar {
 		String taskName = new String();
 		for (int i = 0; i < floatingTasksList.size(); i++) {
 			if (floatingTasksList.get(i).getIndex() == idx) {
-				savePrevCmd(idx, null, null, floatingTasksList.get(i), COMMAND_REMOVE);
+				savePrevCmd(idx, null, null, floatingTasksList.get(i), CMD_REMOVE);
 				taskName = floatingTasksList.get(i).getName();
 				indexStore.removeTask(floatingTasksList.get(i).getIndex());
 				floatingTasksList.remove(i);
@@ -258,7 +266,7 @@ public class Calendar {
 		}
 		exportToFile();
 
-		String cmd = String.format(COMMAND_REMOVE_FLOATING, taskName);
+		String cmd = String.format(CMD_REMOVE_FLOATING, taskName);
 		return new Result(cmd, true, putInHashMap(KEY_FLOATING, tasksList));
 	}
 
@@ -269,7 +277,7 @@ public class Calendar {
 		Event eventToUpdate = (Event) eventsList.get(arrayListIndex);
 		Event originalEvent = copyEvent(eventToUpdate);
 
-		savePrevCmd(idx, originalEvent, null, null, COMMAND_UPDATE);
+		savePrevCmd(idx, originalEvent, null, null, CMD_UPDATE);
 
 		for (int i = 0; i < fields.size(); i++) {
 			eventToUpdate.update(fields.get(i), newValues.get(i));
@@ -278,7 +286,7 @@ public class Calendar {
 		exportToFile();
 
 		String name = eventToUpdate.getName();
-		String cmd = String.format(COMMAND_UPDATE_EVENT, name);
+		String cmd = String.format(CMD_UPDATE_EVENT, name);
 
 		return new Result(cmd, true, putInHashMap(KEY_EVENTS, eventsList));
 	}
@@ -296,7 +304,7 @@ public class Calendar {
 		Task taskToUpdate = (Task) tasksList.get(arrayListIndex);
 		Task originalTask = copyTask(taskToUpdate);
 
-		savePrevCmd(idx, null, originalTask, null, COMMAND_UPDATE);
+		savePrevCmd(idx, null, originalTask, null, CMD_UPDATE);
 
 		for (int i = 0; i < fields.size(); i++) {
 			taskToUpdate.update(fields.get(i), newValues.get(i));
@@ -304,7 +312,7 @@ public class Calendar {
 		exportToFile();
 
 		String name = taskToUpdate.getName();
-		String cmd = String.format(COMMAND_UPDATE_TASK, name);
+		String cmd = String.format(CMD_UPDATE_TASK, name);
 
 		return new Result(cmd, true, putInHashMap(KEY_TASKS, eventsList));
 	}
@@ -323,7 +331,7 @@ public class Calendar {
 		FloatingTask taskToUpdate = (FloatingTask) floatingTasksList.get(arrayListIndex);
 		FloatingTask originalTask = copyFloatingTask(taskToUpdate);
 
-		savePrevCmd(idx, null, null, originalTask, COMMAND_UPDATE);
+		savePrevCmd(idx, null, null, originalTask, CMD_UPDATE);
 
 		for (int i = 0; i < fields.size(); i++) {
 			taskToUpdate.update(fields.get(i), newValues.get(i));
@@ -331,7 +339,7 @@ public class Calendar {
 		exportToFile();
 
 		String name = taskToUpdate.getName();
-		String cmd = String.format(COMMAND_UPDATE_FLOATING, name);
+		String cmd = String.format(CMD_UPDATE_FLOATING, name);
 
 		return new Result(cmd, true, putInHashMap(KEY_FLOATING, eventsList));
 	}
@@ -358,12 +366,12 @@ public class Calendar {
 
 		if (taskToMark.isDone()) {
 			disableUndo();
-			return new Result(COMMAND_DONE_TASK, false, null);
+			return new Result(CMD_DONE_TASK, false, null);
 		} else {
-			savePrevCmd(taskToMark.getIndex(), null, originalTask, null, COMMAND_DONE);
+			savePrevCmd(taskToMark.getIndex(), null, originalTask, null, CMD_DONE);
 			taskToMark.markAsDone();
 			exportToFile();
-			String cmd = String.format(COMMAND_DONE_TASK, taskName);
+			String cmd = String.format(CMD_DONE_TASK, taskName);
 			return new Result(cmd, true, putInHashMap(KEY_TASKS, tasksList));
 		}
 	}
@@ -377,12 +385,12 @@ public class Calendar {
 
 		if (taskToMark.isDone()) {
 			disableUndo();
-			return new Result(COMMAND_DONE_FLOATING, false, null);
+			return new Result(CMD_DONE_FLOATING, false, null);
 		} else {
-			savePrevCmd(taskToMark.getIndex(), null, null, originalTask, COMMAND_DONE);
+			savePrevCmd(taskToMark.getIndex(), null, null, originalTask, CMD_DONE);
 			taskToMark.markAsDone();
 			exportToFile();
-			String cmd = String.format(COMMAND_DONE_FLOATING, taskName);
+			String cmd = String.format(CMD_DONE_FLOATING, taskName);
 			return new Result(cmd, true, putInHashMap(KEY_FLOATING, floatingTasksList));
 		}
 	}
@@ -399,13 +407,13 @@ public class Calendar {
 
 	private Result executeUndo() {
 		switch (prevCommand) {
-			case COMMAND_ADD :
+			case CMD_ADD :
 				return undoAdd();
-			case COMMAND_REMOVE :
+			case CMD_REMOVE :
 				return undoRemove();
-			case COMMAND_UPDATE :
+			case CMD_UPDATE :
 				return undoUpdate();
-			case COMMAND_DONE :
+			case CMD_DONE :
 				return undoMarkTaskAsDone();
 			default :
 				return handleInvalidUndo();
@@ -414,7 +422,7 @@ public class Calendar {
 
 	private void disableUndo() {
 		prevModIndex = INDEX_INVALID;
-		prevCommand = COMMAND_INVALID_UNDO;
+		prevCommand = CMD_INVALID_UNDO;
 		prevModEvent = null;
 		prevModTask = null;
 		prevModFloatingTask = null;
@@ -473,7 +481,7 @@ public class Calendar {
 			}
 		}
 		
-		String cmd = COMMAND_UNDO + String.format(COMMAND_UPDATE_EVENT, name);
+		String cmd = CMD_UNDO + String.format(CMD_UPDATE_EVENT, name);
 		return new Result(cmd, true, putInHashMap(KEY_EVENTS, eventsList));
 	}
 
@@ -490,7 +498,7 @@ public class Calendar {
 			}
 		}
 		
-		String cmd = COMMAND_UNDO + String.format(COMMAND_UPDATE_FLOATING, name);
+		String cmd = CMD_UNDO + String.format(CMD_UPDATE_FLOATING, name);
 		return new Result(cmd, true, putInHashMap(KEY_FLOATING, floatingTasksList));
 	}
 
@@ -508,7 +516,7 @@ public class Calendar {
 			}
 		}
 		
-		String cmd = COMMAND_UNDO + String.format(COMMAND_UPDATE_TASK, name);
+		String cmd = CMD_UNDO + String.format(CMD_UPDATE_TASK, name);
 		return new Result(cmd, true, putInHashMap(KEY_TASKS, tasksList));
 	}
 
@@ -520,27 +528,27 @@ public class Calendar {
 				taskToUnmark.markAsUndone();
 			}
 			String name = taskToUnmark.getName();
-			String cmd = COMMAND_UNDO + String.format(COMMAND_DONE_TASK, name);
+			String cmd = CMD_UNDO + String.format(CMD_DONE_TASK, name);
 			return new Result(cmd, true, putInHashMap(KEY_TASKS, tasksList));
 		} else {
 			int arrayListIndex = getArrayListIndexOfFloatingTask(prevModIndex);
 			FloatingTask taskToUnmark = (FloatingTask) floatingTasksList.get(arrayListIndex);
 			taskToUnmark.markAsUndone();
 			String name = taskToUnmark.getName();
-			String cmd = COMMAND_UNDO + String.format(COMMAND_DONE_FLOATING, name);
+			String cmd = CMD_UNDO + String.format(CMD_DONE_FLOATING, name);
 			return new Result(cmd, true, putInHashMap(KEY_FLOATING, floatingTasksList));
 
 		}
 	}
 
 	private Result handleInvalidUndo() {
-		return new Result(COMMAND_UNDO, false, null);
+		return new Result(CMD_UNDO, false, null);
 	}
 
 	/***** SEARCH COMMAND EXECUTION ******/
 
 	public Result search(String arguments) {
-		String command = String.format(COMMAND_SEARCH, arguments);
+		String command = String.format(CMD_SEARCH, arguments);
 		
 		ArrayList<CalendarObject> eventsFound = new ArrayList<CalendarObject>();
 		ArrayList<CalendarObject> tasksFound = new ArrayList<CalendarObject>();
