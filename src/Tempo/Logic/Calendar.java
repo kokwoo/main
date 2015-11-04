@@ -105,7 +105,8 @@ public class Calendar {
 
 	public Result addEvent(String name, String start, String end) {
 		int newEventIndex = indexStore.getNewId();
-		Event newEvent = new Event(newEventIndex, name, start, end);
+		int newSeriesIndex = indexStore.getNewSeriesId();
+		Event newEvent = new Event(newEventIndex,newSeriesIndex, name, start, end);
 		eventsList.add(newEvent);
 		indexStore.addEvent(newEventIndex, newEvent);
 		Collections.sort(eventsList);
@@ -120,7 +121,8 @@ public class Calendar {
 
 	public Result addRecurringEvent(String name, String start, String end, String recurringType, String recurringEnd) {
 		int newEventIndex = indexStore.getNewId();
-		Event newEvent = new Event(newEventIndex, name, start, end);
+		int newSeriesIndex = indexStore.getNewSeriesId();
+		Event newEvent = new Event(newEventIndex, newSeriesIndex, name, start, end);
 		eventsList.add(newEvent);
 		indexStore.addEvent(newEventIndex, newEvent);
 
@@ -129,7 +131,7 @@ public class Calendar {
 		
 		for(String dates: recurringDates){
 			newEventIndex = indexStore.getNewId();
-			newEvent = new Event(newEventIndex, name, start, end);
+			newEvent = new Event(newEventIndex, newSeriesIndex, name, dates, end);
 			eventsList.add(newEvent);
 			indexStore.addEvent(newEventIndex, newEvent);
 		}
@@ -155,7 +157,8 @@ public class Calendar {
 
 	public Result addTask(String name, String dueDate) {
 		int newTaskIndex = indexStore.getNewId();
-		Task newTask = new Task(newTaskIndex, name, dueDate);
+		int newSeriesIndex = indexStore.getNewSeriesId();
+		Task newTask = new Task(newTaskIndex, newSeriesIndex, name, dueDate);
 		tasksList.add(newTask);
 		indexStore.addTask(newTaskIndex, newTask);
 		Collections.sort(tasksList);
@@ -169,7 +172,8 @@ public class Calendar {
 	
 	public Result addRecurringTask(String name, String dueDate, String recurringType,String recurringEnd) {
 		int newTaskIndex = indexStore.getNewId();
-		Task newTask = new Task(newTaskIndex, name, dueDate);
+		int newSeriesIndex = indexStore.getNewSeriesId();
+		Task newTask = new Task(newTaskIndex, newSeriesIndex, name, dueDate);
 		tasksList.add(newTask);
 		indexStore.addTask(newTaskIndex, newTask);
 
@@ -178,7 +182,7 @@ public class Calendar {
 		
 		for(String dates: recurringDates){
 			newTaskIndex = indexStore.getNewId();
-			newTask = new Task(newTaskIndex, name, dueDate);
+			newTask = new Task(newTaskIndex, newSeriesIndex, dates, dueDate);
 			tasksList.add(newTask);
 			indexStore.addTask(newTaskIndex, newTask);
 		}
@@ -205,7 +209,8 @@ public class Calendar {
 
 	public Result addFloatingTask(String name) {
 		int newTaskIndex = indexStore.getNewId();
-		FloatingTask newFloatingTask = new FloatingTask(newTaskIndex, name);
+		int newSeriesIndex = indexStore.getNewSeriesId();
+		FloatingTask newFloatingTask = new FloatingTask(newTaskIndex, newSeriesIndex, name);
 		indexStore.addTask(newTaskIndex, newFloatingTask);
 		floatingTasksList.add(newFloatingTask);
 		exportToFile();
@@ -218,16 +223,27 @@ public class Calendar {
 
 	/***** REMOVE COMMAND EXECUTION ******/
 
-	public Result removeEvent(int idx) {
+	public Result removeEvent(int idx, boolean removeSeries) {
 		String eventName = new String();
-
+		int seriesIndex = -1;
+		
 		for (int i = 0; i < eventsList.size(); i++) {
 			if (eventsList.get(i).getIndex() == idx) {
 				savePrevCmd(idx, eventsList.get(i), null, null, CMD_REMOVE);
+				seriesIndex = eventsList.get(i).getSeriesIndex();
 				eventName = eventsList.get(i).getName();
 				indexStore.removeEvent(eventsList.get(i).getIndex());
 				eventsList.remove(i);
 				break;
+			}
+		}
+		
+		if(removeSeries){
+			for(int i = 0; i < eventsList.size(); i++){
+				if(eventsList.get(i).getSeriesIndex() == seriesIndex){
+					indexStore.removeEvent(eventsList.get(i).getIndex());
+					eventsList.remove(i);
+				}
 			}
 		}
 		exportToFile();
@@ -236,24 +252,37 @@ public class Calendar {
 		return new Result(cmd, true, putInHashMap(KEY_EVENTS, eventsList));
 	}
 
-	public Result removeTask(int idx) {
+	public Result removeTask(int idx, boolean removeSeries) {
 		String taskName = new String();
+		int seriesIndex = -1;
+		
 		for (int i = 0; i < tasksList.size(); i++) {
 			if (tasksList.get(i).getIndex() == idx) {
 				savePrevCmd(idx, null, tasksList.get(i), null, CMD_REMOVE);
+				seriesIndex = tasksList.get(i).getSeriesIndex();
 				taskName = tasksList.get(i).getName();
 				indexStore.removeTask(tasksList.get(i).getIndex());
 				tasksList.remove(i);
 				break;
 			}
 		}
+		
+		if(removeSeries){
+			for(int i = 0; i < tasksList.size(); i++){
+				if(tasksList.get(i).getSeriesIndex() == seriesIndex){
+					indexStore.removeEvent(tasksList.get(i).getIndex());
+					tasksList.remove(i);
+				}
+			}
+		}
+		
 		exportToFile();
 
 		String cmd = String.format(CMD_REMOVE_TASK, taskName);
 		return new Result(cmd, true, putInHashMap(KEY_TASKS, tasksList));
 	}
 
-	public Result removeFloatingTask(int idx) {
+	public Result removeFloatingTask(int idx, boolean removeSeries) {
 		String taskName = new String();
 		for (int i = 0; i < floatingTasksList.size(); i++) {
 			if (floatingTasksList.get(i).getIndex() == idx) {
