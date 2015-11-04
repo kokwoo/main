@@ -387,15 +387,15 @@ public class Calendar {
 
 	/***** UNDO COMMAND EXECUTION ******/
 
-	public ArrayList<String> undo() {
-		ArrayList<String> feedback = executeUndo();
+	public Result undo() {
+		Result result = executeUndo();
 		disableUndo();
 		exportToFile();
 
-		return feedback;
+		return result;
 	}
 
-	private ArrayList<String> executeUndo() {
+	private Result executeUndo() {
 		switch (prevCommand) {
 			case COMMAND_ADD :
 				return undoAdd();
@@ -458,83 +458,84 @@ public class Calendar {
 	}
 
 	private Result undoUpdateEvent() {
+		String name = new String();
+		
 		for (int i = 0; i < eventsList.size(); i++) {
 			if (eventsList.get(i).getIndex() == prevModIndex) {
 				eventsList.remove(i);
 				eventsList.add(i, prevModEvent);
+				name = eventsList.get(i).getName();
 				Collections.sort(eventsList);
 				indexStore.replaceEvent(prevModIndex, prevModEvent);
 				break;
 			}
 		}
 		
-		
+		String cmd = COMMAND_UNDO + String.format(COMMAND_UPDATE_EVENT, name);
+		return new Result(cmd, true, putInHashMap(KEY_EVENTS, eventsList));
 	}
 
-	private void undoUpdateFloatingTask() {
+	private Result undoUpdateFloatingTask() {
+		String name = new String();
+		
 		for (int i = 0; i < floatingTasksList.size(); i++) {
 			if (floatingTasksList.get(i).getIndex() == prevModIndex) {
 				floatingTasksList.remove(i);
 				floatingTasksList.add(i, prevModFloatingTask);
+				name = floatingTasksList.get(i).getName();
 				indexStore.replaceTask(prevModIndex, prevModFloatingTask);
 				break;
 			}
 		}
+		
+		String cmd = COMMAND_UNDO + String.format(COMMAND_UPDATE_FLOATING, name);
+		return new Result(cmd, true, putInHashMap(KEY_FLOATING, floatingTasksList));
 	}
 
-	private void undoUpdateTask() {
+	private Result undoUpdateTask() {
+		String name = new String();
+		
 		for (int i = 0; i < tasksList.size(); i++) {
 			if (tasksList.get(i).getIndex() == prevModIndex) {
 				tasksList.remove(i);
 				tasksList.add(i, prevModTask);
+				name = tasksList.get(i).getName();
 				Collections.sort(tasksList);
 				indexStore.replaceTask(prevModIndex, prevModTask);
 				break;
 			}
 		}
+		
+		String cmd = COMMAND_UNDO + String.format(COMMAND_UPDATE_TASK, name);
+		return new Result(cmd, true, putInHashMap(KEY_TASKS, tasksList));
 	}
 
-	private ArrayList<String> undoMarkTaskAsDone() {
+	private Result undoMarkTaskAsDone() {
 		if (prevModTask != null) {
-			for (int i = 0; i < tasksList.size(); i++) {
-				if (tasksList.get(i).getIndex() == prevModIndex) {
-					tasksList.get(i).markAsUndone();
-					indexStore.replaceTask(prevModIndex, tasksList.get(i));
-					break;
-				}
+			int arrayListIndex = getArrayListIndexOfTask(prevModIndex);
+			Task taskToUnmark = (Task) tasksList.get(arrayListIndex);
+			if (taskToUnmark.isDone()) {
+				taskToUnmark.markAsUndone();
 			}
+			String name = taskToUnmark.getName();
+			String cmd = COMMAND_UNDO + String.format(COMMAND_DONE_TASK, name);
+			return new Result(cmd, true, putInHashMap(KEY_TASKS, tasksList));
 		} else {
-			for (int i = 0; i < floatingTasksList.size(); i++) {
-				if (floatingTasksList.get(i).getIndex() == prevModIndex) {
-					floatingTasksList.get(i).markAsUndone();
-					indexStore.replaceTask(prevModIndex, floatingTasksList.get(i));
-					break;
-				}
-			}
+			int arrayListIndex = getArrayListIndexOfFloatingTask(prevModIndex);
+			FloatingTask taskToUnmark = (FloatingTask) floatingTasksList.get(arrayListIndex);
+			taskToUnmark.markAsUndone();
+			String name = taskToUnmark.getName();
+			String cmd = COMMAND_UNDO + String.format(COMMAND_DONE_FLOATING, name);
+			return new Result(cmd, true, putInHashMap(KEY_FLOATING, floatingTasksList));
+
 		}
-		ArrayList<String> feedback = new ArrayList<String>();
-		feedback.add(MSG_UNDO_UPDATE);
-		return feedback;
 	}
 
-	private ArrayList<String> handleInvalidUndo() {
-		ArrayList<String> feedback = new ArrayList<String>();
-
-		feedback.add(MSG_UNDO_INVALID);
-		return feedback;
+	private Result handleInvalidUndo() {
+		return new Result(COMMAND_UNDO, false, null);
 	}
 
 	/***** SEARCH COMMAND EXECUTION ******/
-
-	/*
-	 * public ArrayList<String> searchId(int id) { ArrayList<String> idFoundLines = new ArrayList<String>(); if (!isEvent(id) && !isFloatingTask(id)) { idFoundLines.clear(); }
-	 * 
-	 * else if (isEvent(id)) { Event event = indexStore.getEventById(id); idFoundLines.add(event.toString()); }
-	 * 
-	 * else if (isFloatingTask(id)) { FloatingTask task = indexStore.getTaskById(id); idFoundLines.add(task.toString()); } disableUndo(); return idFoundLines;
-	 * 
-	 * }
-	 */
 
 	public ArrayList<String> search(String arguments) {
 
@@ -626,15 +627,15 @@ public class Calendar {
 		return false;
 	}
 
-	public ArrayList<Event> getEventsList() {
+	public ArrayList<CalendarObject> getEventsList() {
 		return eventsList;
 	}
 
-	public ArrayList<Task> getTasksList() {
+	public ArrayList<CalendarObject> getTasksList() {
 		return tasksList;
 	}
 
-	public ArrayList<FloatingTask> getFloatingTasksList() {
+	public ArrayList<CalendarObject> getFloatingTasksList() {
 		return floatingTasksList;
 	}
 
