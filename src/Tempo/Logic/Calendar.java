@@ -5,6 +5,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import Tempo.CalendarObjects.CalendarObject;
 import Tempo.CalendarObjects.Event;
 import Tempo.CalendarObjects.FloatingTask;
 import Tempo.CalendarObjects.Task;
@@ -17,15 +18,6 @@ public class Calendar {
 	private static Calendar instance = new Calendar();
 	private static IndexStore indexStore;
 	private static CalendarImporter importer;
-
-	/*
-	 * private static final String MSG_ADDED_EVENT = "Event %1$s has been added."; private static final String MSG_ADDED_TASK = "Task %1$s has been added."; private static final String
-	 * MSG_REMOVED_EVENT = "Event %1$s has been removed."; private static final String MSG_REMOVED_TASK = "Task %1$s has been removed."; private static final String MSG_UPDATED_EVENT =
-	 * "Your event has been updated."; private static final String MSG_UPDATED_TASK = "Your task has been updated."; private static final String MSG_DONE_TASK = "Task %1$s has been marked as done.";
-	 * private static final String MSG_DONE_INVALID = "Err: Task %1$s is alr marked as done!"; private static final String MSG_UNDO_UPDATE = "Your updates have been reverted."; private static final
-	 * String MSG_UNDO_INVALID = "Error: Cannot undo previous operation."; private static final String MSG_SEARCH_RESULTS = "These are your search results"; private static final String
-	 * MSG_NO_SEARCH_RESULTS = "(We do not have any results for your search)";
-	 */
 
 	private static final String COMMAND_ADD = "add";
 	private static final String COMMAND_ADD_EVENT = "add event %1$s";
@@ -41,8 +33,8 @@ public class Calendar {
 	private static final String COMMAND_UPDATE_FLOATING = "update floating task %1$s";
 	private static final String COMMAND_DONE = "done";
 	private static final String COMMAND_DONE_TASK = "done task %1$s";
-	private static final String COMMAND_UNDO = "undo ";
 	private static final String COMMAND_DONE_FLOATING = "done floating task %1$s";
+	private static final String COMMAND_UNDO = "undo ";
 	private static final String COMMAND_INVALID_UNDO = "invalid undo";
 	private static final String COMMAND_SEARCH = "search %1$s";
 
@@ -68,14 +60,14 @@ public class Calendar {
 	private FloatingTask prevModFloatingTask = null;
 	private String prevCommand = COMMAND_INVALID_UNDO;
 
-	private ArrayList<Event> eventsList;
-	private ArrayList<Task> tasksList;
-	private ArrayList<FloatingTask> floatingTasksList;
+	private ArrayList<CalendarObject> eventsList;
+	private ArrayList<CalendarObject> tasksList;
+	private ArrayList<CalendarObject> floatingTasksList;
 
 	private Calendar() {
-		eventsList = new ArrayList<Event>();
-		tasksList = new ArrayList<Task>();
-		floatingTasksList = new ArrayList<FloatingTask>();
+		eventsList = new ArrayList<CalendarObject>();
+		tasksList = new ArrayList<CalendarObject>();
+		floatingTasksList = new ArrayList<CalendarObject>();
 		indexStore = IndexStore.getInstance();
 		importer = CalendarImporter.getInstance();
 	}
@@ -122,7 +114,7 @@ public class Calendar {
 	}
 
 	//Szeying, can help me format this into a result and also the extra index from the index store...
-	public ArrayList<String> addRecurringEvent(String name, String start, String end, String recurringType,String recurringEnd) {
+	public ArrayList<String> addRecurringEvent(String name, String start, String end, String recurringType, String recurringEnd) {
 		int newEventIndex = indexStore.getNewId();
 		Event newEvent = new Event(newEventIndex, name, start, end);
 		eventsList.add(newEvent);
@@ -272,7 +264,7 @@ public class Calendar {
 
 	public Result updateEvent(int idx, ArrayList<String> fields, ArrayList<String> newValues) {
 		int arrayListIndex = getArrayListIndexOfEvent(idx);
-		Event eventToUpdate = eventsList.get(arrayListIndex);
+		Event eventToUpdate = (Event) eventsList.get(arrayListIndex);
 		Event originalEvent = copyEvent(eventToUpdate);
 
 		savePrevCmd(idx, originalEvent, null, null, COMMAND_UPDATE);
@@ -297,9 +289,9 @@ public class Calendar {
 		return new Event(idx, eventName, startDateTime, endDateTime);
 	}
 
-	public ArrayList<String> updateTask(int idx, ArrayList<String> fields, ArrayList<String> newValues) {
+	public Result updateTask(int idx, ArrayList<String> fields, ArrayList<String> newValues) {
 		int arrayListIndex = getArrayListIndexOfTask(idx);
-		Task taskToUpdate = tasksList.get(arrayListIndex);
+		Task taskToUpdate = (Task) tasksList.get(arrayListIndex);
 		Task originalTask = copyTask(taskToUpdate);
 
 		savePrevCmd(idx, null, originalTask, null, COMMAND_UPDATE);
@@ -323,10 +315,10 @@ public class Calendar {
 		return new Task(idx, taskName, taskDoneStatus, dueDate);
 	}
 
-	public ArrayList<String> updateFloatingTask(int idx, ArrayList<String> fields, ArrayList<String> newValues) {
+	public Result updateFloatingTask(int idx, ArrayList<String> fields, ArrayList<String> newValues) {
 
 		int arrayListIndex = getArrayListIndexOfFloatingTask(idx);
-		FloatingTask taskToUpdate = floatingTasksList.get(arrayListIndex);
+		FloatingTask taskToUpdate = (FloatingTask) floatingTasksList.get(arrayListIndex);
 		FloatingTask originalTask = copyFloatingTask(taskToUpdate);
 
 		savePrevCmd(idx, null, null, originalTask, COMMAND_UPDATE);
@@ -351,64 +343,59 @@ public class Calendar {
 
 	/***** DONE COMMAND EXECUTION ******/
 
-	public ArrayList<String> markTaskAsDone(int idx) {
+	public Result markTaskAsDone(int idx) {
 		if (isFloatingTask(idx)) {
 			return markFloatingTaskAsDone(idx);
 		}
 
 		int arrayListIndex = getArrayListIndexOfTask(idx);
-		Task taskToMark = tasksList.get(arrayListIndex);
+		Task taskToMark = (Task) tasksList.get(arrayListIndex);
 		Task originalTask = taskToMark;
-		ArrayList<String> feedback = new ArrayList<String>();
 
 		String taskName = taskToMark.getName();
 
 		if (taskToMark.isDone()) {
-			feedback.add(String.format(MSG_DONE_INVALID, taskName));
 			disableUndo();
+			return new Result(COMMAND_DONE_TASK, false, null);
 		} else {
 			savePrevCmd(taskToMark.getIndex(), null, originalTask, null, COMMAND_DONE);
 			taskToMark.markAsDone();
 			exportToFile();
-			feedback.add(String.format(MSG_DONE_TASK, taskName));
+			String cmd = String.format(COMMAND_DONE_TASK, taskName);
+			return new Result(cmd, true, putInHashMap(KEY_TASKS, tasksList));
 		}
-
-		return feedback;
-
 	}
 
-	public ArrayList<String> markFloatingTaskAsDone(int idx) {
+	public Result markFloatingTaskAsDone(int idx) {
 		int arrayListIndex = getArrayListIndexOfFloatingTask(idx);
-		FloatingTask taskToMark = floatingTasksList.get(arrayListIndex);
+		FloatingTask taskToMark = (FloatingTask) floatingTasksList.get(arrayListIndex);
 		FloatingTask originalTask = taskToMark;
-		ArrayList<String> feedback = new ArrayList<String>();
 
 		String taskName = taskToMark.getName();
 
 		if (taskToMark.isDone()) {
-			feedback.add(String.format(MSG_DONE_INVALID, taskName));
 			disableUndo();
+			return new Result(COMMAND_DONE_FLOATING, false, null);
 		} else {
 			savePrevCmd(taskToMark.getIndex(), null, null, originalTask, COMMAND_DONE);
 			taskToMark.markAsDone();
 			exportToFile();
-			feedback.add(String.format(MSG_DONE_TASK, taskName));
+			String cmd = String.format(COMMAND_DONE_FLOATING, taskName);
+			return new Result(cmd, true, putInHashMap(KEY_FLOATING, floatingTasksList));
 		}
-
-		return feedback;
 	}
 
 	/***** UNDO COMMAND EXECUTION ******/
 
-	public ArrayList<String> undo() {
-		ArrayList<String> feedback = executeUndo();
+	public Result undo() {
+		Result result = executeUndo();
 		disableUndo();
 		exportToFile();
 
-		return feedback;
+		return result;
 	}
 
-	private ArrayList<String> executeUndo() {
+	private Result executeUndo() {
 		switch (prevCommand) {
 			case COMMAND_ADD :
 				return undoAdd();
@@ -439,7 +426,7 @@ public class Calendar {
 		prevCommand = command;
 	}
 
-	private ArrayList<String> undoAdd() {
+	private Result undoAdd() {
 		if (isEvent(prevModIndex)) {
 			return removeEvent(prevModIndex);
 		} else if (isFloatingTask(prevModIndex)) {
@@ -449,7 +436,7 @@ public class Calendar {
 		}
 	}
 
-	private ArrayList<String> undoRemove() {
+	private Result undoRemove() {
 		indexStore.removeRecycledId(prevModIndex);
 		if (prevModEvent != null) {
 			return addEvent(prevModEvent);
@@ -460,96 +447,95 @@ public class Calendar {
 		}
 	}
 
-	private ArrayList<String> undoUpdate() {
+	private Result undoUpdate() {
 		if (isEvent(prevModIndex)) {
-			undoUpdateEvent();
+			return undoUpdateEvent();
 		} else if (isFloatingTask(prevModIndex)) {
-			undoUpdateFloatingTask();
+			return undoUpdateFloatingTask();
 		} else {
-			undoUpdateTask();
+			return undoUpdateTask();
 		}
-
-		ArrayList<String> feedback = new ArrayList<String>();
-		feedback.add(MSG_UNDO_UPDATE);
-		return feedback;
 	}
 
-	private void undoUpdateEvent() {
+	private Result undoUpdateEvent() {
+		String name = new String();
+		
 		for (int i = 0; i < eventsList.size(); i++) {
 			if (eventsList.get(i).getIndex() == prevModIndex) {
 				eventsList.remove(i);
 				eventsList.add(i, prevModEvent);
+				name = eventsList.get(i).getName();
 				Collections.sort(eventsList);
 				indexStore.replaceEvent(prevModIndex, prevModEvent);
 				break;
 			}
 		}
+		
+		String cmd = COMMAND_UNDO + String.format(COMMAND_UPDATE_EVENT, name);
+		return new Result(cmd, true, putInHashMap(KEY_EVENTS, eventsList));
 	}
 
-	private void undoUpdateFloatingTask() {
+	private Result undoUpdateFloatingTask() {
+		String name = new String();
+		
 		for (int i = 0; i < floatingTasksList.size(); i++) {
 			if (floatingTasksList.get(i).getIndex() == prevModIndex) {
 				floatingTasksList.remove(i);
 				floatingTasksList.add(i, prevModFloatingTask);
+				name = floatingTasksList.get(i).getName();
 				indexStore.replaceTask(prevModIndex, prevModFloatingTask);
 				break;
 			}
 		}
+		
+		String cmd = COMMAND_UNDO + String.format(COMMAND_UPDATE_FLOATING, name);
+		return new Result(cmd, true, putInHashMap(KEY_FLOATING, floatingTasksList));
 	}
 
-	private void undoUpdateTask() {
+	private Result undoUpdateTask() {
+		String name = new String();
+		
 		for (int i = 0; i < tasksList.size(); i++) {
 			if (tasksList.get(i).getIndex() == prevModIndex) {
 				tasksList.remove(i);
 				tasksList.add(i, prevModTask);
+				name = tasksList.get(i).getName();
 				Collections.sort(tasksList);
 				indexStore.replaceTask(prevModIndex, prevModTask);
 				break;
 			}
 		}
+		
+		String cmd = COMMAND_UNDO + String.format(COMMAND_UPDATE_TASK, name);
+		return new Result(cmd, true, putInHashMap(KEY_TASKS, tasksList));
 	}
 
-	private ArrayList<String> undoMarkTaskAsDone() {
+	private Result undoMarkTaskAsDone() {
 		if (prevModTask != null) {
-			for (int i = 0; i < tasksList.size(); i++) {
-				if (tasksList.get(i).getIndex() == prevModIndex) {
-					tasksList.get(i).markAsUndone();
-					indexStore.replaceTask(prevModIndex, tasksList.get(i));
-					break;
-				}
+			int arrayListIndex = getArrayListIndexOfTask(prevModIndex);
+			Task taskToUnmark = (Task) tasksList.get(arrayListIndex);
+			if (taskToUnmark.isDone()) {
+				taskToUnmark.markAsUndone();
 			}
+			String name = taskToUnmark.getName();
+			String cmd = COMMAND_UNDO + String.format(COMMAND_DONE_TASK, name);
+			return new Result(cmd, true, putInHashMap(KEY_TASKS, tasksList));
 		} else {
-			for (int i = 0; i < floatingTasksList.size(); i++) {
-				if (floatingTasksList.get(i).getIndex() == prevModIndex) {
-					floatingTasksList.get(i).markAsUndone();
-					indexStore.replaceTask(prevModIndex, floatingTasksList.get(i));
-					break;
-				}
-			}
+			int arrayListIndex = getArrayListIndexOfFloatingTask(prevModIndex);
+			FloatingTask taskToUnmark = (FloatingTask) floatingTasksList.get(arrayListIndex);
+			taskToUnmark.markAsUndone();
+			String name = taskToUnmark.getName();
+			String cmd = COMMAND_UNDO + String.format(COMMAND_DONE_FLOATING, name);
+			return new Result(cmd, true, putInHashMap(KEY_FLOATING, floatingTasksList));
+
 		}
-		ArrayList<String> feedback = new ArrayList<String>();
-		feedback.add(MSG_UNDO_UPDATE);
-		return feedback;
 	}
 
-	private ArrayList<String> handleInvalidUndo() {
-		ArrayList<String> feedback = new ArrayList<String>();
-
-		feedback.add(MSG_UNDO_INVALID);
-		return feedback;
+	private Result handleInvalidUndo() {
+		return new Result(COMMAND_UNDO, false, null);
 	}
 
 	/***** SEARCH COMMAND EXECUTION ******/
-
-	/*
-	 * public ArrayList<String> searchId(int id) { ArrayList<String> idFoundLines = new ArrayList<String>(); if (!isEvent(id) && !isFloatingTask(id)) { idFoundLines.clear(); }
-	 * 
-	 * else if (isEvent(id)) { Event event = indexStore.getEventById(id); idFoundLines.add(event.toString()); }
-	 * 
-	 * else if (isFloatingTask(id)) { FloatingTask task = indexStore.getTaskById(id); idFoundLines.add(task.toString()); } disableUndo(); return idFoundLines;
-	 * 
-	 * }
-	 */
 
 	public ArrayList<String> search(String arguments) {
 
@@ -641,15 +627,15 @@ public class Calendar {
 		return false;
 	}
 
-	public ArrayList<Event> getEventsList() {
+	public ArrayList<CalendarObject> getEventsList() {
 		return eventsList;
 	}
 
-	public ArrayList<Task> getTasksList() {
+	public ArrayList<CalendarObject> getTasksList() {
 		return tasksList;
 	}
 
-	public ArrayList<FloatingTask> getFloatingTasksList() {
+	public ArrayList<CalendarObject> getFloatingTasksList() {
 		return floatingTasksList;
 	}
 
@@ -718,9 +704,9 @@ public class Calendar {
 		return indexStore.isFloatingTask(id);
 	}
 
-	private HashMap<String, ArrayList<FloatingTask>> putInHashMap(String key, ArrayList<FloatingTask> value) {
-		HashMap<String, ArrayList<FloatingTask>> map;
-		map = new HashMap<String, ArrayList<FloatingTask>>();
+	private HashMap<String, ArrayList<CalendarObject>> putInHashMap(String key, ArrayList<CalendarObject> value) {
+		HashMap<String, ArrayList<CalendarObject>> map;
+		map = new HashMap<String, ArrayList<CalendarObject>>();
 		map.put(key, value);
 		return map;
 	}
