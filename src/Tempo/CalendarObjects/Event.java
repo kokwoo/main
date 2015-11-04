@@ -18,14 +18,6 @@ public class Event extends CalendarObject{
 	private static final String PARAM_END_TIME = "end time";
 	
 	private SimpleDateFormat dateFormatter = new SimpleDateFormat("dd/MM/yyyy/HH:mm");
-
-	
-	public Event(int index, String name, String start, String end){
-		super(name);
-		this.index = index;
-		setStartDateTime(start.trim());
-		setEndDateTime(end.trim());
-		}
 	
 	public Event(int index, int seriesIndex, String name, String start, String end){
 		super(name);
