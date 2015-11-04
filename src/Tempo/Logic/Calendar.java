@@ -5,6 +5,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import Tempo.CalendarObjects.CalendarObject;
 import Tempo.CalendarObjects.Event;
 import Tempo.CalendarObjects.FloatingTask;
 import Tempo.CalendarObjects.Task;
@@ -68,14 +69,14 @@ public class Calendar {
 	private FloatingTask prevModFloatingTask = null;
 	private String prevCommand = COMMAND_INVALID_UNDO;
 
-	private ArrayList<Event> eventsList;
-	private ArrayList<Task> tasksList;
-	private ArrayList<FloatingTask> floatingTasksList;
+	private ArrayList<CalendarObject> eventsList;
+	private ArrayList<CalendarObject> tasksList;
+	private ArrayList<CalendarObject> floatingTasksList;
 
 	private Calendar() {
-		eventsList = new ArrayList<Event>();
-		tasksList = new ArrayList<Task>();
-		floatingTasksList = new ArrayList<FloatingTask>();
+		eventsList = new ArrayList<CalendarObject>();
+		tasksList = new ArrayList<CalendarObject>();
+		floatingTasksList = new ArrayList<CalendarObject>();
 		indexStore = IndexStore.getInstance();
 		importer = CalendarImporter.getInstance();
 	}
@@ -713,9 +714,9 @@ public class Calendar {
 		return indexStore.isFloatingTask(id);
 	}
 
-	private HashMap<String, ArrayList<FloatingTask>> putInHashMap(String key, ArrayList<FloatingTask> value) {
-		HashMap<String, ArrayList<FloatingTask>> map;
-		map = new HashMap<String, ArrayList<FloatingTask>>();
+	private HashMap<String, ArrayList<CalendarObject>> putInHashMap(String key, ArrayList<CalendarObject> value) {
+		HashMap<String, ArrayList<CalendarObject>> map;
+		map = new HashMap<String, ArrayList<CalendarObject>>();
 		map.put(key, value);
 		return map;
 	}
