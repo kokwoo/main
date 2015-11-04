@@ -18,6 +18,7 @@ public class Calendar {
 	private static Calendar instance = new Calendar();
 	private static IndexStore indexStore;
 	private static CalendarImporter importer;
+	private static CalendarExporter exporter;
 
 	private static final String COMMAND_ADD = "add";
 	private static final String COMMAND_ADD_EVENT = "add event %1$s";
@@ -70,6 +71,7 @@ public class Calendar {
 		floatingTasksList = new ArrayList<CalendarObject>();
 		indexStore = IndexStore.getInstance();
 		importer = CalendarImporter.getInstance();
+		exporter = CalendarExporter.getInstance();
 	}
 
 	public static Calendar getInstance() {
@@ -537,95 +539,85 @@ public class Calendar {
 
 	/***** SEARCH COMMAND EXECUTION ******/
 
-	public ArrayList<String> search(String arguments) {
-
-		String[] splitedArg = arguments.split("\\s+");
-		ArrayList<String> wordFoundLines = new ArrayList<String>();
-		wordFoundLines.add(MSG_SEARCH_RESULTS);
-		int state = 0;
-		int num = 1;
-		for (int i = 0; i < eventsList.size(); i++) {
-			innerloop: while (state < splitedArg.length) {
-				if (containsWord(eventsList.get(i).toString(), splitedArg[state])) {
-					state++;
-					if (state == splitedArg.length) {
-						wordFoundLines = toDisplayEvent(wordFoundLines, eventsList.get(i), num);
-						num++;
-					}
-				} else {
-					break innerloop;
-				}
+	public Result search(String arguments) {
+		String command = String.format(COMMAND_SEARCH, arguments);
+		
+		ArrayList<CalendarObject> eventsFound = new ArrayList<CalendarObject>();
+		ArrayList<CalendarObject> tasksFound = new ArrayList<CalendarObject>();
+		ArrayList<CalendarObject> floatingTasksFound = new ArrayList<CalendarObject>();
+		
+		String regex = generateRegex(arguments);
+		
+		for(CalendarObject event: eventsList){
+			if(event.toString().matches(regex)){
+				eventsFound.add(event);
 			}
 		}
-
-		state = 0;
-		for (int i = 0; i < tasksList.size(); i++) {
-			innerloop: while (state < splitedArg.length) {
-				if (containsWord(tasksList.get(i).toString(), splitedArg[state])) {
-					state++;
-					if (state == splitedArg.length) {
-						wordFoundLines = toDisplayTasks(wordFoundLines, tasksList.get(i), num);
-						num++;
-					}
-				} else {
-					break innerloop;
-				}
+		
+		for(CalendarObject task: tasksList){
+			if(tasksFound.toString().matches(regex)){
+				tasksFound.add(task);
 			}
 		}
-
-		state = 0;
-		for (int i = 0; i < floatingTasksList.size(); i++) {
-			innerloop: while (state < splitedArg.length) {
-				if (containsWord(floatingTasksList.get(i).toString(), splitedArg[state])) {
-					state++;
-					if (state == splitedArg.length) {
-						wordFoundLines = toDisplayFTasks(wordFoundLines, floatingTasksList.get(i), num);
-						num++;
-					}
-				} else {
-					break innerloop;
-				}
+		
+		for(CalendarObject floatingTask: floatingTasksList){
+			if(floatingTask.toString().matches(regex)){
+				floatingTasksFound.add(floatingTask);
 			}
 		}
-
-		// Display error if no search results
-		if (num == 1) {
-			wordFoundLines.add(MSG_NO_SEARCH_RESULTS);
+		
+		HashMap<String, ArrayList<CalendarObject>> results = new HashMap<String, ArrayList<CalendarObject>>();
+		
+		results.put(KEY_EVENTS, eventsFound);
+		results.put(KEY_TASKS, tasksFound);
+		results.put(KEY_FLOATING, floatingTasksFound);
+		
+		return new Result(command, true, results);
+	}
+	
+	private String generateRegex(String args){
+		String[] splittedArgs = args.split("\\s+");
+		
+		String regex = "(?i:.*";
+		
+		for(String s: splittedArgs){
+			regex += s + ".*";
 		}
-
-		return wordFoundLines;
+		
+		regex += ")";
+		return regex;
 	}
 
-	private ArrayList<String> toDisplayFTasks(ArrayList<String> wordFoundLines, FloatingTask floatingTask, int num) {
-
-		wordFoundLines.add(num + ") " + floatingTask.getName() + "\t[ID:" + floatingTask.getIndex() + "] ");
-		return wordFoundLines;
-	}
-
-	private ArrayList<String> toDisplayTasks(ArrayList<String> wordFoundLines, Task task, int num) {
-		wordFoundLines.add("Tasks");
-		wordFoundLines
-				.add(num + ") " + task.getName() + " Due: " + task.getDueDate() + "\t[ID:" + task.getIndex() + "] ");
-
-		return wordFoundLines;
-	}
-
-	private ArrayList<String> toDisplayEvent(ArrayList<String> wordFoundLines, Event event, int num) {
-		wordFoundLines.add("Events");
-		wordFoundLines.add(num + ") " + event.getName() + " From: " + event.getStartDateTime() + " To: "
-				+ event.getEndDateTime() + "\t[ID:" + event.getIndex() + "] ");
-		return wordFoundLines;
-	}
-
-	private boolean containsWord(String content, String keyword) {
-		String[] splited = content.split("\\W");
-		for (int i = 0; i < splited.length; i++) {
-			if (splited[i].equalsIgnoreCase(keyword)) {
-				return true;
-			}
-		}
-		return false;
-	}
+//	private ArrayList<String> toDisplayFTasks(ArrayList<String> wordFoundLines, FloatingTask floatingTask, int num) {
+//
+//		wordFoundLines.add(num + ") " + floatingTask.getName() + "\t[ID:" + floatingTask.getIndex() + "] ");
+//		return wordFoundLines;
+//	}
+//
+//	private ArrayList<String> toDisplayTasks(ArrayList<String> wordFoundLines, Task task, int num) {
+//		wordFoundLines.add("Tasks");
+//		wordFoundLines
+//				.add(num + ") " + task.getName() + " Due: " + task.getDueDate() + "\t[ID:" + task.getIndex() + "] ");
+//
+//		return wordFoundLines;
+//	}
+//
+//	private ArrayList<String> toDisplayEvent(ArrayList<String> wordFoundLines, Event event, int num) {
+//		wordFoundLines.add("Events");
+//		wordFoundLines.add(num + ") " + event.getName() + " From: " + event.getStartDateTime() + " To: "
+//				+ event.getEndDateTime() + "\t[ID:" + event.getIndex() + "] ");
+//		return wordFoundLines;
+//	}
+//
+//	private boolean containsWord(String content, String keyword) {
+//		String[] splited = content.split("\\W");
+//		for (int i = 0; i < splited.length; i++) {
+//			if (splited[i].equalsIgnoreCase(keyword)) {
+//				return true;
+//			}
+//		}
+//		return false;
+//	}
 
 	public ArrayList<CalendarObject> getEventsList() {
 		return eventsList;
@@ -641,7 +633,7 @@ public class Calendar {
 
 	public void exportToFile() {
 		// System.out.println("Exporting: " + _fileName);
-		CalendarExporter exporter = new CalendarExporter(_fileName, eventsList, tasksList, floatingTasksList);
+		exporter.setFileName(_fileName);
 		exporter.export();
 		// System.out.println("Export Successful!");
 	}
@@ -761,8 +753,6 @@ public class Calendar {
 	}
 
 	private ArrayList<String> getWeeklyRecurringDates(String start, String end) {
-		int count = 0;
-
 		Date startDate = null;
 		Date endDate = null;
 

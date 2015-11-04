@@ -3,6 +3,7 @@ package Tempo.Storage;
 import java.io.*;
 import java.util.*;
 
+import Tempo.CalendarObjects.CalendarObject;
 import Tempo.CalendarObjects.Event;
 import Tempo.CalendarObjects.FloatingTask;
 import Tempo.CalendarObjects.Task;
@@ -12,16 +13,16 @@ public class CalendarImporter {
 	
 	private String _fileName; 
 	
-	private ArrayList<Event> events;
-	private ArrayList<Task> tasks;
-	private ArrayList<FloatingTask> floatingTasks;
+	private ArrayList<CalendarObject> events;
+	private ArrayList<CalendarObject> tasks;
+	private ArrayList<CalendarObject> floatingTasks;
 	
 	private BufferedReader in;
 	
 	private CalendarImporter(){
-		events = new ArrayList<Event>();
-		tasks = new ArrayList<Task>();
-		floatingTasks = new ArrayList<FloatingTask>();
+		events = new ArrayList<CalendarObject>();
+		tasks = new ArrayList<CalendarObject>();
+		floatingTasks = new ArrayList<CalendarObject>();
 	}
 	
 	public static CalendarImporter getInstance(){
@@ -92,15 +93,15 @@ public class CalendarImporter {
 		}
 	}
 	
-	public ArrayList<Event> getEventsList(){
+	public ArrayList<CalendarObject> getEventsList(){
 		return events;
 	}
 	
-	public ArrayList<Task> getTasksList(){
+	public ArrayList<CalendarObject> getTasksList(){
 		return tasks;
 	}
 	
-	public ArrayList<FloatingTask> getFloatingTasksList(){
+	public ArrayList<CalendarObject>getFloatingTasksList(){
 		return floatingTasks;
 	}
 }

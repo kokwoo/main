@@ -15,7 +15,7 @@ public class SearchCommand implements Command {
 	}
 
 	@Override
-	public ArrayList<String> execute() {
+	public Result execute() {
 			return cal.search(arguments);
 	}
 }
