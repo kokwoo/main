@@ -3,8 +3,7 @@ package Tempo.CalendarObjects;
 import java.text.*;
 import java.util.*;
 
-public class Event implements Comparable<Event>, CalendarObject{
-	protected String name;
+public class Event extends CalendarObject implements Comparable<Event> {
 	protected Date startDateTime;
 	protected Date endDateTime;
 	protected int index;
@@ -22,16 +21,16 @@ public class Event implements Comparable<Event>, CalendarObject{
 
 	
 	public Event(int index, String name, String start, String end){
+		super(name);
 		this.index = index;
-		this.name = name;		
 		setStartDateTime(start.trim());
 		setEndDateTime(end.trim());
 		}
 	
 	public Event(int index, int seriesIndex, String name, String start, String end){
+		super(name);
 		this.index = index;
-		this.seriesIndex = seriesIndex;
-		this.name = name;		
+		this.seriesIndex = seriesIndex;		
 		setStartDateTime(start.trim());
 		setEndDateTime(end.trim());
 		}

@@ -19,15 +19,6 @@ public class Calendar {
 	private static IndexStore indexStore;
 	private static CalendarImporter importer;
 
-	/*
-	 * private static final String MSG_ADDED_EVENT = "Event %1$s has been added."; private static final String MSG_ADDED_TASK = "Task %1$s has been added."; private static final String
-	 * MSG_REMOVED_EVENT = "Event %1$s has been removed."; private static final String MSG_REMOVED_TASK = "Task %1$s has been removed."; private static final String MSG_UPDATED_EVENT =
-	 * "Your event has been updated."; private static final String MSG_UPDATED_TASK = "Your task has been updated."; private static final String MSG_DONE_TASK = "Task %1$s has been marked as done.";
-	 * private static final String MSG_DONE_INVALID = "Err: Task %1$s is alr marked as done!"; private static final String MSG_UNDO_UPDATE = "Your updates have been reverted."; private static final
-	 * String MSG_UNDO_INVALID = "Error: Cannot undo previous operation."; private static final String MSG_SEARCH_RESULTS = "These are your search results"; private static final String
-	 * MSG_NO_SEARCH_RESULTS = "(We do not have any results for your search)";
-	 */
-
 	private static final String COMMAND_ADD = "add";
 	private static final String COMMAND_ADD_EVENT = "add event %1$s";
 	private static final String COMMAND_ADD_TASK = "add task %1$s";
@@ -123,7 +114,7 @@ public class Calendar {
 	}
 
 	//Szeying, can help me format this into a result and also the extra index from the index store...
-	public ArrayList<String> addRecurringEvent(String name, String start, String end, String recurringType,String recurringEnd) {
+	public ArrayList<String> addRecurringEvent(String name, String start, String end, String recurringType, String recurringEnd) {
 		int newEventIndex = indexStore.getNewId();
 		Event newEvent = new Event(newEventIndex, name, start, end);
 		eventsList.add(newEvent);
@@ -273,7 +264,7 @@ public class Calendar {
 
 	public Result updateEvent(int idx, ArrayList<String> fields, ArrayList<String> newValues) {
 		int arrayListIndex = getArrayListIndexOfEvent(idx);
-		Event eventToUpdate = eventsList.get(arrayListIndex);
+		Event eventToUpdate = (Event) eventsList.get(arrayListIndex);
 		Event originalEvent = copyEvent(eventToUpdate);
 
 		savePrevCmd(idx, originalEvent, null, null, COMMAND_UPDATE);
@@ -298,9 +289,9 @@ public class Calendar {
 		return new Event(idx, eventName, startDateTime, endDateTime);
 	}
 
-	public ArrayList<String> updateTask(int idx, ArrayList<String> fields, ArrayList<String> newValues) {
+	public Result updateTask(int idx, ArrayList<String> fields, ArrayList<String> newValues) {
 		int arrayListIndex = getArrayListIndexOfTask(idx);
-		Task taskToUpdate = tasksList.get(arrayListIndex);
+		Task taskToUpdate = (Task) tasksList.get(arrayListIndex);
 		Task originalTask = copyTask(taskToUpdate);
 
 		savePrevCmd(idx, null, originalTask, null, COMMAND_UPDATE);
@@ -324,10 +315,10 @@ public class Calendar {
 		return new Task(idx, taskName, taskDoneStatus, dueDate);
 	}
 
-	public ArrayList<String> updateFloatingTask(int idx, ArrayList<String> fields, ArrayList<String> newValues) {
+	public Result updateFloatingTask(int idx, ArrayList<String> fields, ArrayList<String> newValues) {
 
 		int arrayListIndex = getArrayListIndexOfFloatingTask(idx);
-		FloatingTask taskToUpdate = floatingTasksList.get(arrayListIndex);
+		FloatingTask taskToUpdate = (FloatingTask) floatingTasksList.get(arrayListIndex);
 		FloatingTask originalTask = copyFloatingTask(taskToUpdate);
 
 		savePrevCmd(idx, null, null, originalTask, COMMAND_UPDATE);
@@ -358,7 +349,7 @@ public class Calendar {
 		}
 
 		int arrayListIndex = getArrayListIndexOfTask(idx);
-		Task taskToMark = tasksList.get(arrayListIndex);
+		Task taskToMark = (Task) tasksList.get(arrayListIndex);
 		Task originalTask = taskToMark;
 
 		String taskName = taskToMark.getName();
@@ -377,7 +368,7 @@ public class Calendar {
 
 	public Result markFloatingTaskAsDone(int idx) {
 		int arrayListIndex = getArrayListIndexOfFloatingTask(idx);
-		FloatingTask taskToMark = floatingTasksList.get(arrayListIndex);
+		FloatingTask taskToMark = (FloatingTask) floatingTasksList.get(arrayListIndex);
 		FloatingTask originalTask = taskToMark;
 
 		String taskName = taskToMark.getName();
@@ -435,7 +426,7 @@ public class Calendar {
 		prevCommand = command;
 	}
 
-	private ArrayList<String> undoAdd() {
+	private Result undoAdd() {
 		if (isEvent(prevModIndex)) {
 			return removeEvent(prevModIndex);
 		} else if (isFloatingTask(prevModIndex)) {
@@ -445,7 +436,7 @@ public class Calendar {
 		}
 	}
 
-	private ArrayList<String> undoRemove() {
+	private Result undoRemove() {
 		indexStore.removeRecycledId(prevModIndex);
 		if (prevModEvent != null) {
 			return addEvent(prevModEvent);
@@ -456,21 +447,17 @@ public class Calendar {
 		}
 	}
 
-	private ArrayList<String> undoUpdate() {
+	private Result undoUpdate() {
 		if (isEvent(prevModIndex)) {
-			undoUpdateEvent();
+			return undoUpdateEvent();
 		} else if (isFloatingTask(prevModIndex)) {
-			undoUpdateFloatingTask();
+			return undoUpdateFloatingTask();
 		} else {
-			undoUpdateTask();
+			return undoUpdateTask();
 		}
-
-		ArrayList<String> feedback = new ArrayList<String>();
-		feedback.add(MSG_UNDO_UPDATE);
-		return feedback;
 	}
 
-	private void undoUpdateEvent() {
+	private Result undoUpdateEvent() {
 		for (int i = 0; i < eventsList.size(); i++) {
 			if (eventsList.get(i).getIndex() == prevModIndex) {
 				eventsList.remove(i);
@@ -480,6 +467,8 @@ public class Calendar {
 				break;
 			}
 		}
+		
+		
 	}
 
 	private void undoUpdateFloatingTask() {
