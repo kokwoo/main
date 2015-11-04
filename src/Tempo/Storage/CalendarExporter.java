@@ -1,39 +1,57 @@
 package Tempo.Storage;
 
 import java.io.*;
-import java.util.*;
+import java.util.ArrayList;
 
+import Tempo.CalendarObjects.CalendarObject;
 import Tempo.CalendarObjects.Event;
 import Tempo.CalendarObjects.FloatingTask;
 import Tempo.CalendarObjects.Task;
+import Tempo.Logic.Calendar;
 
 public class CalendarExporter {
-	private String _fileName; 
+	private static CalendarExporter instance = new CalendarExporter();
 	
-	private ArrayList<Event> events;
-	private ArrayList<Task> tasks;
-	private ArrayList<FloatingTask> floatingTasks;
+	private String _fileName; 
+	private Calendar calendar;
+	
+	private ArrayList<CalendarObject> events;
+	private ArrayList<CalendarObject> tasks;
+	private ArrayList<CalendarObject> floatingTasks;
 	
 	private static final String HEADER_EVENTS = "--EVENTS--";
 	private static final String HEADER_TASKS = "--TASKS--";
 	private static final String HEADER_FLOATING_TASKS = "--FLOATING TASKS--";
 	private BufferedWriter out;
 	
-	public CalendarExporter(String fileName, ArrayList<Event> events, ArrayList<Task> tasks, ArrayList<FloatingTask> floatingTasks){
-		this._fileName = fileName;
-		this.events = events;
-		this.tasks = tasks;
-		this.floatingTasks = floatingTasks;
+	private CalendarExporter(){
+		_fileName = "";
+		events = new ArrayList<CalendarObject>();
+		tasks = new ArrayList<CalendarObject>();
+		floatingTasks = new ArrayList<CalendarObject>();
 		
-		try {
-			out = new BufferedWriter(new FileWriter(_fileName));
-		} catch (IOException e) {
-			System.out.println("Error while exporting calendar");
-		}					
+		calendar = Calendar.getInstance();
 						
 	}
 	
+	public static CalendarExporter getInstance(){
+		return instance;
+	}
+	
+	public void setFileName(String filename){
+		_fileName = filename.trim();
+		try{
+			out = new BufferedWriter(new FileWriter(_fileName));
+		}catch (Exception e){
+			//UNABLE TO OPEN FILENAME
+		}
+	}
+	
 	public void export(){
+		events = calendar.getEventsList();
+		tasks = calendar.getTasksList();
+		floatingTasks = calendar.getFloatingTasksList();
+		
 		try {
 			out.write(HEADER_EVENTS + "\n");
 			for(int i = 0; i < events.size(); i++){
@@ -53,15 +71,4 @@ public class CalendarExporter {
 			e.printStackTrace();
 		}
 	}
-	
-//	public void writeToFile(String s){
-//		try {
-//			out.write(s + System.getProperty("line.separator"));
-//			out.flush();
-//		} catch (Exception e) {
-//			System.out.println("Error while exporting calendar");
-//		}
-//	}
-	
-	
 }

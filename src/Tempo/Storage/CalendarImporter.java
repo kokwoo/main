@@ -3,6 +3,7 @@ package Tempo.Storage;
 import java.io.*;
 import java.util.*;
 
+import Tempo.CalendarObjects.CalendarObject;
 import Tempo.CalendarObjects.Event;
 import Tempo.CalendarObjects.FloatingTask;
 import Tempo.CalendarObjects.Task;
@@ -12,17 +13,16 @@ public class CalendarImporter {
 	
 	private String _fileName; 
 	
-	private ArrayList<Event> events;
-	private ArrayList<Task> tasks;
-	private ArrayList<FloatingTask> floatingTasks;
+	private ArrayList<CalendarObject> events;
+	private ArrayList<CalendarObject> tasks;
+	private ArrayList<CalendarObject> floatingTasks;
 	
 	private BufferedReader in;
 	
 	private CalendarImporter(){
-		events = new ArrayList<Event>();
-		tasks = new ArrayList<Task>();
-		floatingTasks = new ArrayList<FloatingTask>();
-
+		events = new ArrayList<CalendarObject>();
+		tasks = new ArrayList<CalendarObject>();
+		floatingTasks = new ArrayList<CalendarObject>();
 	}
 	
 	public static CalendarImporter getInstance(){
@@ -55,21 +55,24 @@ public class CalendarImporter {
 						//is a task
 						//tasks
 						int taskIndex = Integer.parseInt(split[0]);
-						Task newTask = new Task(taskIndex, split[1], split[2], split[3]);
+						int taskSeriesIndex = Integer.parseInt(split[1]);
+						Task newTask = new Task(taskIndex, taskSeriesIndex, split[2], split[3], split[4]);
 						tasks.add(newTask);
 						Collections.sort(tasks);
 					}else{
 						//is a event
 						//events
 						int eventIndex = Integer.parseInt(split[0]);
-						Event newEvent  = new Event(eventIndex, split[1], split[2], split[3]);
+						int eventSeriesIndex = Integer.parseInt(split[1]);
+						Event newEvent  = new Event(eventIndex, eventSeriesIndex, split[2], split[3], split[4]);
 						events.add(newEvent);
 						Collections.sort(events);
 					}
 				}else if (split.length == 3){
 					//floating tasks
 					int floatingTaskIndex = Integer.parseInt(split[0]);
-					FloatingTask newFloatingTask =  new FloatingTask(floatingTaskIndex, split[1], split[2]);
+					int floatingTaskSeriesIndex = Integer.parseInt(split[1]);
+					FloatingTask newFloatingTask =  new FloatingTask(floatingTaskIndex, floatingTaskSeriesIndex, split[2], split[3]);
 					floatingTasks.add(newFloatingTask);
 				}else{
 					//unrecognized
@@ -90,15 +93,15 @@ public class CalendarImporter {
 		}
 	}
 	
-	public ArrayList<Event> getEventsList(){
+	public ArrayList<CalendarObject> getEventsList(){
 		return events;
 	}
 	
-	public ArrayList<Task> getTasksList(){
+	public ArrayList<CalendarObject> getTasksList(){
 		return tasks;
 	}
 	
-	public ArrayList<FloatingTask> getFloatingTasksList(){
+	public ArrayList<CalendarObject>getFloatingTasksList(){
 		return floatingTasks;
 	}
 }

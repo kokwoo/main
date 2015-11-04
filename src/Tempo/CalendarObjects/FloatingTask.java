@@ -1,22 +1,25 @@
 package Tempo.CalendarObjects;
 
-public class FloatingTask implements CalendarObject{
-	protected String _name;
-	protected boolean _done;
-	protected int _index;
+public class FloatingTask extends CalendarObject{
+	protected String name;
+	protected boolean done;
+	protected int index;
+	protected int seriesIndex;
 	
 	private static final String DELIMETER = "!!";
 	
-	public FloatingTask(int index, String name){
-		_index = index;
-		_name = name;
-		_done = false;
+	public FloatingTask(int index, int seriesIndex, String name){
+		super(name);
+		this.index = index;
+		this.name = name;
+		this.done = false;
 	}
 	
-	public FloatingTask(int index, String name, String done) {
-		_index = index;
-		_name = name;
-		_done = Boolean.parseBoolean(done);
+	public FloatingTask(int index, int seriesIndex, String name, String done) {
+		super(name);
+		this.index = index;
+		this.seriesIndex = seriesIndex;
+		this.done = Boolean.parseBoolean(done);
 	}
 	
 	public void update(String field, String newValue) {
@@ -26,27 +29,31 @@ public class FloatingTask implements CalendarObject{
 	}
 	
 	public void setName(String newName) {
-		_name = newName;
+		name = newName;
 	}
 	
 	public int getIndex() {
-		return _index;
+		return index;
+	}
+	
+	public int getSeriesIndex(){
+		return seriesIndex;
 	}
 
 	public String getName() {
-		return _name;
+		return name;
 	}
 
 	public boolean isDone() {
-		return _done;
+		return done;
 	}
 
 	public void markAsDone() {
-		_done = true;
+		done = true;
 	}
 	
 	public void markAsUndone() {
-		_done = false;
+		done = false;
 	}
 	
 	public boolean isFloatingTask() {
@@ -54,6 +61,6 @@ public class FloatingTask implements CalendarObject{
 	}
 	
 	public String toString(){
-		return getIndex() + DELIMETER + getName() + DELIMETER + isDone();
+		return getIndex() + DELIMETER + getSeriesIndex() + DELIMETER + getName() + DELIMETER + isDone();
 	}
 }
