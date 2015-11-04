@@ -8,6 +8,13 @@ public class FloatingTask extends CalendarObject{
 	
 	private static final String DELIMETER = "!!";
 	
+	public FloatingTask(int index, String name, String done){
+		super(name);
+		this.index = index;
+		this.name = name;
+		this.done = false;
+	}
+	
 	public FloatingTask(int index, int seriesIndex, String name){
 		super(name);
 		this.index = index;
