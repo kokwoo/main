@@ -41,8 +41,8 @@ public class Calendar {
 	private static final String COMMAND_UPDATE_FLOATING = "update floating task %1$s";
 	private static final String COMMAND_DONE = "done";
 	private static final String COMMAND_DONE_TASK = "done task %1$s";
-	private static final String COMMAND_UNDO = "undo ";
 	private static final String COMMAND_DONE_FLOATING = "done floating task %1$s";
+	private static final String COMMAND_UNDO = "undo ";
 	private static final String COMMAND_INVALID_UNDO = "invalid undo";
 	private static final String COMMAND_SEARCH = "search %1$s";
 
@@ -351,7 +351,7 @@ public class Calendar {
 
 	/***** DONE COMMAND EXECUTION ******/
 
-	public ArrayList<String> markTaskAsDone(int idx) {
+	public Result markTaskAsDone(int idx) {
 		if (isFloatingTask(idx)) {
 			return markFloatingTaskAsDone(idx);
 		}
@@ -359,43 +359,38 @@ public class Calendar {
 		int arrayListIndex = getArrayListIndexOfTask(idx);
 		Task taskToMark = tasksList.get(arrayListIndex);
 		Task originalTask = taskToMark;
-		ArrayList<String> feedback = new ArrayList<String>();
 
 		String taskName = taskToMark.getName();
 
 		if (taskToMark.isDone()) {
-			feedback.add(String.format(MSG_DONE_INVALID, taskName));
 			disableUndo();
+			return new Result(COMMAND_DONE_TASK, false, null);
 		} else {
 			savePrevCmd(taskToMark.getIndex(), null, originalTask, null, COMMAND_DONE);
 			taskToMark.markAsDone();
 			exportToFile();
-			feedback.add(String.format(MSG_DONE_TASK, taskName));
+			String cmd = String.format(COMMAND_DONE_TASK, taskName);
+			return new Result(cmd, true, putInHashMap(KEY_TASKS, tasksList));
 		}
-
-		return feedback;
-
 	}
 
-	public ArrayList<String> markFloatingTaskAsDone(int idx) {
+	public Result markFloatingTaskAsDone(int idx) {
 		int arrayListIndex = getArrayListIndexOfFloatingTask(idx);
 		FloatingTask taskToMark = floatingTasksList.get(arrayListIndex);
 		FloatingTask originalTask = taskToMark;
-		ArrayList<String> feedback = new ArrayList<String>();
 
 		String taskName = taskToMark.getName();
 
 		if (taskToMark.isDone()) {
-			feedback.add(String.format(MSG_DONE_INVALID, taskName));
 			disableUndo();
+			return new Result(COMMAND_DONE_FLOATING, false, null);
 		} else {
 			savePrevCmd(taskToMark.getIndex(), null, null, originalTask, COMMAND_DONE);
 			taskToMark.markAsDone();
 			exportToFile();
-			feedback.add(String.format(MSG_DONE_TASK, taskName));
+			String cmd = String.format(COMMAND_DONE_FLOATING, taskName);
+			return new Result(cmd, true, putInHashMap(KEY_FLOATING, floatingTasksList));
 		}
-
-		return feedback;
 	}
 
 	/***** UNDO COMMAND EXECUTION ******/
