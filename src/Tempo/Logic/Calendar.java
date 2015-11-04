@@ -95,12 +95,44 @@ public class Calendar {
 	public Result addEvent(Event newEvent) {
 		eventsList.add(newEvent);
 		indexStore.addEvent(newEvent.getIndex(), newEvent);
-		Collections.sort(eventsList);
+		sortEvents();
 
 		String name = newEvent.getName();
 		String cmd = String.format(CMD_ADD_EVENT, name);
 
 		return new Result(cmd, true, putInHashMap(KEY_EVENTS, eventsList));
+	}
+	
+	public void sortEvents(){
+		ArrayList<Event> events = new ArrayList<Event>();
+		
+		for(CalendarObject o: eventsList){
+			Event currEvent = (Event)o;
+			events.add(currEvent);
+		}
+		
+		Collections.sort(events);
+		eventsList.clear();
+		
+		for(Event e: events){
+			eventsList.add(e);
+		}
+	}
+	
+	public void sortTasks(){
+		ArrayList<Task> tasks = new ArrayList<Task>();
+		
+		for(CalendarObject o: tasksList){
+			Task currTask = (Task)o;
+			tasks.add(currTask);
+		}
+		
+		Collections.sort(tasks);
+		tasksList.clear();
+		
+		for(Task t: tasks){
+			tasksList.add(t);
+		}
 	}
 
 	public Result addEvent(String name, String start, String end) {
@@ -109,7 +141,7 @@ public class Calendar {
 		Event newEvent = new Event(newEventIndex,newSeriesIndex, name, start, end);
 		eventsList.add(newEvent);
 		indexStore.addEvent(newEventIndex, newEvent);
-		Collections.sort(eventsList);
+		sortEvents();
 		exportToFile();
 
 		savePrevCmd(newEventIndex, newEvent, null, null, CMD_ADD);
@@ -136,7 +168,7 @@ public class Calendar {
 			indexStore.addEvent(newEventIndex, newEvent);
 		}
 
-		Collections.sort(eventsList);
+		sortEvents();
 		exportToFile();
 
 		String cmd = String.format(CMD_ADD_RECURR_EVENT, name);
@@ -147,7 +179,7 @@ public class Calendar {
 	public Result addTask(Task newTask) {
 		tasksList.add(newTask);
 		indexStore.addTask(newTask.getIndex(), newTask);
-		Collections.sort(tasksList);
+		sortTasks();
 
 		String name = newTask.getName();
 		String cmd = String.format(CMD_ADD_TASK, name);
@@ -161,7 +193,7 @@ public class Calendar {
 		Task newTask = new Task(newTaskIndex, newSeriesIndex, name, dueDate);
 		tasksList.add(newTask);
 		indexStore.addTask(newTaskIndex, newTask);
-		Collections.sort(tasksList);
+		sortTasks();
 		exportToFile();
 
 		savePrevCmd(newTaskIndex, null, newTask, null, CMD_ADD);
@@ -187,7 +219,7 @@ public class Calendar {
 			indexStore.addTask(newTaskIndex, newTask);
 		}
 
-		Collections.sort(tasksList);
+		sortTasks();
 		exportToFile();
 		
 		String cmd = String.format(CMD_ADD_RECURR_TASK, name);
@@ -228,11 +260,12 @@ public class Calendar {
 		int seriesIndex = -1;
 		
 		for (int i = 0; i < eventsList.size(); i++) {
-			if (eventsList.get(i).getIndex() == idx) {
+			Event currEvent = (Event)eventsList.get(i);
+			if (currEvent.getIndex() == idx) {
 				savePrevCmd(idx, eventsList.get(i), null, null, CMD_REMOVE);
-				seriesIndex = eventsList.get(i).getSeriesIndex();
-				eventName = eventsList.get(i).getName();
-				indexStore.removeEvent(eventsList.get(i).getIndex());
+				seriesIndex = currEvent.getSeriesIndex();
+				eventName = currEvent.getName();
+				indexStore.removeEvent(currEvent.getIndex());
 				eventsList.remove(i);
 				break;
 			}
@@ -240,8 +273,9 @@ public class Calendar {
 		
 		if(removeSeries){
 			for(int i = 0; i < eventsList.size(); i++){
-				if(eventsList.get(i).getSeriesIndex() == seriesIndex){
-					indexStore.removeEvent(eventsList.get(i).getIndex());
+				Event currEvent = (Event)eventsList.get(i);
+				if(currEvent.getSeriesIndex() == seriesIndex){
+					indexStore.removeEvent(currEvent.getIndex());
 					eventsList.remove(i);
 				}
 			}
@@ -257,11 +291,12 @@ public class Calendar {
 		int seriesIndex = -1;
 		
 		for (int i = 0; i < tasksList.size(); i++) {
-			if (tasksList.get(i).getIndex() == idx) {
+			Task currTask = (Task)tasksList.get(i);
+			if (currTask.getIndex() == idx) {
 				savePrevCmd(idx, null, tasksList.get(i), null, CMD_REMOVE);
-				seriesIndex = tasksList.get(i).getSeriesIndex();
-				taskName = tasksList.get(i).getName();
-				indexStore.removeTask(tasksList.get(i).getIndex());
+				seriesIndex = currTask.getSeriesIndex();
+				taskName = currTask.getName();
+				indexStore.removeTask(currTask.getIndex());
 				tasksList.remove(i);
 				break;
 			}
@@ -269,8 +304,9 @@ public class Calendar {
 		
 		if(removeSeries){
 			for(int i = 0; i < tasksList.size(); i++){
-				if(tasksList.get(i).getSeriesIndex() == seriesIndex){
-					indexStore.removeEvent(tasksList.get(i).getIndex());
+				Task currTask = (Task)tasksList.get(i);
+				if(currTask.getSeriesIndex() == seriesIndex){
+					indexStore.removeEvent(currTask.getIndex());
 					tasksList.remove(i);
 				}
 			}
@@ -285,10 +321,11 @@ public class Calendar {
 	public Result removeFloatingTask(int idx, boolean removeSeries) {
 		String taskName = new String();
 		for (int i = 0; i < floatingTasksList.size(); i++) {
-			if (floatingTasksList.get(i).getIndex() == idx) {
+			FloatingTask currFloating = (FloatingTask)floatingTasksList.get(i);
+			if (currFloating.getIndex() == idx) {
 				savePrevCmd(idx, null, null, floatingTasksList.get(i), CMD_REMOVE);
-				taskName = floatingTasksList.get(i).getName();
-				indexStore.removeTask(floatingTasksList.get(i).getIndex());
+				taskName = currFloating.getName();
+				indexStore.removeTask(currFloating.getIndex());
 				floatingTasksList.remove(i);
 				break;
 			}
@@ -500,11 +537,12 @@ public class Calendar {
 		String name = new String();
 		
 		for (int i = 0; i < eventsList.size(); i++) {
-			if (eventsList.get(i).getIndex() == prevModIndex) {
+			Event currEvent = (Event)eventsList.get(i);
+			if (currEvent.getIndex() == prevModIndex) {
 				eventsList.remove(i);
 				eventsList.add(i, prevModEvent);
-				name = eventsList.get(i).getName();
-				Collections.sort(eventsList);
+				name = currEvent.getName();
+				sortEvents();
 				indexStore.replaceEvent(prevModIndex, prevModEvent);
 				break;
 			}
@@ -518,10 +556,11 @@ public class Calendar {
 		String name = new String();
 		
 		for (int i = 0; i < floatingTasksList.size(); i++) {
-			if (floatingTasksList.get(i).getIndex() == prevModIndex) {
+			FloatingTask currFloatingTask = (FloatingTask) floatingTasksList.get(i);
+			if (currFloatingTask.getIndex() == prevModIndex) {
 				floatingTasksList.remove(i);
 				floatingTasksList.add(i, prevModFloatingTask);
-				name = floatingTasksList.get(i).getName();
+				name =currFloatingTask.getName();
 				indexStore.replaceTask(prevModIndex, prevModFloatingTask);
 				break;
 			}
@@ -535,11 +574,12 @@ public class Calendar {
 		String name = new String();
 		
 		for (int i = 0; i < tasksList.size(); i++) {
-			if (tasksList.get(i).getIndex() == prevModIndex) {
+			Task currTask = (Task)tasksList.get(i);
+			if (currTask.getIndex() == prevModIndex) {
 				tasksList.remove(i);
 				tasksList.add(i, prevModTask);
-				name = tasksList.get(i).getName();
-				Collections.sort(tasksList);
+				name = currTask.getName();
+				sortTasks();
 				indexStore.replaceTask(prevModIndex, prevModTask);
 				break;
 			}
@@ -681,6 +721,10 @@ public class Calendar {
 			eventsList = importer.getEventsList();
 			tasksList = importer.getTasksList();
 			floatingTasksList = importer.getFloatingTasksList();
+			
+			sortEvents();
+			sortTasks();
+			
 			System.out.println("Import Sucessful!");
 		} else {
 			System.out.println("Import failed!");
@@ -691,7 +735,8 @@ public class Calendar {
 		int index = 0;
 
 		for (int i = 0; i < eventsList.size(); i++) {
-			if (eventsList.get(i).getIndex() == id) {
+			Event currEvent = (Event)eventsList.get(i);
+			if (currEvent.getIndex() == id) {
 				i = index;
 			}
 		}
@@ -703,7 +748,8 @@ public class Calendar {
 		int index = 0;
 
 		for (int i = 0; i < tasksList.size(); i++) {
-			if (tasksList.get(i).getIndex() == id) {
+			Task currTask = (Task)tasksList.get(i);
+			if (currTask.getIndex() == id) {
 				// i = index;
 				index = i;
 			}
@@ -716,7 +762,8 @@ public class Calendar {
 		int index = 0;
 
 		for (int i = 0; i < floatingTasksList.size(); i++) {
-			if (floatingTasksList.get(i).getIndex() == id) {
+			FloatingTask currFloatingTask = (FloatingTask)floatingTasksList.get(i);
+			if (currFloatingTask.getIndex() == id) {
 				// i = index;
 				index = i;
 			}
