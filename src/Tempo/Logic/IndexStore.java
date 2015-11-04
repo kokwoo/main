@@ -2,6 +2,7 @@ package Tempo.Logic;
 
 import java.util.*;
 
+import Tempo.CalendarObjects.CalendarObject;
 import Tempo.CalendarObjects.Event;
 import Tempo.CalendarObjects.FloatingTask;
 import Tempo.CalendarObjects.Task;
@@ -11,45 +12,45 @@ public class IndexStore {
 	
 	private static int nextUnusedId;
 	private static LinkedList<Integer> recycledId;
-	public static HashMap<Integer, Event> events;
-	public static HashMap<Integer, FloatingTask> tasks;
+	public static HashMap<Integer, CalendarObject> events;
+	public static HashMap<Integer, CalendarObject> tasks;
 	
 	private IndexStore() {
 		nextUnusedId = 0;
 		recycledId = new LinkedList<Integer>();
-		events = new HashMap<Integer, Event>();
-		tasks = new HashMap<Integer, FloatingTask>();
+		events = new HashMap<Integer, CalendarObject>();
+		tasks = new HashMap<Integer, CalendarObject>();
 	}
 	
 	public static IndexStore getInstance() {
 		return instance;
 	}
 		
-	public void initialiseStore(ArrayList<Event> eventsList, ArrayList<Task> tasksList, 
-			  					ArrayList<FloatingTask> floatingTasksList) {
+	public void initialiseStore(ArrayList<CalendarObject> eventsList, ArrayList<CalendarObject> tasksList, 
+			  					ArrayList<CalendarObject> floatingTasksList) {
 		initialiseEventsMap(eventsList);
 		initialiseTasksMap(tasksList, floatingTasksList);
 		updateRecycledId();
 	}
 	
-	private void initialiseEventsMap(ArrayList<Event> eventsList) {
+	private void initialiseEventsMap(ArrayList<CalendarObject> eventsList) {
 		for (int i = 0; i < eventsList.size(); i++) {
-			Event currEvent = eventsList.get(i);
+			Event currEvent = (Event) eventsList.get(i);
 			addEvent(currEvent.getIndex(), currEvent);
 			updateNextUnusedId(currEvent.getIndex());
 		}
 	}
 	
-	private void initialiseTasksMap(ArrayList<Task> tasksList, 
-									ArrayList<FloatingTask> floatingTasksList) {
+	private void initialiseTasksMap(ArrayList<CalendarObject> tasksList, 
+									ArrayList<CalendarObject> floatingTasksList) {
 		for (int i = 0; i < tasksList.size(); i++) {
-			Task currTask = tasksList.get(i);
+			Task currTask = (Task) tasksList.get(i);
 			addTask(currTask.getIndex(), currTask);
 			updateNextUnusedId(currTask.getIndex());
 		}
 		
 		for (int i = 0; i < floatingTasksList.size(); i++) {
-			FloatingTask currTask = floatingTasksList.get(i);
+			FloatingTask currTask = (FloatingTask) floatingTasksList.get(i);
 			addTask(currTask.getIndex(), currTask);
 			updateNextUnusedId(currTask.getIndex());
 		}
@@ -129,7 +130,7 @@ public class IndexStore {
 	}
 	
 	public boolean isFloatingTask(int id) {
-		FloatingTask task = getTaskById(id);
+		FloatingTask task = (FloatingTask) getTaskById(id);
 		return task.isFloatingTask();
 	}
 	
@@ -137,11 +138,11 @@ public class IndexStore {
 		return (!isEvent(id) && !isFloatingTask(id));
 	}
 	
-	public Event getEventById(int id) {
+	public CalendarObject getEventById(int id) {
 		return events.get(id);
 	}
 	
-	public FloatingTask getTaskById(int id) {
+	public CalendarObject getTaskById(int id) {
 		return tasks.get(id);
 	}
 }
