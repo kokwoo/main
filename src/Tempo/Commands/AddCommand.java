@@ -3,6 +3,7 @@ package Tempo.Commands;
 import java.util.*;
 import java.text.*;
 
+import Tempo.CalendarObjects.CalendarObject;
 import Tempo.CalendarObjects.Event;
 import Tempo.CalendarObjects.FloatingTask;
 import Tempo.Logic.Calendar;
@@ -48,9 +49,17 @@ public class AddCommand implements Command {
 	@Override
 	public Result execute() {
 		if (params.size() == LENGTH_ADD_EVENT_PARAMS) {
-			return addEvent();
+			if(isRecurring){
+				return addRecurringEvent();
+			}else{
+				return addEvent();
+			}
 		} else if (params.size() == LENGTH_ADD_TASK_PARAMS) {
-			return addTask();
+			if(isRecurring){
+				return addRecurringTask();
+			}else{
+				return addTask();
+			}
 		} else {
 			return addFloatingTask();		
 		}
@@ -60,7 +69,7 @@ public class AddCommand implements Command {
 		String name = params.get(0);
 		
 		if (!hasValidName(name)) {
-			return Result(String.format(ADD_EVENT, BLANK), false, null);
+			return new Result(String.format(ADD_EVENT, BLANK), false, null);
 		}
 		
 		String start = replaceNullStart(params.get(1));
@@ -68,13 +77,26 @@ public class AddCommand implements Command {
 	
 		String command = String.format(ADD_EVENT, name);
 		
-		HashMap<String, ArrayList<FloatingTask>> result = cal.addEvent(name, start, end);
+		Result result = cal.addEvent(name, start, end);
 		
-		return new Result(command, true, result);
+		return result;
 	}
 	
 	private Result addRecurringEvent(){
-		return new Result(null, false, null); // TODO:
+		String name = params.get(0);
+		
+		if (!hasValidName(name)) {
+			return new Result(String.format(ADD_EVENT, BLANK), false, null);
+		}
+		
+		String start = replaceNullStart(params.get(1));
+		String end = replaceNullEnd(start, params.get(2));
+	
+		String command = String.format(ADD_EVENT, name);
+		
+		Result result = cal.addRecurringEvent(name, start, end, recurringType, recurrenceEndDate);
+		
+		return result;
 	}
 	
 	private Result addTask() {
@@ -89,7 +111,14 @@ public class AddCommand implements Command {
 	}
 	
 	private Result addRecurringTask(){
+		String name = params.get(0);
+		String dueDate = params.get(1);
 		
+		if (!hasValidName(name)) {
+			return new Result(String.format(ADD_TASK, BLANK), false, null);
+		}
+		
+		return cal.addRecurringTask(name, dueDate, recurringType, recurrenceEndDate);
 	}
 	
 	private Result addFloatingTask() {
