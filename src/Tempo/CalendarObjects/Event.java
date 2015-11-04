@@ -3,7 +3,7 @@ package Tempo.CalendarObjects;
 import java.text.*;
 import java.util.*;
 
-public class Event implements Comparable<Event>{
+public class Event implements Comparable<Event>, CalendarObject{
 	protected String name;
 	protected Date startDateTime;
 	protected Date endDateTime;
