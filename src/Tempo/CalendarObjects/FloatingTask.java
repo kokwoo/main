@@ -4,17 +4,19 @@ public class FloatingTask implements CalendarObject{
 	protected String _name;
 	protected boolean _done;
 	protected int _index;
+	protected int _seriesIndex;
 	
 	private static final String DELIMETER = "!!";
 	
-	public FloatingTask(int index, String name){
+	public FloatingTask(int index, int seriesIndex, String name){
 		_index = index;
 		_name = name;
 		_done = false;
 	}
 	
-	public FloatingTask(int index, String name, String done) {
+	public FloatingTask(int index, int seriesIndex, String name, String done) {
 		_index = index;
+		_seriesIndex = seriesIndex;
 		_name = name;
 		_done = Boolean.parseBoolean(done);
 	}
@@ -31,6 +33,10 @@ public class FloatingTask implements CalendarObject{
 	
 	public int getIndex() {
 		return _index;
+	}
+	
+	public int getSeriesIndex(){
+		return _seriesIndex;
 	}
 
 	public String getName() {
@@ -54,6 +60,6 @@ public class FloatingTask implements CalendarObject{
 	}
 	
 	public String toString(){
-		return getIndex() + DELIMETER + getName() + DELIMETER + isDone();
+		return getIndex() + DELIMETER + getSeriesIndex() + DELIMETER + getName() + DELIMETER + isDone();
 	}
 }
