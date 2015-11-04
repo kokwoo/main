@@ -25,7 +25,7 @@ public class DisplayCommand implements Command {
 		this.displayType = displayType;
 	}
 
-	public ArrayList<String> execute() {
+	public Result execute() {
 		switch (displayType) {
 		case (ARG_EVENTS):
 			return display.getEvents();
@@ -42,9 +42,11 @@ public class DisplayCommand implements Command {
 		case (ARGS_ALL):
 			return display.getAll();
 		default:
-			ArrayList<String> returnList = new ArrayList<String>();
-			returnList.add(DISPLAY_ERROR);
-			return returnList;
+			Result result = new Result("display", false, null);
+			return result;
+//			ArrayList<String> returnList = new ArrayList<String>();
+//			returnList.add(DISPLAY_ERROR);
+//			return returnList;
 
 		}
 	}

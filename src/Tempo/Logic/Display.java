@@ -4,10 +4,12 @@ import java.util.ArrayList;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 
 import Tempo.CalendarObjects.Event;
 import Tempo.CalendarObjects.FloatingTask;
 import Tempo.CalendarObjects.Task;
+import Tempo.Commands.Result;
 
 //The list of things that can be displayed
 /*getEventsToday
@@ -48,7 +50,7 @@ public class Display {
 	private ArrayList<Task> doneTasks;
 	private ArrayList<FloatingTask> doneFloatingTasks;
 	// private ArrayList<String> wordFoundLines;
-	private CurrentDateAndTime date;
+	private CurrentTime date;
 
 	// Messages
 	private final String UPCOMING_EVENTS = "These are the list of upcoming events";
@@ -87,10 +89,11 @@ public class Display {
 
 	private void refresh() {
 		
+		
 		events = cal.getEventsList();
 		tasks = cal.getTasksList();
 		floatingTasks = cal.getFloatingTasksList();
-		date = new CurrentDateAndTime();
+		date = new CurrentTime();
 
 		eventsToday = new ArrayList<Event>();
 		upcomingEvents = new ArrayList<Event>();
@@ -181,45 +184,59 @@ public class Display {
 		}
 	}
 
-	public ArrayList<String> getUpcomingEvents() {
+	public Result getUpcomingEvents() {
 		refresh();
-		ArrayList<String> upcomingEventsStr = new ArrayList<String>();
-		if (upcomingEvents.isEmpty()) {
-			upcomingEventsStr.add(NO_UPCOMING_EVENTS);
-		} else {
-			upcomingEventsStr.add(UPCOMING_EVENTS);
-			upcomingEventsStr = addStrEventToArray(upcomingEventsStr, upcomingEvents);
-		}
-		return upcomingEventsStr;
+//		ArrayList<String> upcomingEventsStr = new ArrayList<String>();
+//		if (upcomingEvents.isEmpty()) {
+//			upcomingEventsStr.add(NO_UPCOMING_EVENTS);
+//		} else {
+//			upcomingEventsStr.add(UPCOMING_EVENTS);
+//			upcomingEventsStr = addStrEventToArray(upcomingEventsStr, upcomingEvents);
+//		}
+		
+		HashMap<String, ArrayList<FloatingTask>> hm = new HashMap<String, ArrayList<FloatingTask>>();
+		hm.put("Events", upcomingEvents);		
+		Result upcomingEvents = new Result("displayUpcomingEvents", true, hm);
+		return upcomingEvents;
 	}
 
-	public ArrayList<String> getEventsToday() {
+	public Result getEventsToday() {
 		refresh();
-		ArrayList<String> eventsTodayStr = new ArrayList<String>();
-		if (eventsToday.isEmpty()) {
-			eventsTodayStr.add(NO_TODAY_EVENTS);
-		} else {
-			eventsTodayStr.add(TODAY_EVENTS);
-			eventsTodayStr = addStrEventToArray(eventsTodayStr, eventsToday);
-		}
-		return eventsTodayStr;
+//		ArrayList<String> eventsTodayStr = new ArrayList<String>();
+//		if (eventsToday.isEmpty()) {
+//			eventsTodayStr.add(NO_TODAY_EVENTS);
+//		} else {
+//			eventsTodayStr.add(TODAY_EVENTS);
+//			eventsTodayStr = addStrEventToArray(eventsTodayStr, eventsToday);
+//		}
+		
+		HashMap<String, ArrayList<FloatingTask>> hm = new HashMap<String, ArrayList<FloatingTask>>();
+		hm.put("Events", eventsToday);		
+		Result eventsToday = new Result("displayEventsToday", true, hm);
+		
+		return eventsToday;
 	}
 
-	public ArrayList<String> getPastEvents() {
+	public Result getPastEvents() {
 		refresh();
-		ArrayList<String> pastEventsStr = new ArrayList<String>();
-		if (pastEvents.isEmpty()) {
-			pastEventsStr.add(NO_PAST_EVENTS);
-		}
+//		ArrayList<String> pastEventsStr = new ArrayList<String>();
+//		if (pastEvents.isEmpty()) {
+//			pastEventsStr.add(NO_PAST_EVENTS);
+//		}
 
-		else {
-			pastEventsStr.add(PAST_EVENTS);
-			pastEventsStr = addStrEventToArray(pastEventsStr, pastEvents);
-		}
-		return pastEventsStr;
+//		else {
+//			pastEventsStr.add(PAST_EVENTS);
+//			pastEventsStr = addStrEventToArray(pastEventsStr, pastEvents);
+//		}
+		
+		HashMap<String, ArrayList<FloatingTask>> hm = new HashMap<String, ArrayList<FloatingTask>>();
+		hm.put("Events", pastEvents);		
+		Result pastEvents = new Result("displayPastEvents", true, hm);
+		
+		return pastEvents;
 	}
 
-	private ArrayList<String> addStrEventToArray(ArrayList<String> eventsStr, ArrayList<Event> events) {
+/*	private ArrayList<String> addStrEventToArray(ArrayList<String> eventsStr, ArrayList<Event> events) {
 		for (int i = 0; i < events.size(); i++) {
 			Event currEvent = events.get(i);
 			int num = i + 1;
@@ -228,146 +245,220 @@ public class Display {
 		}
 		return eventsStr;
 	}
-
-	public ArrayList<String> getTasksToday() {
+*/
+	
+	public Result getTasksToday() {
 		refresh();
-		ArrayList<String> tasksTodayStr = new ArrayList<String>();
-		if (tasksToday.isEmpty()) {
-			tasksTodayStr.add(NO_TODAY_TASKS);
-		}
+//		ArrayList<String> tasksTodayStr = new ArrayList<String>();
+//		if (tasksToday.isEmpty()) {
+//			tasksTodayStr.add(NO_TODAY_TASKS);
+//		}
 
-		else {
-			tasksTodayStr.add(TODAY_TASKS);
-			tasksTodayStr = addStrTasksToArray(tasksTodayStr, tasksToday);
-		}
-		return tasksTodayStr;
+//		else {
+//			tasksTodayStr.add(TODAY_TASKS);
+//			tasksTodayStr = addStrTasksToArray(tasksTodayStr, tasksToday);
+//		}
+		
+		HashMap<String, ArrayList<FloatingTask>> hm = new HashMap<String, ArrayList<FloatingTask>>();
+		hm.put("Tasks", tasksToday);		
+		Result tasksToday = new Result("displayTasksToday", true, hm);
+		
+		return tasksToday;
 	}
 
-	public ArrayList<String> getUpcomingTasks() {
+	public Result getUpcomingTasks() {
 		refresh();
-		ArrayList<String> upcomingTasksStr = new ArrayList<String>();
-		if (upcomingTasks.isEmpty()) {
-			upcomingTasksStr.add(NO_UPCOMING_TASKS);
+//		ArrayList<String> upcomingTasksStr = new ArrayList<String>();
+//		if (upcomingTasks.isEmpty()) {
+//			upcomingTasksStr.add(NO_UPCOMING_TASKS);
 
-		} else {
-			upcomingTasksStr.add(UPCOMING_TASKS);
-			upcomingTasksStr = addStrTasksToArray(upcomingTasksStr, upcomingTasks);
-		}
-		return upcomingTasksStr;
+//		} else {
+//			upcomingTasksStr.add(UPCOMING_TASKS);
+//			upcomingTasksStr = addStrTasksToArray(upcomingTasksStr, upcomingTasks);
+//		}
+		
+		
+		HashMap<String, ArrayList<FloatingTask>> hm = new HashMap<String, ArrayList<FloatingTask>>();
+		hm.put("Tasks", upcomingTasks);		
+		Result upcomingTasks = new Result("displayUpcomingTasks", true, hm);
+		
+		return upcomingTasks;
 	}
 
-	public ArrayList<String> getMissedTasks() {
+	public Result getMissedTasks() {
 		refresh();
-		ArrayList<String> missedTasksStr = new ArrayList<String>();
-		if (missedTasks.isEmpty()) {
-			missedTasksStr.add(NO_MISSED_TASKS);
+//		ArrayList<String> missedTasksStr = new ArrayList<String>();
+//		if (missedTasks.isEmpty()) {
+//			missedTasksStr.add(NO_MISSED_TASKS);
 
-		} else {
-			missedTasksStr.add(MISSED_TASKS);
-			missedTasksStr = addStrTasksToArray(missedTasksStr, missedTasks);
-		}
-		return missedTasksStr;
+//		} else {
+//			missedTasksStr.add(MISSED_TASKS);
+//			missedTasksStr = addStrTasksToArray(missedTasksStr, missedTasks);
+//		}
+		
+		
+		HashMap<String, ArrayList<FloatingTask>> hm = new HashMap<String, ArrayList<FloatingTask>>();
+		hm.put("Tasks", missedTasks);		
+		Result missedTasks = new Result("displayMissedTasks", true, hm);
+		
+		return missedTasks;
 	}
 
-	public ArrayList<String> getUndoneTasks() {
+	public Result getUndoneTasks() {
 		refresh();
-		ArrayList<String> undoneTasksStr = new ArrayList<String>();
-		if (undoneTasks.isEmpty()) {
-			undoneTasksStr.add(NO_UNDONE_TASKS);
-		} else {
-			undoneTasksStr.add(UNDONE_TASKS);
-			undoneTasksStr = addStrTasksToArray(undoneTasksStr, undoneTasks);
-		}
-		return undoneTasksStr;
+//		ArrayList<String> undoneTasksStr = new ArrayList<String>();
+//		if (undoneTasks.isEmpty()) {
+//			undoneTasksStr.add(NO_UNDONE_TASKS);
+//		} else {
+//			undoneTasksStr.add(UNDONE_TASKS);
+//			undoneTasksStr = addStrTasksToArray(undoneTasksStr, undoneTasks);
+//		}
+		
+		
+		HashMap<String, ArrayList<FloatingTask>> hm = new HashMap<String, ArrayList<FloatingTask>>();
+		hm.put("Tasks", undoneTasks);		
+		Result undoneTasks = new Result("displayUndoneTasks", true, hm);	
+		return undoneTasks;
 	}
 
-	public ArrayList<String> getDoneTasks() {
+	public Result getDoneTasks() {
 		refresh();
-		ArrayList<String> doneTasksStr = new ArrayList<String>();
-		if (doneTasks.isEmpty()) {
-			doneTasksStr.add(NO_DONE_TASKS);
-		} else {
-			doneTasksStr.add(DONE_TASKS);
-			doneTasksStr = addStrTasksToArray(doneTasksStr, doneTasks);
-		}
-		return doneTasksStr;
+//		ArrayList<String> doneTasksStr = new ArrayList<String>();
+//		if (doneTasks.isEmpty()) {
+//			doneTasksStr.add(NO_DONE_TASKS);
+//		} else {
+//			doneTasksStr.add(DONE_TASKS);
+//			doneTasksStr = addStrTasksToArray(doneTasksStr, doneTasks);
+//		}
+		
+		
+		HashMap<String, ArrayList<FloatingTask>> hm = new HashMap<String, ArrayList<FloatingTask>>();
+		hm.put("Tasks", doneTasks);		
+		Result doneTasks = new Result("displayDoneTasks", true, hm);
+		
+		return doneTasks;
 	}
 
-	private ArrayList<String> addStrTasksToArray(ArrayList<String> tasksStr, ArrayList<Task> tasks) {
-		for (int i = 0; i < tasks.size(); i++) {
-			Task currTask = tasks.get(i);
-			int num = i + 1;
-			tasksStr.add(num + ") " + currTask.getName() + " Due: " + currTask.getDueDate() + "\t[ID:"
-					+ currTask.getIndex() + "] ");
-		}
-		return tasksStr;
-	}
+//	private ArrayList<String> addStrTasksToArray(ArrayList<String> tasksStr, ArrayList<Task> tasks) {
+//		for (int i = 0; i < tasks.size(); i++) {
+//			Task currTask = tasks.get(i);
+//			int num = i + 1;
+//			tasksStr.add(num + ") " + currTask.getName() + " Due: " + currTask.getDueDate() + "\t[ID:"
+//					+ currTask.getIndex() + "] ");
+//		}
+//		return tasksStr;
+//	}
 
-	public ArrayList<String> getUndoneFloatingTasks() {
+	public Result getUndoneFloatingTasks() {
 		refresh();
-		ArrayList<String> undoneFTasksStr = new ArrayList<String>();
-		if (undoneFloatingTasks.isEmpty()) {
-			undoneFTasksStr.add(NO_UNDONE_FLOATING_TASKS);
-		} else {
-			undoneFTasksStr.add(UNDONE_FLOATING_TASKS);
-			undoneFTasksStr = addStrFTasksToArray(undoneFTasksStr, undoneFloatingTasks);
-		}
-		return undoneFTasksStr;
+//		ArrayList<String> undoneFTasksStr = new ArrayList<String>();
+//		if (undoneFloatingTasks.isEmpty()) {
+//			undoneFTasksStr.add(NO_UNDONE_FLOATING_TASKS);
+//		} else {
+//			undoneFTasksStr.add(UNDONE_FLOATING_TASKS);
+//			undoneFTasksStr = addStrFTasksToArray(undoneFTasksStr, undoneFloatingTasks);
+//		}
+		
+		HashMap<String, ArrayList<FloatingTask>> hm = new HashMap<String, ArrayList<FloatingTask>>();
+		hm.put("Tasks", undoneFloatingTasks);		
+		Result undoneFTasks = new Result("displayUndoneFTasks", true, hm);
+		
+		return undoneFTasks;
 	}
 
-	public ArrayList<String> getDoneFloatingTasks() {
+	public Result getDoneFloatingTasks() {
 		refresh();
-		ArrayList<String> doneFTasksStr = new ArrayList<String>();
-		if (doneFloatingTasks.isEmpty()) {
-			doneFTasksStr.add(NO_DONE_FLOATING_TASKS);
-		} else {
-			doneFTasksStr.add(DONE_FLOATING_TASKS);
-			doneFTasksStr = addStrFTasksToArray(doneFTasksStr, doneFloatingTasks);
-		}
-		return doneFTasksStr;
+//		ArrayList<String> doneFTasksStr = new ArrayList<String>();
+//		if (doneFloatingTasks.isEmpty()) {
+//			doneFTasksStr.add(NO_DONE_FLOATING_TASKS);
+//		} else {
+//			doneFTasksStr.add(DONE_FLOATING_TASKS);
+//			doneFTasksStr = addStrFTasksToArray(doneFTasksStr, doneFloatingTasks);
+//		}
+		
+		HashMap<String, ArrayList<FloatingTask>> hm = new HashMap<String, ArrayList<FloatingTask>>();
+		hm.put("Tasks", doneFloatingTasks);		
+		Result doneFTasks = new Result("displayDoneFTasks", true, hm);
+		
+		return doneFTasks;
 	}
 
-	private ArrayList<String> addStrFTasksToArray(ArrayList<String> fTasksStr, ArrayList<FloatingTask> fTasks) {
-		for (int i = 0; i < fTasks.size(); i++) {
-			FloatingTask currFT = fTasks.get(i);
-			int num = i + 1;
-			fTasksStr.add(num + ") " + currFT.getName() + "\t[ID:" + currFT.getIndex() + "] ");
-		}
-		return fTasksStr;
-	}
+//	private ArrayList<String> addStrFTasksToArray(ArrayList<String> fTasksStr, ArrayList<FloatingTask> fTasks) {
+//		for (int i = 0; i < fTasks.size(); i++) {
+//			FloatingTask currFT = fTasks.get(i);
+//			int num = i + 1;
+//			fTasksStr.add(num + ") " + currFT.getName() + "\t[ID:" + currFT.getIndex() + "] ");
+//		}
+//		return fTasksStr;
+//	}
 
-	public ArrayList<String> getEvents() {
+	public Result getEvents() {
 		refresh();
-		ArrayList<String> eventsStr = new ArrayList<String>();
-		eventsStr.addAll(getEventsToday());
-		eventsStr.addAll(getUpcomingEvents());
-		eventsStr.addAll(getPastEvents());
-		return eventsStr;
+//		ArrayList<String> eventsStr = new ArrayList<String>();
+//		eventsStr.addAll(getEventsToday());
+//		eventsStr.addAll(getUpcomingEvents());
+//		eventsStr.addAll(getPastEvents());
+		
+		HashMap<String, ArrayList<FloatingTask>> hm = new HashMap<String, ArrayList<FloatingTask>>();
+		hm.put("Events", eventsToday);
+		hm.put("Events", upcomingEvents);
+		hm.put("Events", pastEvents);
+		Result events = new Result("displayEvents", true, hm);
+		
+		return events;
+		
 	}
 
-	public ArrayList<String> getTasks() {
+	public Result getTasks() {
 		refresh();
-		ArrayList<String> tasksStr = new ArrayList<String>();
-		tasksStr.addAll(getUndoneFloatingTasks());
-		tasksStr.addAll(getDoneFloatingTasks());
-		tasksStr.addAll(getTasksToday());
-		tasksStr.addAll(getUpcomingTasks());
-		tasksStr.addAll(getMissedTasks());
-		return tasksStr;
+//		ArrayList<String> tasksStr = new ArrayList<String>();
+//		tasksStr.addAll(getUndoneFloatingTasks());
+//		tasksStr.addAll(getDoneFloatingTasks());
+//		tasksStr.addAll(getTasksToday());
+//		tasksStr.addAll(getUpcomingTasks());
+//		tasksStr.addAll(getMissedTasks());
+		
+		HashMap<String, ArrayList<FloatingTask>> hm = new HashMap<String, ArrayList<FloatingTask>>();
+		hm.put("Tasks", tasksToday);
+		hm.put("Tasks", upcomingTasks);
+		hm.put("Tasks", missedTasks);
+		hm.put("Tasks", doneTasks);
+		Result tasks = new Result("displayTasks", true, hm);
+		
+		return tasks;
 	}
 
-	public ArrayList<String> getAll() {
+	public Result getAll() {
 		refresh();
 
-		ArrayList<String> all = new ArrayList<String>();
-		all.addAll(getEvents());
-		all.addAll(getTasks());
+//		ArrayList<String> all = new ArrayList<String>();
+//		all.addAll(getEvents());
+//		all.addAll(getTasks());
+		
+		HashMap<String, ArrayList<FloatingTask>> hm = new HashMap<String, ArrayList<FloatingTask>>();
+		hm.put("Tasks", tasksToday);
+		hm.put("Tasks", upcomingTasks);
+		hm.put("Tasks", missedTasks);	
+		hm.put("Tasks", doneTasks);
+		hm.put("Events", eventsToday);
+		hm.put("Events", upcomingEvents);
+		hm.put("Events", pastEvents);
+		hm.put("FloatingTasks", undoneFloatingTasks);
+		hm.put("FloatingTasks", doneFloatingTasks);
+		Result all = new Result("displayAll", true, hm);
+		
 		return all;
 	}
 
-	public ArrayList<String> getToday() {
-		// TODO Auto-generated method stub
-		return null;
+	public Result getToday() {
+		
+		HashMap<String, ArrayList<FloatingTask>> hm = new HashMap<String, ArrayList<FloatingTask>>();
+		hm.put("Tasks", tasksToday);		
+		hm.put("Events", eventsToday);
+//		hm.put("FloatingTasks", floatingTasks);
+		Result today = new Result("displayToday", true, hm);
+			
+		return today;
 	}
 
 }
