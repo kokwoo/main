@@ -1,6 +1,8 @@
 package Tempo.Logic;
 
 import java.io.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import Tempo.CalendarObjects.Event;
@@ -17,19 +19,13 @@ public class Calendar {
 	private static CalendarImporter importer;
 
 	/*
-	private static final String MSG_ADDED_EVENT = "Event %1$s has been added.";
-	private static final String MSG_ADDED_TASK = "Task %1$s has been added.";
-	private static final String MSG_REMOVED_EVENT = "Event %1$s has been removed.";
-	private static final String MSG_REMOVED_TASK = "Task %1$s has been removed.";
-	private static final String MSG_UPDATED_EVENT = "Your event has been updated.";
-	private static final String MSG_UPDATED_TASK = "Your task has been updated.";
-	private static final String MSG_DONE_TASK = "Task %1$s has been marked as done.";
-	private static final String MSG_DONE_INVALID = "Err: Task %1$s is alr marked as done!";
-	private static final String MSG_UNDO_UPDATE = "Your updates have been reverted.";
-	private static final String MSG_UNDO_INVALID = "Error: Cannot undo previous operation.";
-	private static final String MSG_SEARCH_RESULTS = "These are your search results";
-	private static final String MSG_NO_SEARCH_RESULTS = "(We do not have any results for your search)";
-	*/
+	 * private static final String MSG_ADDED_EVENT = "Event %1$s has been added."; private static final String MSG_ADDED_TASK = "Task %1$s has been added."; private static final String
+	 * MSG_REMOVED_EVENT = "Event %1$s has been removed."; private static final String MSG_REMOVED_TASK = "Task %1$s has been removed."; private static final String MSG_UPDATED_EVENT =
+	 * "Your event has been updated."; private static final String MSG_UPDATED_TASK = "Your task has been updated."; private static final String MSG_DONE_TASK = "Task %1$s has been marked as done.";
+	 * private static final String MSG_DONE_INVALID = "Err: Task %1$s is alr marked as done!"; private static final String MSG_UNDO_UPDATE = "Your updates have been reverted."; private static final
+	 * String MSG_UNDO_INVALID = "Error: Cannot undo previous operation."; private static final String MSG_SEARCH_RESULTS = "These are your search results"; private static final String
+	 * MSG_NO_SEARCH_RESULTS = "(We do not have any results for your search)";
+	 */
 
 	private static final String COMMAND_ADD = "add";
 	private static final String COMMAND_ADD_EVENT = "add event %1$s";
@@ -49,10 +45,18 @@ public class Calendar {
 	private static final String COMMAND_DONE_FLOATING = "done floating task %1$s";
 	private static final String COMMAND_INVALID_UNDO = "invalid undo";
 	private static final String COMMAND_SEARCH = "search %1$s";
-	
+
 	private static final String KEY_EVENTS = "events";
 	private static final String KEY_TASKS = "tasks";
 	private static final String KEY_FLOATING = "floating tasks";
+	private static final String KEY_DAILY = "daily";
+	private static final String KEY_WEEKLY = "weekly";
+	private static final String KEY_MONTHLY = "monthly";
+	private static final String KEY_ANNUALLY = "annually";
+
+	public static final long MILLISECONDS_A_DAY = 86400000;
+	public static final long MILLISECONDS_A_WEEK = 604800000;
+	public static final String DATE_DELIMETER = "/";
 
 	private static final int INDEX_INVALID = -1;
 
@@ -95,10 +99,10 @@ public class Calendar {
 		eventsList.add(newEvent);
 		indexStore.addEvent(newEvent.getIndex(), newEvent);
 		Collections.sort(eventsList);
-		
+
 		String name = newEvent.getName();
 		String cmd = String.format(COMMAND_ADD_EVENT, name);
-		
+
 		return new Result(cmd, true, putInHashMap(KEY_EVENTS, eventsList));
 	}
 
@@ -111,16 +115,34 @@ public class Calendar {
 		exportToFile();
 
 		savePrevCmd(newEventIndex, newEvent, null, null, COMMAND_ADD);
-		
+
 		String cmd = String.format(COMMAND_ADD_EVENT, name);
 
 		return new Result(cmd, true, putInHashMap(KEY_EVENTS, eventsList));
 	}
-	
-	public ArrayList<String> addRecurringEvent() {
-		// TODO:
-	}
 
+	//Szeying, can help me format this into a result and also the extra index from the index store...
+	public ArrayList<String> addRecurringEvent(String name, String start, String end, String recurringType,String recurringEnd) {
+		int newEventIndex = indexStore.getNewId();
+		Event newEvent = new Event(newEventIndex, name, start, end);
+		eventsList.add(newEvent);
+		indexStore.addEvent(newEventIndex, newEvent);
+
+		// Gets the list of recurring dates;
+		ArrayList<String> recurringDates = processRecurringDates(start, recurringEnd, recurringType);
+		
+		for(String dates: recurringDates){
+			newEventIndex = indexStore.getNewId();
+			newEvent = new Event(newEventIndex, name, start, end);
+			eventsList.add(newEvent);
+			indexStore.addEvent(newEventIndex, newEvent);
+		}
+
+		Collections.sort(eventsList);
+		exportToFile();
+
+		// TODO: UNDO METHOD
+	}
 
 	public Result addTask(Task newTask) {
 		tasksList.add(newTask);
@@ -129,10 +151,9 @@ public class Calendar {
 
 		String name = newTask.getName();
 		String cmd = String.format(COMMAND_ADD_TASK, name);
-		
+
 		return new Result(cmd, true, putInHashMap(KEY_TASKS, tasksList));
 	}
-	
 
 	public Result addTask(String name, String dueDate) {
 		int newTaskIndex = indexStore.getNewId();
@@ -144,8 +165,30 @@ public class Calendar {
 
 		savePrevCmd(newTaskIndex, null, newTask, null, COMMAND_ADD);
 
-		String cmd = String.format(COMMAND_ADD_TASK, name);		
+		String cmd = String.format(COMMAND_ADD_TASK, name);
 		return new Result(cmd, true, putInHashMap(KEY_TASKS, tasksList));
+	}
+	
+	public ArrayList<String> addRecurringTask(String name, String dueDate, String recurringType,String recurringEnd) {
+		int newTaskIndex = indexStore.getNewId();
+		Task newTask = new Task(newTaskIndex, name, dueDate);
+		tasksList.add(newTask);
+		indexStore.addTask(newTaskIndex, newTask);
+
+		// Gets the list of recurring dates;
+		ArrayList<String> recurringDates = processRecurringDates(dueDate, recurringEnd, recurringType);
+		
+		for(String dates: recurringDates){
+			newTaskIndex = indexStore.getNewId();
+			newTask = new Task(newTaskIndex, name, dueDate);
+			tasksList.add(newTask);
+			indexStore.addTask(newTaskIndex, newTask);
+		}
+
+		Collections.sort(tasksList);
+		exportToFile();
+
+		// TODO: UNDO METHOD
 	}
 
 	public Result addFloatingTask(FloatingTask newTask) {
@@ -154,7 +197,7 @@ public class Calendar {
 
 		String name = newTask.getName();
 		String cmd = String.format(COMMAND_ADD_FLOATING, name);
-		
+
 		return new Result(cmd, true, putInHashMap(KEY_FLOATING, floatingTasksList));
 	}
 
@@ -242,7 +285,7 @@ public class Calendar {
 
 		String name = eventToUpdate.getName();
 		String cmd = String.format(COMMAND_UPDATE_EVENT, name);
-		
+
 		return new Result(cmd, true, putInHashMap(KEY_EVENTS, eventsList));
 	}
 
@@ -268,7 +311,7 @@ public class Calendar {
 
 		String name = taskToUpdate.getName();
 		String cmd = String.format(COMMAND_UPDATE_TASK, name);
-		
+
 		return new Result(cmd, true, putInHashMap(KEY_TASKS, eventsList));
 	}
 
@@ -295,7 +338,7 @@ public class Calendar {
 
 		String name = taskToUpdate.getName();
 		String cmd = String.format(COMMAND_UPDATE_FLOATING, name);
-		
+
 		return new Result(cmd, true, putInHashMap(KEY_FLOATING, eventsList));
 	}
 
@@ -305,7 +348,7 @@ public class Calendar {
 		String taskDoneStatus = String.valueOf(task.isDone());
 		return new FloatingTask(idx, taskName, taskDoneStatus);
 	}
-	
+
 	/***** DONE COMMAND EXECUTION ******/
 
 	public ArrayList<String> markTaskAsDone(int idx) {
@@ -367,16 +410,16 @@ public class Calendar {
 
 	private ArrayList<String> executeUndo() {
 		switch (prevCommand) {
-		case COMMAND_ADD:
-			return undoAdd();
-		case COMMAND_REMOVE:
-			return undoRemove();
-		case COMMAND_UPDATE:
-			return undoUpdate();
-		case COMMAND_DONE:
-			return undoMarkTaskAsDone();
-		default:
-			return handleInvalidUndo();
+			case COMMAND_ADD :
+				return undoAdd();
+			case COMMAND_REMOVE :
+				return undoRemove();
+			case COMMAND_UPDATE :
+				return undoUpdate();
+			case COMMAND_DONE :
+				return undoMarkTaskAsDone();
+			default :
+				return handleInvalidUndo();
 		}
 	}
 
@@ -499,16 +542,11 @@ public class Calendar {
 	/***** SEARCH COMMAND EXECUTION ******/
 
 	/*
-	 * public ArrayList<String> searchId(int id) { ArrayList<String>
-	 * idFoundLines = new ArrayList<String>(); if (!isEvent(id) &&
-	 * !isFloatingTask(id)) { idFoundLines.clear(); }
+	 * public ArrayList<String> searchId(int id) { ArrayList<String> idFoundLines = new ArrayList<String>(); if (!isEvent(id) && !isFloatingTask(id)) { idFoundLines.clear(); }
 	 * 
-	 * else if (isEvent(id)) { Event event = indexStore.getEventById(id);
-	 * idFoundLines.add(event.toString()); }
+	 * else if (isEvent(id)) { Event event = indexStore.getEventById(id); idFoundLines.add(event.toString()); }
 	 * 
-	 * else if (isFloatingTask(id)) { FloatingTask task =
-	 * indexStore.getTaskById(id); idFoundLines.add(task.toString()); }
-	 * disableUndo(); return idFoundLines;
+	 * else if (isFloatingTask(id)) { FloatingTask task = indexStore.getTaskById(id); idFoundLines.add(task.toString()); } disableUndo(); return idFoundLines;
 	 * 
 	 * }
 	 */
@@ -679,11 +717,207 @@ public class Calendar {
 	private boolean isFloatingTask(int id) {
 		return indexStore.isFloatingTask(id);
 	}
-	
+
 	private HashMap<String, ArrayList<FloatingTask>> putInHashMap(String key, ArrayList<FloatingTask> value) {
 		HashMap<String, ArrayList<FloatingTask>> map;
 		map = new HashMap<String, ArrayList<FloatingTask>>();
 		map.put(key, value);
 		return map;
+	}
+
+	/******
+	 * HELPER METHODS FOR RECURRING EVENTS NOTE: THE ARRAYLIST THAT IS RETURNED DOES NOT RETURN THE ORIGINAL START DATE FOR EXAMPLE: IF THE START DATE IS ON 12/03/15, THE FIRST DATE TO BE ADDED WILL
+	 * BE ON 13/03/15
+	 ******/
+
+	private ArrayList<String> processRecurringDates(String start, String recurringEnd, String recurringType) {
+		switch (recurringType.toLowerCase()) {
+			case KEY_DAILY :
+				return getDailyRecurringDates(start, recurringEnd);
+
+			case KEY_WEEKLY :
+				return getWeeklyRecurringDates(start, recurringEnd);
+
+			case KEY_MONTHLY :
+				return getMonthlyRecurringDates(start, recurringEnd);
+
+			case KEY_ANNUALLY :
+				return getAnnualRecurringDates(start, recurringEnd);
+
+			default :
+				return null;
+		}
+	}
+
+	private ArrayList<String> getDailyRecurringDates(String start, String end) {
+		Date startDate = null;
+		Date endDate = null;
+
+		ArrayList<String> returnArray = new ArrayList<String>();
+
+		try {
+			startDate = parseDate(start);
+			endDate = parseDate(end);
+		} catch (Exception e) {
+			return null;
+		}
+
+		long startMilli = dateToMilli(startDate);
+		long endMilli = dateToMilli(endDate);
+
+		while ((endMilli - startMilli) > 0) {
+			startMilli += MILLISECONDS_A_DAY;
+			String currDate = formatDateMilli(startMilli);
+			returnArray.add(currDate);
+		}
+
+		return returnArray;
+	}
+
+	private ArrayList<String> getWeeklyRecurringDates(String start, String end) {
+		int count = 0;
+
+		Date startDate = null;
+		Date endDate = null;
+
+		ArrayList<String> returnArray = new ArrayList<String>();
+
+		try {
+			startDate = parseDate(start);
+			endDate = parseDate(end);
+		} catch (Exception e) {
+			return null;
+		}
+
+		long startMilli = dateToMilli(startDate);
+		long endMilli = dateToMilli(endDate);
+
+		while ((endMilli - startMilli) > MILLISECONDS_A_WEEK) {
+			startMilli += MILLISECONDS_A_WEEK;
+			String currDate = formatDateMilli(startMilli);
+			returnArray.add(currDate);
+		}
+		return returnArray;
+	}
+
+	private ArrayList<String> getMonthlyRecurringDates(String start, String end) {
+		ArrayList<String> returnArray = new ArrayList<String>();
+
+		String[] splitStart = start.split(DATE_DELIMETER);
+		String startDay = splitStart[0];
+		int startMonth = Integer.parseInt(splitStart[1]);
+		int startYear = Integer.parseInt(splitStart[2]);
+		String startTime = splitStart[3];
+
+		Date startDate = null;
+		Date endDate = null;
+
+		try {
+			startDate = parseDate(start);
+			endDate = parseDate(end);
+		} catch (Exception e) {
+			return null;
+		}
+
+		long startMilli = dateToMilli(startDate);
+		long endMilli = dateToMilli(endDate);
+
+		while ((endMilli - startMilli) > 0) {
+			startMonth++;
+
+			if (startMonth == 13) {
+				startMonth = 1;
+				startYear++;
+			}
+
+			String currDate = formatCurrDateString(startDay, String.valueOf(startMonth), String.valueOf(startYear),
+					startTime);
+
+			try {
+				startMilli = dateToMilli(parseDate(currDate));
+			} catch (ParseException e) {
+				continue;
+			}
+
+			if (isValidDate(startMilli, endMilli)) {
+				returnArray.add(formatDateMilli(startMilli));
+			}
+		}
+		return returnArray;
+	}
+
+	private ArrayList<String> getAnnualRecurringDates(String start, String end) {
+		ArrayList<String> returnArray = new ArrayList<String>();
+
+		String[] splitStart = start.split(DATE_DELIMETER);
+		String startDay = splitStart[0];
+		String startMonth = splitStart[1];
+		int startYear = Integer.parseInt(splitStart[2]);
+		String startTime = splitStart[3];
+
+		Date startDate = null;
+		Date endDate = null;
+
+		try {
+			startDate = parseDate(start);
+			endDate = parseDate(end);
+		} catch (Exception e) {
+			return null;
+		}
+
+		long startMilli = dateToMilli(startDate);
+		long endMilli = endDate.getTime();
+
+		while ((endMilli - startMilli) > 0) {
+			startYear++;
+
+			String currDate = formatCurrDateString(startDay, startMonth, String.valueOf(startYear), startTime);
+
+			try {
+				startMilli = dateToMilli(parseDate(currDate));
+			} catch (ParseException e) {
+				continue;
+			}
+
+			if (isValidDate(startMilli, endMilli)) {
+				returnArray.add(formatDateMilli(startMilli));
+			}
+		}
+		return returnArray;
+	}
+
+	/****** HELPER METHODS FOR RECURRING EVENTS ******/
+	private Date parseDate(String dateString) throws ParseException {
+		SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy");
+		df.setLenient(false);
+		return df.parse(dateString);
+	}
+
+	private String formatDate(Date date) {
+		SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy");
+		df.setLenient(false);
+		return df.format(date);
+	}
+
+	private String formatDateMilli(long date) {
+		SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy");
+		df.setLenient(false);
+		return df.format(date);
+	}
+
+	private long dateToMilli(Date date) {
+		return date.getTime();
+	}
+
+	private String formatCurrDateString(String startDay, String startMonth, String startYear, String startTime) {
+		return startDay + DATE_DELIMETER + startMonth + DATE_DELIMETER + startYear + DATE_DELIMETER + startTime;
+	}
+
+	private boolean isValidDate(long currDate, long endDate) {
+		if (currDate > endDate) {
+			return false;
+		} else {
+			return true;
+		}
 	}
 }
