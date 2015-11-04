@@ -3,7 +3,7 @@ package Tempo.CalendarObjects;
 import java.util.*;
 import java.text.*;
 
-public class Task extends FloatingTask implements Comparable<Task>{
+public class Task extends FloatingTask implements Comparable<Task>, CalendarObject{
 	protected Date _dueDate;
 	private static final String DELIMETER = "!!";
 	
