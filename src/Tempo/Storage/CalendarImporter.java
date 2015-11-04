@@ -22,7 +22,6 @@ public class CalendarImporter {
 		events = new ArrayList<Event>();
 		tasks = new ArrayList<Task>();
 		floatingTasks = new ArrayList<FloatingTask>();
-
 	}
 	
 	public static CalendarImporter getInstance(){

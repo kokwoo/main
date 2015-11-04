@@ -1,5 +1,6 @@
-package Tempo.Calendar;
+package Tempo.Logic;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -46,6 +47,31 @@ public class CommandParser {
 	private static final String COMMAND_HELP = "help";
 
 	private static final String COMMAND_EXIT = "exit";
+	
+	private static final String KEY_DAY = "day";
+	private static final String KEY_WEEK = "week";
+	private static final String KEY_MONTH = "month";
+	private static final String KEY_YEAR = "year";
+	
+	private static final String KEY_DAILY = "daily";
+	private static final String KEY_WEEKLY = "weekly";
+	private static final String KEY_MONTHLY = "monthly";
+	private static final String KEY_ANNUALLY = "annually";
+		
+	private static final String KEY_EVENTS = "events";
+	private static final String KEY_TASKS = "tasks";
+	private static final String KEY_UPCOMING_EVENTS = "upcoming events";
+	private static final String KEY_UNDONE_TASKS = "undone tasks";
+	private static final String KEY_MISSED_TASKS = "missed tasks";
+	private static final String KEY_TODAY = "today";
+	private static final String KEY_ALL = "all";
+	
+	
+	private static final String DATE_DELIMETER = "/";
+	
+	private static final String DATE_FORMAT = "dd/MM/yyyy";
+	private static final String TIME_FORMAT = "HH:mm";
+	private static final String DATETIME_FORMAT = "dd/MM/yyyy/HH:mm";
 
 	private Calendar calendar = Calendar.getInstance();
 	private IndexStore indexStore = IndexStore.getInstance();
@@ -191,7 +217,7 @@ public class CommandParser {
 			if (dateGroup != null) {
 				// We are in trouble... :(
 				Date startDate = dateGroup.getDates().get(0);
-				SimpleDateFormat formatDate = new SimpleDateFormat("dd/MM/yyyy");
+				SimpleDateFormat formatDate = new SimpleDateFormat(DATE_FORMAT);
 				startDateString = formatDate.format(startDate);
 			}
 			
@@ -249,19 +275,19 @@ public class CommandParser {
 		
 		
 		if(startDateString != null){
-			SimpleDateFormat formatTime = new SimpleDateFormat("HH:mm");
+			SimpleDateFormat formatTime = new SimpleDateFormat(TIME_FORMAT);
 			if(startDateTime != null){
 				startTimeString = formatTime.format(startDateTime);
-				startDateTimeString = startDateString + "/" + startTimeString;
+				startDateTimeString = startDateString + DATE_DELIMETER + startTimeString;
 			}
 			
 			if(endDateTime != null){
 				endTimeString = formatTime.format(endDateTime);
-				endDateTimeString = startDateString + "/" + endTimeString;
+				endDateTimeString = startDateString + DATE_DELIMETER + endTimeString;
 			}
 			
 		}else{
-			SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy/HH:mm");
+			SimpleDateFormat df = new SimpleDateFormat(DATETIME_FORMAT);
 
 			if (startDateTime != null) {
 				startDateTimeString = df.format(startDateTime);
@@ -316,7 +342,7 @@ public class CommandParser {
 			}
 		}
 
-		SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy/HH:mm");
+		SimpleDateFormat df = new SimpleDateFormat(DATETIME_FORMAT);
 
 		if (dueDate != null) {
 			dueDateString = df.format(dueDate);
@@ -395,14 +421,14 @@ public class CommandParser {
 	}
 
 	private boolean checkArguments(String arguments) {
-		switch (arguments) {
-			case ("events") :
-			case ("tasks") :
-			case ("upcoming events") :
-			case ("undone tasks") :
-			case ("missed tasks") :
-			case ("today") :
-			case ("all") :
+		switch (arguments.toLowerCase()) {
+			case KEY_EVENTS:
+			case KEY_TASKS :
+			case KEY_UPCOMING_EVENTS:
+			case KEY_UNDONE_TASKS :
+			case KEY_MISSED_TASKS :
+			case KEY_TODAY:
+			case KEY_ALL:
 				return true;
 			default :
 				return false;
@@ -422,81 +448,64 @@ public class CommandParser {
 			if (dateTimeString.contains("at")) {
 				String dateString = dateTimeString.split("at")[0].trim();
 				String timeString = dateTimeString.split("at")[1].trim();
-
-				SimpleDateFormat dateFormat;
 				DateGroup dateGroup = null;
 				Date date = null;
 
 				// splits date according to
-				if (dateString.contains("/")) {
-					dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-					date = dateFormat.parse(dateString);
-				} else if (dateString.contains("-")) {
-					dateFormat = new SimpleDateFormat("dd-MM-yyyy");
-					date = dateFormat.parse(dateString);
-				} else if (dateString.contains(".")) {
-					dateFormat = new SimpleDateFormat("dd.MM.yyyy");
-					date = dateFormat.parse(dateString);
-				} else {
-					dateGroup = parseDateTimeString(dateString);
-
-					if (dateGroup != null) {
-						date = dateGroup.getDates().get(0);
-						dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-						dateString = dateFormat.format(date);
-					} else {
-						date = null;
-					}
-				}
+				date = parseDateString(dateString);
+				
 				dateGroup = parseDateTimeString(timeString);
 				Date time = null;
 
 				if (dateGroup == null) {
-					SimpleDateFormat tempFormat = new SimpleDateFormat("HH:mm");
+					SimpleDateFormat tempFormat = new SimpleDateFormat(TIME_FORMAT);
 					time = tempFormat.parse("00:00");
 				} else {
 					time = dateGroup.getDates().get(0);
 				}
 
-				SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
+				SimpleDateFormat timeFormat = new SimpleDateFormat(TIME_FORMAT);
 				timeString = timeFormat.format(time);
 
-				String combinedDateTimeString = dateString + "/" + timeString;
-				SimpleDateFormat dateTimeFormat = new SimpleDateFormat("dd/MM/yyyy/HH:mm");
+				String combinedDateTimeString = dateString + DATE_DELIMETER + timeString;
+				SimpleDateFormat dateTimeFormat = new SimpleDateFormat(DATETIME_FORMAT);
 
 				Date parsedDate = dateTimeFormat.parse(combinedDateTimeString);
 				return parsedDate;
 			} else {
-				SimpleDateFormat dateFormat;
-				DateGroup dateGroup = null;
-				Date date = null;
-
-				// splits date according to
-				if (dateTimeString.contains("/")) {
-					dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-					date = dateFormat.parse(dateTimeString);
-				} else if (dateTimeString.contains("-")) {
-					dateFormat = new SimpleDateFormat("dd-MM-yyyy");
-					date = dateFormat.parse(dateTimeString);
-				} else if (dateTimeString.contains(".")) {
-					dateFormat = new SimpleDateFormat("dd.MM.yyyy");
-					date = dateFormat.parse(dateTimeString);
-				} else {
-					dateGroup = parseDateTimeString(dateTimeString);
-
-					if (dateGroup != null) {
-						date = dateGroup.getDates().get(0);
-					} else {
-						date = null;
-					}
-				}
-
-				return date;
+				return parseDateString(dateTimeString);
 			}
 		} catch (Exception e) {
 			return null;
 		}
 
+	}
+
+	private Date parseDateString(String dateTimeString) throws ParseException {
+		SimpleDateFormat dateFormat;
+		DateGroup dateGroup;
+		Date date;
+		// splits date according to
+		if (dateTimeString.contains("/")) {
+			dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+			date = dateFormat.parse(dateTimeString);
+		} else if (dateTimeString.contains("-")) {
+			dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+			date = dateFormat.parse(dateTimeString);
+		} else if (dateTimeString.contains(".")) {
+			dateFormat = new SimpleDateFormat("dd.MM.yyyy");
+			date = dateFormat.parse(dateTimeString);
+		} else {
+			dateGroup = parseDateTimeString(dateTimeString);
+
+			if (dateGroup != null) {
+				date = dateGroup.getDates().get(0);
+			} else {
+				date = null;
+			}
+		}
+
+		return date;
 	}
 
 	// FOR REMOVE/MARK AS DONE FUNCTION
@@ -553,7 +562,7 @@ public class CommandParser {
 			recurringType = split[0];
 			recurringDate = getDateTime(split[1]);
 			
-			SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy");
+			SimpleDateFormat df = new SimpleDateFormat(DATE_FORMAT);
 			
 			try{
 				recurringDateStr = df.format(recurringDate);
@@ -564,10 +573,29 @@ public class CommandParser {
 			recurringType = recurringArgs;
 		}
 		
+		if(recurringType.contains("every ")){
+			recurringType = processRecurringType(recurringType);
+		}
+		
 		args.add(recurringType);
 		args.add(recurringDateStr);
 		
 		return args;
+	}
+	
+	private String processRecurringType(String recurringType){
+		switch(recurringType.toLowerCase()){
+			case KEY_DAY: 
+				return KEY_DAILY;
+			case KEY_WEEK:
+				return KEY_WEEKLY;
+			case KEY_MONTH:
+				return KEY_MONTHLY;
+			case KEY_YEAR:
+				return KEY_ANNUALLY;
+			default:
+				return null;
+		}
 	}
 
 	// FOR ADD TASK FUNCTION
@@ -584,7 +612,7 @@ public class CommandParser {
 	}
 	
 	private String adjustDates(String start, String end){
-		SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy/HH:mm");
+		SimpleDateFormat df = new SimpleDateFormat(DATETIME_FORMAT);
 		Date startDate = null;
 		Date endDate = null;
 		
@@ -599,8 +627,8 @@ public class CommandParser {
 		long endDateMilli = endDate.getTime();
 		
 		if(endDateMilli < startDateMilli){
-			SimpleDateFormat formatDate = new SimpleDateFormat("dd/MM/yyyy");
-			SimpleDateFormat formatTime = new SimpleDateFormat("HH:mm");
+			SimpleDateFormat formatDate = new SimpleDateFormat(DATE_FORMAT);
+			SimpleDateFormat formatTime = new SimpleDateFormat(TIME_FORMAT);
 	
 			String startDateString = formatDate.format(startDate);
 			String endTimeString = formatTime.format(endDate);
