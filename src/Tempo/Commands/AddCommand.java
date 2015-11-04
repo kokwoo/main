@@ -6,6 +6,7 @@ import java.text.*;
 import Tempo.CalendarObjects.Event;
 import Tempo.CalendarObjects.FloatingTask;
 import Tempo.Logic.Calendar;
+import Tempo.Logic.CurrentTime;
 
 public class AddCommand implements Command {
 	private String commandString;
@@ -24,6 +25,7 @@ public class AddCommand implements Command {
 	private static final String ADD_FLOATINGTASK = "Add Floating Task %1$s";
 	private static final String DELIMETER_SPACE = " ";
 	private static final String DELIMETER_COLON = ":";
+	private static final String DELIMETER_SLASH = "/";
 	private static final String BLANK = "";
 	
 	private DateFormat dateTimeFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm");
@@ -115,8 +117,9 @@ public class AddCommand implements Command {
 	}
 	
 	private String addTwoHours(String start) {
-		// TODO: after we rename our Calendar class	
-		return "";
+		GregorianCalendar startDate = getCalendarDate(start);
+		startDate.add(GregorianCalendar.HOUR, 2);
+		return dateTimeFormat.format(startDate);
 	}
 	
 	private boolean isEmptyInput(String input) {
@@ -127,19 +130,38 @@ public class AddCommand implements Command {
 		return isEmptyInput(name);
 	}
 		
-	private Date getCurrDateTime() {
-		return new Date();
+	private CurrentTime getCurrDateTime() {
+		return new CurrentTime();
 	}
 	
 	private String getCurrDateTimeStr() {
-		return dateTimeFormat.format(getCurrDateTime());
+		CurrentTime curr = getCurrDateTime();
+		return curr.getDateAndTime();
 	}
 	
 	private String getCurrDateStr() {
-		return dateFormat.format(getCurrDateTime());
+		CurrentTime curr = getCurrDateTime();
+		return curr.getDate();
 	}
 	
 	private String getCurrTimeStr() {
 		return timeFormat.format(getCurrDateTime());
+	}
+	
+	private GregorianCalendar getCalendarDate(String dateStr) {
+		String date = dateFormat.format(dateStr);
+		String[] dateParams = date.trim().split(DELIMETER_SLASH);
+		
+		int year = Integer.valueOf(dateParams[2]);
+		int month = Integer.valueOf(dateParams[1]);
+		int day = Integer.valueOf(dateParams[0]);
+		
+		String time = timeFormat.format(dateStr);
+		String[] timeParams = date.trim().split(DELIMETER_COLON);
+		
+		int hour = Integer.valueOf(timeParams[0]);
+		int min = Integer.valueOf(timeParams[1]);
+		
+		return new GregorianCalendar(year, month, day, hour, min);
 	}
 }

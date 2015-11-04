@@ -8,12 +8,14 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
-public class CurrentDateAndTime {
+public class CurrentTime {
 	private static Calendar _date;
 	private static Calendar cal = Calendar.getInstance();
-	private static DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
+	private static DateFormat date = new SimpleDateFormat("dd/MM/yyyy");
+	private static DateFormat dateTime = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+	private static DateFormat time = new SimpleDateFormat("HH:mm");
 
-	public CurrentDateAndTime() {
+	public CurrentTime() {
 		Calendar date = new GregorianCalendar();
 		_date = date;
 
@@ -54,7 +56,15 @@ public class CurrentDateAndTime {
 	public String getDate(){
 		//System.out.println(df.format(cal.getTime()));
 		
-		return df.format(cal.getTime());
+		return date.format(cal.getTime());
+	}
+	
+	public String getDateAndTime() {
+		return dateTime.format(cal.getTime());
+	}
+	
+	public String getHoursAndMin() {
+		return time.format(cal.getTime());
 	}
 	
 //	public String getDate() {
