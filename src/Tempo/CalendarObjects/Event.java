@@ -169,13 +169,13 @@ public class Event implements CalendarObject, Comparable<Event>{
 		return getIndex() + DELIMETER + getSeriesIndex()+ DELIMETER + getName() + DELIMETER + getStartDate() + DATE_DELIMETER + getStartTime() + DELIMETER + getEndDate()+ DATE_DELIMETER +getEndTime(); 
 	}
 	
-//	public boolean clashesWith(Event e){
-//		if(this.getStartTimeInMilli() < e.getEndTimeInMilli()){
-//			return true;
-//		}else if(this.getEndTimeInMilli() > e.getStartTimeInMilli()){
-//			return true;
-//		}else{
-//			return false;
-//		}
-//	}
+	public boolean clashesWith(Event e){
+		if(this.getStartTimeInMilli() < e.getEndTimeInMilli()){
+			return true;
+		}else if(this.getEndTimeInMilli() > e.getStartTimeInMilli()){
+			return true;
+		}else{
+			return false;
+		}
+	}
 }
