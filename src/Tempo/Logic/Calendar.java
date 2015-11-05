@@ -18,7 +18,7 @@ public class Calendar {
 
 	private static Stack<Command> history;
 
-	private static final String MSG_WARNING_CLASH = "this event clashes with another event.\nenter 'undo' if you would like to revoke the previous operation.";
+	private static final String MSG_WARNING_CLASH = "Warning: this event clashes with another event.\nEnter 'undo' if you would like to revoke the previous operation.";
 
 	private static final String CMD_ADD_EVENT = "add event %1$s";
 	private static final String CMD_ADD_RECURR_EVENT = "add recurring event %1$s";
@@ -149,7 +149,6 @@ public class Calendar {
 		ArrayList<String> recurringDates = processRecurringDates(start, recurringEnd, recurringType);
 
 		for (String dates : recurringDates) {
-			System.out.println("Recurring date: " + dates);
 			newEventIndex = indexStore.getNewId();
 
 			String newStart = dates + DATE_DELIMETER + timeString;
@@ -162,14 +161,17 @@ public class Calendar {
 			newEvent = new Event(newEventIndex, newSeriesIndex, name, newStart, newEnd);
 			eventsList.add(newEvent);
 			indexStore.addEvent(newEventIndex, newEvent);
+			System.out.println("Adding event " + newEventIndex);
 		}
 
 		sortEvents();
 		exportToFile();
+		
+		Command newUndo = (Command) new UndoAdd(newEventIndex, true, false, true);
+		history.add(newUndo);
 
 		String cmd = String.format(CMD_ADD_RECURR_EVENT, name);
 		return new Result(cmd, true, putInHashMap(KEY_EVENTS, eventsList));
-		// TODO: UNDO METHOD
 	}
 
 	private long getStartEndDiff(String start, String end) {
@@ -267,6 +269,9 @@ public class Calendar {
 
 		sortTasks();
 		exportToFile();
+		
+		Command newUndo = (Command) new UndoAdd(newTaskIndex, false, true, true);
+		history.add(newUndo);
 
 		String cmd = String.format(CMD_ADD_RECURR_TASK, name);
 		return new Result(cmd, true, putInHashMap(KEY_TASKS, tasksList));
@@ -323,12 +328,11 @@ public class Calendar {
 		ArrayList<CalendarObject> eventsToRemove = new ArrayList<CalendarObject>();
 		String eventName = new String();
 		int seriesIndex = -1;
-
+		
 		for (int i = 0; i < eventsList.size(); i++) {
 			Event currEvent = (Event) eventsList.get(i);
 			if (currEvent.getIndex() == idx) {
 				eventsToRemove.add(currEvent);
-				// savePrevCmd(idx, eventsList.get(i), null, null, CMD_REMOVE);
 				seriesIndex = currEvent.getSeriesIndex();
 				eventName = currEvent.getName();
 				indexStore.removeEvent(currEvent.getIndex());
@@ -336,7 +340,7 @@ public class Calendar {
 				break;
 			}
 		}
-
+		
 		if (isSeries) {
 			for (int i = 0; i < eventsList.size(); i++) {
 				Event currEvent = (Event) eventsList.get(i);
@@ -344,6 +348,8 @@ public class Calendar {
 					eventsToRemove.add(currEvent);
 					indexStore.removeEvent(currEvent.getIndex());
 					eventsList.remove(i);
+					i--;
+					continue;
 				}
 			}
 		}
