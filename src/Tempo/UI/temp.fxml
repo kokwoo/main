@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<TabPane fx:id="tabView" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="555.0" prefWidth="750.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Tempo.UI.Controller">
+  <tabs>
+    <Tab text="All">
+      <content>
+        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+               <children>
+                  <ComboBox fx:id="inputBox" editable="true" layoutY="1.0" onKeyPressed="#handleEnterPressed" onKeyTyped="#handleType" prefHeight="45.0" prefWidth="750.0" />
+                  <TableView fx:id="table" layoutY="46.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="495.0" prefWidth="750.0">
+                    <columns>
+                      <TableColumn fx:id="id" prefWidth="46.0" text="ID" />
+                      <TableColumn fx:id="name" prefWidth="227.0" text="Name" />
+                        <TableColumn fx:id="done" prefWidth="64.0" text="Done" />
+                        <TableColumn fx:id="startTime" prefWidth="85.0" text="Start Time" />
+                        <TableColumn fx:id="startDate" minWidth="0.0" prefWidth="101.0" text="Start Date" />
+                        <TableColumn fx:id="endDate" prefWidth="95.0" text="End Date" />
+                        <TableColumn fx:id="endTime" prefWidth="131.0" text="End Time" />
+                    </columns>
+                  </TableView>
+               </children></AnchorPane>
+      </content>
+    </Tab>
+      <Tab text="Today">
+         <content>
+            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+               <children>
+                  <ComboBox fx:id="inputBoxToday" editable="true" layoutY="1.0" onKeyPressed="#handleEnterPressed" onKeyTyped="#handleType" prefHeight="45.0" prefWidth="750.0" />
+                  <TableView fx:id="todayTable" layoutY="46.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="495.0" prefWidth="750.0">
+                     <columns>
+                        <TableColumn fx:id="idToday" prefWidth="46.0" text="ID" />
+                        <TableColumn fx:id="nameToday" prefWidth="227.0" text="Name" />
+                        <TableColumn fx:id="doneToday" prefWidth="64.0" text="Done" />
+                        <TableColumn fx:id="startTimeToday" prefWidth="85.0" text="Start Time" />
+                        <TableColumn fx:id="startDateToday" minWidth="0.0" prefWidth="101.0" text="Start Date" />
+                        <TableColumn fx:id="endDateToday" prefWidth="95.0" text="End Date" />
+                        <TableColumn fx:id="endTimeToday" prefWidth="131.0" text="End Time" />
+                     </columns>
+                  </TableView>
+               </children>
+            </AnchorPane>
+         </content>
+      </Tab>
+      <Tab text="Upcoming">
+         <content>
+            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+               <children>
+                  <ComboBox fx:id="inputBoxUpComing" editable="true" layoutY="1.0" onKeyPressed="#handleEnterPressed" onKeyTyped="#handleType" prefHeight="45.0" prefWidth="750.0" />
+                  <TableView fx:id="upcomingTable" layoutY="46.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="495.0" prefWidth="750.0">
+                     <columns>
+                        <TableColumn fx:id="upcomingId" prefWidth="46.0" text="ID" />
+                        <TableColumn fx:id="upcomingName" prefWidth="227.0" text="Name" />
+                        <TableColumn fx:id="upcomingDone" prefWidth="64.0" text="Done" />
+                        <TableColumn fx:id="upcomingStartTime" prefWidth="85.0" text="Start Time" />
+                        <TableColumn fx:id="upcomingStartDate" minWidth="0.0" prefWidth="101.0" text="Start Date" />
+                        <TableColumn fx:id="upcomingEndDate" prefWidth="95.0" text="End Date" />
+                        <TableColumn fx:id="upcomingEndTime" prefWidth="131.0" text="End Time" />
+                     </columns>
+                  </TableView>
+               </children>
+            </AnchorPane>
+         </content>
+      </Tab>
+      <Tab text="Missed">
+         <content>
+            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+               <children>
+                  <ComboBox fx:id="missedInputBox" editable="true" layoutY="1.0" onKeyPressed="#handleEnterPressed" onKeyTyped="#handleType" prefHeight="45.0" prefWidth="750.0" />
+                  <TableView fx:id="missedTable" layoutY="46.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="495.0" prefWidth="750.0">
+                     <columns>
+                        <TableColumn fx:id="missedId" prefWidth="46.0" text="ID" />
+                        <TableColumn fx:id="missedName" prefWidth="227.0" text="Name" />
+                        <TableColumn fx:id="missedDone" prefWidth="64.0" text="Done" />
+                        <TableColumn fx:id="missedStartTime" prefWidth="85.0" text="Start Time" />
+                        <TableColumn fx:id="missedStartDate" minWidth="0.0" prefWidth="101.0" text="Start Date" />
+                        <TableColumn fx:id="missedEndDate" prefWidth="95.0" text="End Date" />
+                        <TableColumn fx:id="missedEndTime" prefWidth="131.0" text="End Time" />
+                     </columns>
+                  </TableView>
+               </children>
+            </AnchorPane>
+         </content>
+      </Tab>
+      <Tab text="Undone">
+         <content>
+            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+               <children>
+                  <ComboBox fx:id="undoneInputBox" editable="true" layoutY="1.0" onKeyPressed="#handleEnterPressed" onKeyTyped="#handleType" prefHeight="45.0" prefWidth="750.0" />
+                  <TableView fx:id="undoneTable" layoutY="46.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="495.0" prefWidth="750.0">
+                     <columns>
+                        <TableColumn fx:id="undoneId" prefWidth="46.0" text="ID" />
+                        <TableColumn fx:id="undoneName" prefWidth="227.0" text="Name" />
+                        <TableColumn fx:id="undoneDone" prefWidth="64.0" text="Done" />
+                        <TableColumn fx:id="undoneStartTime" prefWidth="85.0" text="Start Time" />
+                        <TableColumn fx:id="undoneStartDate" minWidth="0.0" prefWidth="101.0" text="Start Date" />
+                        <TableColumn fx:id="undoneEndDate" prefWidth="95.0" text="End Date" />
+                        <TableColumn fx:id="undoneEndTime" prefWidth="131.0" text="End Time" />
+                     </columns>
+                  </TableView>
+               </children>
+            </AnchorPane>
+         </content>
+      </Tab>
+      <Tab text="Search Results">
+         <content>
+            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+               <children>
+                  <ComboBox fx:id="undoneInputBox1" editable="true" layoutY="1.0" onKeyPressed="#handleEnterPressed" onKeyTyped="#handleType" prefHeight="45.0" prefWidth="750.0" />
+                  <TableView fx:id="undoneTable1" layoutY="46.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="495.0" prefWidth="750.0">
+                     <columns>
+                        <TableColumn fx:id="undoneId1" prefWidth="46.0" text="ID" />
+                        <TableColumn fx:id="undoneName1" prefWidth="227.0" text="Name" />
+                        <TableColumn fx:id="undoneDone1" prefWidth="64.0" text="Done" />
+                        <TableColumn fx:id="undoneStartTime1" prefWidth="85.0" text="Start Time" />
+                        <TableColumn fx:id="undoneStartDate1" minWidth="0.0" prefWidth="101.0" text="Start Date" />
+                        <TableColumn fx:id="undoneEndDate1" prefWidth="95.0" text="End Date" />
+                        <TableColumn fx:id="undoneEndTime1" prefWidth="131.0" text="End Time" />
+                     </columns>
+                  </TableView>
+               </children>
+            </AnchorPane>
+         </content>
+      </Tab>
+  </tabs>
+</TabPane>

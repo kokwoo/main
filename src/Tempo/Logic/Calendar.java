@@ -11,7 +11,7 @@ import Tempo.CalendarObjects.FloatingTask;
 import Tempo.CalendarObjects.Task;
 import Tempo.Commands.Command;
 import Tempo.Commands.Result;
-import Tempo.Commands.UndoRemove;
+//import Tempo.Commands.UndoRemove;
 import Tempo.Storage.CalendarExporter;
 import Tempo.Storage.CalendarImporter;
 
@@ -297,13 +297,13 @@ public class Calendar {
 		Command newUndo;
 		
 		if (isSeries) {
-			newUndo = (Command) new UndoRemove(eventsToRemove, true);
+			//newUndo = (Command) new UndoRemove(eventsToRemove, true);
 		} else {
 			Event event = (Event) eventsToRemove.get(0);
-			newUndo = (Command) new UndoRemove(event);
+			//newUndo = (Command) new UndoRemove(event);
 		}
 		
-		history.add(newUndo);
+		//history.add(newUndo);
 
 		String cmd = String.format(CMD_REMOVE_EVENT, eventName);
 		return new Result(cmd, true, putInHashMap(KEY_EVENTS, eventsList));
