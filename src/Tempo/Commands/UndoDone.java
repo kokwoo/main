@@ -6,8 +6,8 @@ public class UndoDone implements Command {
 	private static Calendar cal = Calendar.getInstance();
 	private static final String CMD = "Undo done %1$s";
 	
-	protected int prevModIndex;
-	protected boolean isFloating;
+	private int prevModIndex;
+	private boolean isFloating;
 	
 	public UndoDone(int prevModIndex, boolean isFloating) {
 		this.prevModIndex = prevModIndex;

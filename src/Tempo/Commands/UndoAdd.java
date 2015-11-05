@@ -7,11 +7,11 @@ public class UndoAdd implements Command {
 	
 	private static final String CMD = "Undo add %1$s";
 	
-	protected int prevModIndex;
+	private int prevModIndex;
 	
-	protected boolean isEvent = false;
-	protected boolean isTask = false;
-	protected boolean isSeries = false;
+	private boolean isEvent = false;
+	private boolean isTask = false;
+	private boolean isSeries = false;
 	
 	public UndoAdd(int prevModIndex, boolean isEvent, boolean isTask, boolean isSeries) {
 		this.prevModIndex = prevModIndex;
