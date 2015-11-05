@@ -118,7 +118,7 @@ public class Calendar {
 		eventsList.add(newEvent);
 		indexStore.addEvent(newEvent.getIndex(), newEvent);
 		sortEvents();
-
+		
 		String name = newEvent.getName();
 		String cmd = String.format(CMD_ADD_EVENT, name);
 
@@ -279,6 +279,8 @@ public class Calendar {
 				break;
 			}
 		}
+		
+		System.out.println("isSeries = " + isSeries); // debug
 		
 		if(isSeries){
 			for(int i = 0; i < eventsList.size(); i++){
@@ -530,7 +532,9 @@ public class Calendar {
 	/***** UNDO COMMAND EXECUTION ******/
 
 	public Result undo() {
-		return history.pop().execute();
+		Result result = history.pop().execute();
+		exportToFile();
+		return result;
 	}
 	
 	/*

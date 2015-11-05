@@ -5,7 +5,7 @@ import java.util.*;
 import Tempo.CalendarObjects.*;
 import Tempo.Logic.Calendar;
 
-public class UndoRemove {
+public class UndoRemove implements Command {
 	private static Calendar calendar = Calendar.getInstance();
 	
 	private static final String CMD = "Undo add %1$s";
@@ -58,7 +58,7 @@ public class UndoRemove {
 		} else {
 			result = calendar.addBackRecurrTask(prevModTasks);
 		}
-		
+			
 		String command = result.getCommandPerformed();
 		String name = getLastWord(command);
 		result.setCommand(String.format(CMD, name));
