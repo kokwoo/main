@@ -139,6 +139,9 @@ public class Calendar {
 
 		sortEvents();
 		exportToFile();
+		
+		Command newUndo = (Command) new UndoAdd(newEventIndex, true, false, true);
+		history.add(newUndo);
 
 		String cmd = String.format(CMD_ADD_RECURR_EVENT, name);
 		return new Result(cmd, true, putInHashMap(KEY_EVENTS, eventsList));
@@ -171,7 +174,8 @@ public class Calendar {
 		sortTasks();
 		exportToFile();
 
-		//savePrevCmd(newTaskIndex, null, newTask, null, CMD_ADD);
+		Command newUndo = (Command) new UndoAdd(newTaskIndex, false, true, false);
+		history.add(newUndo);
 
 		String cmd = String.format(CMD_ADD_TASK, name);
 		return new Result(cmd, true, putInHashMap(KEY_TASKS, tasksList));
@@ -208,6 +212,9 @@ public class Calendar {
 		sortTasks();
 		exportToFile();
 		
+		Command newUndo = (Command) new UndoAdd(newTaskIndex, false, true, true);
+		history.add(newUndo);
+		
 		String cmd = String.format(CMD_ADD_RECURR_TASK, name);
 		return new Result(cmd, true, putInHashMap(KEY_TASKS, tasksList));
 	}
@@ -238,8 +245,9 @@ public class Calendar {
 		floatingTasksList.add(newFloatingTask);
 		exportToFile();
 
-		//savePrevCmd(newTaskIndex, null, null, newFloatingTask, CMD_ADD);
-
+		Command newUndo = (Command) new UndoAdd(newTaskIndex, false, false, false);
+		history.add(newUndo);
+		
 		String cmd = String.format(CMD_ADD_FLOATING, name);
 		return new Result(cmd, true, putInHashMap(KEY_FLOATING, floatingTasksList));
 	}
