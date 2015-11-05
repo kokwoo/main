@@ -13,7 +13,7 @@ public class CalendarExporter {
 	private static CalendarExporter instance = new CalendarExporter();
 	
 	private String _fileName; 
-	private Calendar calendar;
+	private static Calendar calendar;
 	
 	private ArrayList<CalendarObject> events;
 	private ArrayList<CalendarObject> tasks;
@@ -29,9 +29,6 @@ public class CalendarExporter {
 		events = new ArrayList<CalendarObject>();
 		tasks = new ArrayList<CalendarObject>();
 		floatingTasks = new ArrayList<CalendarObject>();
-		
-		calendar = Calendar.getInstance();
-						
 	}
 	
 	public static CalendarExporter getInstance(){
@@ -39,6 +36,7 @@ public class CalendarExporter {
 	}
 	
 	public void setFileName(String filename){
+		System.out.println("Set filename: " + filename);
 		_fileName = filename.trim();
 		try{
 			out = new BufferedWriter(new FileWriter(_fileName));
@@ -48,6 +46,8 @@ public class CalendarExporter {
 	}
 	
 	public void export(){
+		calendar = Calendar.getInstance();
+		
 		events = calendar.getEventsList();
 		tasks = calendar.getTasksList();
 		floatingTasks = calendar.getFloatingTasksList();
