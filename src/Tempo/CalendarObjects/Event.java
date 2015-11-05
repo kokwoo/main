@@ -3,11 +3,12 @@ package Tempo.CalendarObjects;
 import java.text.*;
 import java.util.*;
 
-public class Event extends CalendarObject{
+public class Event implements CalendarObject, Comparable<Event>{
 	protected Date startDateTime;
 	protected Date endDateTime;
 	protected int index;
 	protected int seriesIndex;
+	protected String name;
 	
 	private static final String DELIMETER = "!!";
 	private static final String DATE_DELIMETER = "/";
@@ -20,7 +21,7 @@ public class Event extends CalendarObject{
 	private SimpleDateFormat dateFormatter = new SimpleDateFormat("dd/MM/yyyy/HH:mm");
 	
 	public Event(int index, int seriesIndex, String name, String start, String end){
-		super(name);
+		this.name = name;
 		this.index = index;
 		this.seriesIndex = seriesIndex;		
 		setStartDateTime(start.trim());

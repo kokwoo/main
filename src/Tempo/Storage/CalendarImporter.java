@@ -58,7 +58,6 @@ public class CalendarImporter {
 						int taskSeriesIndex = Integer.parseInt(split[1]);
 						Task newTask = new Task(taskIndex, taskSeriesIndex, split[2], split[3], split[4]);
 						tasks.add(newTask);
-						Collections.sort(tasks);
 					}else{
 						//is a event
 						//events
@@ -66,7 +65,6 @@ public class CalendarImporter {
 						int eventSeriesIndex = Integer.parseInt(split[1]);
 						Event newEvent  = new Event(eventIndex, eventSeriesIndex, split[2], split[3], split[4]);
 						events.add(newEvent);
-						Collections.sort(events);
 					}
 				}else if (split.length == 3){
 					//floating tasks

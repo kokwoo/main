@@ -18,7 +18,7 @@ public class DoneCommand implements Command {
 		this.idx = idx;
 	}
 	
-	public ArrayList<String> execute() {
+	public Result execute() {
 		if(isTask() || isFloatingTask()){
 			return cal.markTaskAsDone(idx);
 		}else{
@@ -26,10 +26,8 @@ public class DoneCommand implements Command {
 		}
 	}
 	
-	private ArrayList<String> handleInvalidDone() {
-		ArrayList<String> feedback = new ArrayList<String>();
-		feedback.add(MSG_DONE_ERR_NOT_EVENT);
-		return feedback;
+	private Result handleInvalidDone() {
+		return new Result(MSG_DONE_ERR_NOT_EVENT, false, null);
 	}
 	
 	private boolean isFloatingTask(){
