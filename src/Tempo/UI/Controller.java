@@ -199,9 +199,6 @@ public class Controller {
 		return selected.getSelectedIndex();
 	}
 	
-	
-	
-	
 	private void refresh(Page currPage,String view) {
 		SingleSelectionModel<Tab> selected = tabView.getSelectionModel();
 		selected.select(5);
