@@ -36,7 +36,6 @@ public class CalendarExporter {
 	}
 	
 	public void setFileName(String filename){
-		System.out.println("Set filename: " + filename);
 		_fileName = filename.trim();
 		try{
 			out = new BufferedWriter(new FileWriter(_fileName));

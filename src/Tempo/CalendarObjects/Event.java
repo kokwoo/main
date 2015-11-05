@@ -170,12 +170,18 @@ public class Event implements CalendarObject, Comparable<Event>{
 	}
 	
 	public boolean clashesWith(Event e){
-		if(this.getStartTimeInMilli() < e.getEndTimeInMilli()){
-			return true;
-		}else if(this.getEndTimeInMilli() > e.getStartTimeInMilli()){
-			return true;
-		}else{
+		if(isBefore(e) || isAfter(e)){
 			return false;
+		}else{
+			return true;
 		}
+	}
+	
+	private boolean isBefore(Event e) {
+		return this.getEndTimeInMilli() <= e.getStartTimeInMilli();
+	}
+	
+	private boolean isAfter(Event e) {
+		return this.getStartTimeInMilli() >= e.getEndTimeInMilli();
 	}
 }

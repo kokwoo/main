@@ -18,7 +18,7 @@ public class Calendar {
 	
 	private static Stack<Command> history;
 	
-	private static final String MSG_WARNING_CLASH = "this event clashes with another event. enter 'undo' if you would like to revoke the previous operation.";
+	private static final String MSG_WARNING_CLASH = "this event clashes with another event.\nenter 'undo' if you would like to revoke the previous operation.";
 
 	private static final String CMD_ADD_EVENT = "add event %1$s";
 	private static final String CMD_ADD_RECURR_EVENT = "add recurring event %1$s";
@@ -95,9 +95,15 @@ public class Calendar {
 	/***** ADD COMMAND EXECUTION ******/
 
 	public Result addEvent(String name, String start, String end) {
+		boolean hasClash = false;
 		int newEventIndex = indexStore.getNewId();
 		int newSeriesIndex = indexStore.getNewSeriesId();
 		Event newEvent = new Event(newEventIndex,newSeriesIndex, name, start, end);
+		
+		if (hasClash(newEvent)) {
+			hasClash = true;
+		}
+		
 		eventsList.add(newEvent);
 		
 		indexStore.addEvent(newEventIndex, newEvent);
@@ -109,7 +115,7 @@ public class Calendar {
 
 		String cmd = String.format(CMD_ADD_EVENT, name);
 
-		if (hasClash(newEvent)) {
+		if (hasClash) {
 			return new Result(cmd, MSG_WARNING_CLASH, true, putInHashMap(KEY_EVENTS, eventsList));
 		}
 		
@@ -133,25 +139,27 @@ public class Calendar {
 		int newEventIndex = indexStore.getNewId();
 		int newSeriesIndex = indexStore.getNewSeriesId();
 		Event newEvent = new Event(newEventIndex, newSeriesIndex, name, start, end);
-		eventsList.add(newEvent);
-		indexStore.addEvent(newEventIndex, newEvent);
 		
 		if (hasClash(newEvent)) {
 			hasClash = true;
 		}
-
+		
+		eventsList.add(newEvent);
+		indexStore.addEvent(newEventIndex, newEvent);
+	
 		// Gets the list of recurring dates;
 		ArrayList<String> recurringDates = processRecurringDates(start, recurringEnd, recurringType);
 		
 		for(String dates: recurringDates){
 			newEventIndex = indexStore.getNewId();
 			newEvent = new Event(newEventIndex, newSeriesIndex, name, dates, end);
-			eventsList.add(newEvent);
-			indexStore.addEvent(newEventIndex, newEvent);
 			
 			if (!hasClash && hasClash(newEvent)) {
 				hasClash = true;
 			}
+
+			eventsList.add(newEvent);
+			indexStore.addEvent(newEventIndex, newEvent);
 		}
 
 		sortEvents();
@@ -1204,7 +1212,7 @@ public class Calendar {
 	private boolean hasClash(Event event) {
 		for (int i = 0; i < eventsList.size(); i++) {
 			Event currEvent = (Event) eventsList.get(i);
-			if (event.clashesWith(currEvent)) {
+			if (!event.equals(currEvent) && event.clashesWith(currEvent)) {
 				return true;
 			}
 		}
