@@ -131,7 +131,7 @@ public class IndexStore {
 	}
 	
 	public void removeTask(int index) {
-		Task taskToRemove = (Task) tasks.get(index);
+		FloatingTask taskToRemove = (FloatingTask) tasks.get(index);
 		int seriesId = taskToRemove.getSeriesIndex();
 		recycledSecId.add(seriesId);
 		tasks.remove(index);
