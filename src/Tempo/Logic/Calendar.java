@@ -17,6 +17,8 @@ public class Calendar {
 	private static CalendarExporter exporter;
 	
 	private static Stack<Command> history;
+	
+	private static final String MSG_WARNING_CLASH = "this event clashes with another event.\nenter 'undo' if you would like to revoke the previous operation.";
 
 	private static final String CMD_ADD_EVENT = "add event %1$s";
 	private static final String CMD_ADD_RECURR_EVENT = "add recurring event %1$s";
@@ -49,6 +51,11 @@ public class Calendar {
 	private static final String KEY_WEEKLY = "weekly";
 	private static final String KEY_MONTHLY = "monthly";
 	private static final String KEY_ANNUALLY = "annually";
+	
+	private static final String FIELD_START_DATE = "start date";
+	private static final String FIELD_START_TIME = "start time";
+	private static final String FIELD_END_DATE = "end date";
+	private static final String FIELD_END_TIME = "end time";
 
 	public static final long MILLISECONDS_A_DAY = 86400000;
 	public static final long MILLISECONDS_A_WEEK = 604800000;
@@ -88,9 +95,15 @@ public class Calendar {
 	/***** ADD COMMAND EXECUTION ******/
 
 	public Result addEvent(String name, String start, String end) {
+		boolean hasClash = false;
 		int newEventIndex = indexStore.getNewId();
 		int newSeriesIndex = indexStore.getNewSeriesId();
 		Event newEvent = new Event(newEventIndex,newSeriesIndex, name, start, end);
+		
+		if (hasClash(newEvent)) {
+			hasClash = true;
+		}
+		
 		eventsList.add(newEvent);
 		
 		indexStore.addEvent(newEventIndex, newEvent);
@@ -102,6 +115,10 @@ public class Calendar {
 
 		String cmd = String.format(CMD_ADD_EVENT, name);
 
+		if (hasClash) {
+			return new Result(cmd, MSG_WARNING_CLASH, true, putInHashMap(KEY_EVENTS, eventsList));
+		}
+		
 		return new Result(cmd, true, putInHashMap(KEY_EVENTS, eventsList));
 	}
 	
@@ -118,18 +135,29 @@ public class Calendar {
 	}
 
 	public Result addRecurringEvent(String name, String start, String end, String recurringType, String recurringEnd) {
+		boolean hasClash = false;
 		int newEventIndex = indexStore.getNewId();
 		int newSeriesIndex = indexStore.getNewSeriesId();
 		Event newEvent = new Event(newEventIndex, newSeriesIndex, name, start, end);
+		
+		if (hasClash(newEvent)) {
+			hasClash = true;
+		}
+		
 		eventsList.add(newEvent);
 		indexStore.addEvent(newEventIndex, newEvent);
-
+	
 		// Gets the list of recurring dates;
 		ArrayList<String> recurringDates = processRecurringDates(start, recurringEnd, recurringType);
 		
 		for(String dates: recurringDates){
 			newEventIndex = indexStore.getNewId();
 			newEvent = new Event(newEventIndex, newSeriesIndex, name, dates, end);
+			
+			if (!hasClash && hasClash(newEvent)) {
+				hasClash = true;
+			}
+
 			eventsList.add(newEvent);
 			indexStore.addEvent(newEventIndex, newEvent);
 		}
@@ -141,6 +169,11 @@ public class Calendar {
 		history.add(newUndo);
 
 		String cmd = String.format(CMD_ADD_RECURR_EVENT, name);
+		
+		if (hasClash) {
+			return new Result(cmd, MSG_WARNING_CLASH, true, putInHashMap(KEY_EVENTS, eventsList));
+		}
+		
 		return new Result(cmd, true, putInHashMap(KEY_EVENTS, eventsList));
 	}
 	
@@ -378,6 +411,7 @@ public class Calendar {
 	/***** UPDATE COMMAND EXECUTION ******/
 
 	public Result updateEvent(int idx, ArrayList<String> fields, ArrayList<String> newValues, boolean isSeries) {
+		boolean hasClash = false;
 		ArrayList<CalendarObject> eventsToUpdate = new ArrayList<CalendarObject>();
 		
 		int arrayListIndex = getArrayListIndexOfEvent(idx);
@@ -387,6 +421,9 @@ public class Calendar {
 		
 		for (int i = 0; i < fields.size(); i++) {
 			eventToUpdate.update(fields.get(i), newValues.get(i));
+			if (!hasClash && hasChangedTime(fields.get(i)) && hasClash(eventToUpdate)) {
+				hasClash = true;
+			}
 		}
 		
 		if(isSeries){
@@ -398,6 +435,9 @@ public class Calendar {
 					eventsToUpdate.add(copyEvent(currEvent));
 					for (int j = 0; j < fields.size(); j++) {
 						currEvent.update(fields.get(j), newValues.get(j));
+						if (!hasClash && hasChangedTime(fields.get(i)) && hasClash(currEvent)) {
+							hasClash = true;
+						}
 					}
 
 				}
@@ -418,6 +458,10 @@ public class Calendar {
 	
 		String name = eventToUpdate.getName();
 		String cmd = String.format(CMD_UPDATE_EVENT, name);
+		
+		if (hasClash) {
+			return new Result(cmd, MSG_WARNING_CLASH, true, putInHashMap(KEY_EVENTS, eventsList));
+		}
 
 		return new Result(cmd, true, putInHashMap(KEY_EVENTS, eventsList));
 	}
@@ -1163,5 +1207,20 @@ public class Calendar {
 		for(Task t: tasks){
 			tasksList.add(t);
 		}
+	}
+	
+	private boolean hasClash(Event event) {
+		for (int i = 0; i < eventsList.size(); i++) {
+			Event currEvent = (Event) eventsList.get(i);
+			if (!event.equals(currEvent) && event.clashesWith(currEvent)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	private boolean hasChangedTime(String field) {
+		field = field.trim();
+		return (field.equals(FIELD_START_DATE) || field.equals(FIELD_START_TIME) || field.equals(FIELD_END_DATE) || field.equals(FIELD_END_TIME));
 	}
 }
