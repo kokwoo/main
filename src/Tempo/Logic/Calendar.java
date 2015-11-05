@@ -5,9 +5,15 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-import Tempo.CalendarObjects.*;
-import Tempo.Commands.*;
-import Tempo.Storage.*;
+import Tempo.CalendarObjects.CalendarObject;
+import Tempo.CalendarObjects.Event;
+import Tempo.CalendarObjects.FloatingTask;
+import Tempo.CalendarObjects.Task;
+import Tempo.Commands.Command;
+import Tempo.Commands.Result;
+//import Tempo.Commands.UndoRemove;
+import Tempo.Storage.CalendarExporter;
+import Tempo.Storage.CalendarImporter;
 
 public class Calendar {
 
@@ -36,7 +42,6 @@ public class Calendar {
 	private static final String CMD_DONE_TASK = "done task %1$s";
 	private static final String CMD_DONE_FLOATING = "done floating task %1$s";
 	private static final String CMD_UNDO = "undo ";
-	private static final String CMD_INVALID_UNDO = "invalid undo";
 	private static final String CMD_SEARCH = "search %1$s";
 
 	private static final String KEY_EVENTS = "events";
@@ -54,13 +59,7 @@ public class Calendar {
 	private static final int INDEX_INVALID = -1;
 
 	private String _fileName;
-
-	private int prevModIndex = INDEX_INVALID;
-	private Event prevModEvent = null;
-	private Task prevModTask = null;
-	private FloatingTask prevModFloatingTask = null;
-	private String prevCommand = CMD_INVALID_UNDO;
-
+	
 	private ArrayList<CalendarObject> eventsList;
 	private ArrayList<CalendarObject> tasksList;
 	private ArrayList<CalendarObject> floatingTasksList;
@@ -99,9 +98,8 @@ public class Calendar {
 		indexStore.addEvent(newEventIndex, newEvent);
 		sortEvents();
 		exportToFile();
-		
-		Command newUndo = (Command) new UndoAdd(newEventIndex, true, false, false);
-		history.add(newUndo);
+
+		//savePrevCmd(newEventIndex, newEvent, null, null, CMD_ADD);
 
 		String cmd = String.format(CMD_ADD_EVENT, name);
 
@@ -139,9 +137,6 @@ public class Calendar {
 
 		sortEvents();
 		exportToFile();
-		
-		Command newUndo = (Command) new UndoAdd(newEventIndex, true, false, true);
-		history.add(newUndo);
 
 		String cmd = String.format(CMD_ADD_RECURR_EVENT, name);
 		return new Result(cmd, true, putInHashMap(KEY_EVENTS, eventsList));
@@ -174,8 +169,7 @@ public class Calendar {
 		sortTasks();
 		exportToFile();
 
-		Command newUndo = (Command) new UndoAdd(newTaskIndex, false, true, false);
-		history.add(newUndo);
+		//savePrevCmd(newTaskIndex, null, newTask, null, CMD_ADD);
 
 		String cmd = String.format(CMD_ADD_TASK, name);
 		return new Result(cmd, true, putInHashMap(KEY_TASKS, tasksList));
@@ -212,9 +206,6 @@ public class Calendar {
 		sortTasks();
 		exportToFile();
 		
-		Command newUndo = (Command) new UndoAdd(newTaskIndex, false, true, true);
-		history.add(newUndo);
-		
 		String cmd = String.format(CMD_ADD_RECURR_TASK, name);
 		return new Result(cmd, true, putInHashMap(KEY_TASKS, tasksList));
 	}
@@ -245,9 +236,8 @@ public class Calendar {
 		floatingTasksList.add(newFloatingTask);
 		exportToFile();
 
-		Command newUndo = (Command) new UndoAdd(newTaskIndex, false, false, false);
-		history.add(newUndo);
-		
+		//savePrevCmd(newTaskIndex, null, null, newFloatingTask, CMD_ADD);
+
 		String cmd = String.format(CMD_ADD_FLOATING, name);
 		return new Result(cmd, true, putInHashMap(KEY_FLOATING, floatingTasksList));
 	}
@@ -300,28 +290,25 @@ public class Calendar {
 		Command newUndo;
 		
 		if (isSeries) {
-			newUndo = (Command) new UndoRemove(eventsToRemove, true);
+			//newUndo = (Command) new UndoRemove(eventsToRemove, true);
 		} else {
 			Event event = (Event) eventsToRemove.get(0);
-			newUndo = (Command) new UndoRemove(event);
+			//newUndo = (Command) new UndoRemove(event);
 		}
 		
-		history.add(newUndo);
+		//history.add(newUndo);
 
 		String cmd = String.format(CMD_REMOVE_EVENT, eventName);
 		return new Result(cmd, true, putInHashMap(KEY_EVENTS, eventsList));
 	}
 
-	public Result removeTask(int idx, boolean isSeries) {
-		ArrayList<CalendarObject> tasksToRemove = new ArrayList<CalendarObject>();
-
+	public Result removeTask(int idx, boolean removeSeries) {
 		String taskName = new String();
 		int seriesIndex = -1;
 		
 		for (int i = 0; i < tasksList.size(); i++) {
-			Task currTask = (Task) tasksList.get(i);
+			Task currTask = (Task)tasksList.get(i);
 			if (currTask.getIndex() == idx) {
-				tasksToRemove.add(currTask);
 				//savePrevCmd(idx, null, tasksList.get(i), null, CMD_REMOVE);
 				seriesIndex = currTask.getSeriesIndex();
 				taskName = currTask.getName();
@@ -331,11 +318,10 @@ public class Calendar {
 			}
 		}
 		
-		if(isSeries){
+		if(removeSeries){
 			for(int i = 0; i < tasksList.size(); i++){
-				Task currTask = (Task) tasksList.get(i);
+				Task currTask = (Task)tasksList.get(i);
 				if(currTask.getSeriesIndex() == seriesIndex){
-					tasksToRemove.add(currTask);
 					indexStore.removeEvent(currTask.getIndex());
 					tasksList.remove(i);
 				}
@@ -343,30 +329,17 @@ public class Calendar {
 		}
 		
 		exportToFile();
-		
-		Command newUndo;
-		
-		if (isSeries) {
-			newUndo = (Command) new UndoRemove(tasksToRemove, true);
-		} else {
-			Task task = (Task) tasksToRemove.get(0);
-			newUndo = (Command) new UndoRemove(task);
-		}
-		
-		history.add(newUndo);
 
 		String cmd = String.format(CMD_REMOVE_TASK, taskName);
 		return new Result(cmd, true, putInHashMap(KEY_TASKS, tasksList));
 	}
 
-	public Result removeFloatingTask(int idx, boolean isSeries) {
-		FloatingTask taskToRemove = null;
-		
+	public Result removeFloatingTask(int idx, boolean removeSeries) {
 		String taskName = new String();
 		for (int i = 0; i < floatingTasksList.size(); i++) {
 			FloatingTask currFloating = (FloatingTask)floatingTasksList.get(i);
 			if (currFloating.getIndex() == idx) {
-				taskToRemove = currFloating;
+				//savePrevCmd(idx, null, null, floatingTasksList.get(i), CMD_REMOVE);
 				taskName = currFloating.getName();
 				indexStore.removeTask(currFloating.getIndex());
 				floatingTasksList.remove(i);
@@ -374,29 +347,42 @@ public class Calendar {
 			}
 		}
 		exportToFile();
-		
-		Command newUndo = (Command) new UndoRemove(taskToRemove);
-		history.add(newUndo);
-		
+
 		String cmd = String.format(CMD_REMOVE_FLOATING, taskName);
 		return new Result(cmd, true, putInHashMap(KEY_FLOATING, tasksList));
 	}
 
 	/***** UPDATE COMMAND EXECUTION ******/
 
-	public Result updateEvent(int idx, ArrayList<String> fields, ArrayList<String> newValues) {
+	public Result updateEvent(int idx, ArrayList<String> fields, ArrayList<String> newValues, boolean isSeries) {
+		ArrayList<CalendarObject> eventsToUpdate = new ArrayList<CalendarObject>();
+		
 		int arrayListIndex = getArrayListIndexOfEvent(idx);
 		Event eventToUpdate = (Event) eventsList.get(arrayListIndex);
-		Event originalEvent = copyEvent(eventToUpdate);
-
-		//savePrevCmd(idx, originalEvent, null, null, CMD_UPDATE);
-
+		int seriesIndex = eventToUpdate.getSeriesIndex();
+		Event oldEvent = copyEvent(eventToUpdate);
+		
 		for (int i = 0; i < fields.size(); i++) {
 			eventToUpdate.update(fields.get(i), newValues.get(i));
 		}
+		
+		if(isSeries){
+			eventsToUpdate.add(oldEvent);
+			
+			for(int i = 0; i < eventsList.size(); i++){
+				Event currEvent = (Event) eventsList.get(i);
+				if(currEvent.getSeriesIndex() == seriesIndex){
+					eventsToUpdate.add(copyEvent(currEvent));
+					for (int j = 0; j < fields.size(); j++) {
+						currEvent.update(fields.get(j), newValues.get(j));
+					}
 
+				}
+			}
+		}
+		
 		exportToFile();
-
+		
 		String name = eventToUpdate.getName();
 		String cmd = String.format(CMD_UPDATE_EVENT, name);
 
@@ -412,16 +398,33 @@ public class Calendar {
 		return new Event(idx, seriesId, eventName, startDateTime, endDateTime);
 	}
 
-	public Result updateTask(int idx, ArrayList<String> fields, ArrayList<String> newValues) {
+	public Result updateTask(int idx, ArrayList<String> fields, ArrayList<String> newValues, boolean isSeries) {
+		ArrayList<CalendarObject> tasksToUpdate = new ArrayList<CalendarObject>();
+		
 		int arrayListIndex = getArrayListIndexOfTask(idx);
 		Task taskToUpdate = (Task) tasksList.get(arrayListIndex);
-		Task originalTask = copyTask(taskToUpdate);
-
-		//savePrevCmd(idx, null, originalTask, null, CMD_UPDATE);
+		int seriesIndex = taskToUpdate.getSeriesIndex();
+		Task oldTask = copyTask(taskToUpdate);
 
 		for (int i = 0; i < fields.size(); i++) {
 			taskToUpdate.update(fields.get(i), newValues.get(i));
+		}		
+		
+		if(isSeries){
+			tasksToUpdate.add(oldTask);
+			
+			for(int i = 0; i < tasksList.size(); i++){
+				Task currTask = (Task) tasksList.get(i);
+				if(currTask.getSeriesIndex() == seriesIndex){
+					tasksToUpdate.add(copyTask(currTask));
+					for (int j = 0; j < fields.size(); j++) {
+						currTask.update(fields.get(j), newValues.get(j));
+					}
+
+				}
+			}
 		}
+
 		exportToFile();
 
 		String name = taskToUpdate.getName();
@@ -439,7 +442,7 @@ public class Calendar {
 		return new Task(idx, seriesIdx, taskName, taskDoneStatus, dueDate);
 	}
 
-	public Result updateFloatingTask(int idx, ArrayList<String> fields, ArrayList<String> newValues) {
+	public Result updateFloatingTask(int idx, ArrayList<String> fields, ArrayList<String> newValues, boolean isSeries) {
 
 		int arrayListIndex = getArrayListIndexOfFloatingTask(idx);
 		FloatingTask taskToUpdate = (FloatingTask) floatingTasksList.get(arrayListIndex);
@@ -480,11 +483,11 @@ public class Calendar {
 		String taskName = taskToMark.getName();
 
 		if (taskToMark.isDone()) {
-			//disableUndo();
 			return new Result(CMD_DONE_TASK, false, null);
 		} else {
-			//savePrevCmd(taskToMark.getIndex(), null, originalTask, null, CMD_DONE);
 			taskToMark.markAsDone();
+			Command newUndo = (Command) new UndoDone(idx, false);
+			history.add(newUndo);
 			exportToFile();
 			String cmd = String.format(CMD_DONE_TASK, taskName);
 			return new Result(cmd, true, putInHashMap(KEY_TASKS, tasksList));
@@ -499,11 +502,11 @@ public class Calendar {
 		String taskName = taskToMark.getName();
 
 		if (taskToMark.isDone()) {
-			//disableUndo();
 			return new Result(CMD_DONE_FLOATING, false, null);
 		} else {
-			//savePrevCmd(taskToMark.getIndex(), null, null, originalTask, CMD_DONE);
 			taskToMark.markAsDone();
+			Command newUndo = (Command) new UndoDone(idx, true);
+			history.add(newUndo);
 			exportToFile();
 			String cmd = String.format(CMD_DONE_FLOATING, taskName);
 			return new Result(cmd, true, putInHashMap(KEY_FLOATING, floatingTasksList));
@@ -555,6 +558,9 @@ public class Calendar {
 	/***** UNDO COMMAND EXECUTION ******/
 
 	public Result undo() {
+		if (history.isEmpty()) {
+			return new Result(CMD_UNDO, false, null);
+		}
 		Result result = history.pop().execute();
 		exportToFile();
 		return result;
