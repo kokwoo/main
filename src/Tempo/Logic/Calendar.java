@@ -9,7 +9,9 @@ import Tempo.CalendarObjects.CalendarObject;
 import Tempo.CalendarObjects.Event;
 import Tempo.CalendarObjects.FloatingTask;
 import Tempo.CalendarObjects.Task;
+import Tempo.Commands.Command;
 import Tempo.Commands.Result;
+import Tempo.Commands.UndoRemove;
 import Tempo.Storage.CalendarExporter;
 import Tempo.Storage.CalendarImporter;
 
@@ -19,6 +21,8 @@ public class Calendar {
 	private static IndexStore indexStore;
 	private static CalendarImporter importer;
 	private static CalendarExporter exporter;
+	
+	private static Stack<Command> history;
 
 	private static final String CMD_ADD = "add";
 	private static final String CMD_ADD_EVENT = "add event %1$s";
@@ -74,6 +78,7 @@ public class Calendar {
 		indexStore = IndexStore.getInstance();
 		importer = CalendarImporter.getInstance();
 		exporter = CalendarExporter.getInstance();
+		history = new Stack<Command>();
 	}
 
 	public static Calendar getInstance() {
@@ -91,49 +96,6 @@ public class Calendar {
 
 	/***** ADD COMMAND EXECUTION ******/
 
-	public Result addEvent(Event newEvent) {
-		eventsList.add(newEvent);
-		indexStore.addEvent(newEvent.getIndex(), newEvent);
-		sortEvents();
-
-		String name = newEvent.getName();
-		String cmd = String.format(CMD_ADD_EVENT, name);
-
-		return new Result(cmd, true, putInHashMap(KEY_EVENTS, eventsList));
-	}
-	
-	public void sortEvents(){
-		ArrayList<Event> events = new ArrayList<Event>();
-		
-		for(CalendarObject o: eventsList){
-			Event currEvent = (Event)o;
-			events.add(currEvent);
-		}
-		
-		Collections.sort(events);
-		eventsList.clear();
-		
-		for(Event e: events){
-			eventsList.add(e);
-		}
-	}
-	
-	public void sortTasks(){
-		ArrayList<Task> tasks = new ArrayList<Task>();
-		
-		for(CalendarObject o: tasksList){
-			Task currTask = (Task)o;
-			tasks.add(currTask);
-		}
-		
-		Collections.sort(tasks);
-		tasksList.clear();
-		
-		for(Task t: tasks){
-			tasksList.add(t);
-		}
-	}
-
 	public Result addEvent(String name, String start, String end) {
 		int newEventIndex = indexStore.getNewId();
 		int newSeriesIndex = indexStore.getNewSeriesId();
@@ -146,6 +108,18 @@ public class Calendar {
 
 		//savePrevCmd(newEventIndex, newEvent, null, null, CMD_ADD);
 
+		String cmd = String.format(CMD_ADD_EVENT, name);
+
+		return new Result(cmd, true, putInHashMap(KEY_EVENTS, eventsList));
+	}
+	
+
+	public Result addBackEvent(Event newEvent) {
+		eventsList.add(newEvent);
+		indexStore.addEvent(newEvent.getIndex(), newEvent);
+		sortEvents();
+		
+		String name = newEvent.getName();
 		String cmd = String.format(CMD_ADD_EVENT, name);
 
 		return new Result(cmd, true, putInHashMap(KEY_EVENTS, eventsList));
@@ -173,18 +147,24 @@ public class Calendar {
 
 		String cmd = String.format(CMD_ADD_RECURR_EVENT, name);
 		return new Result(cmd, true, putInHashMap(KEY_EVENTS, eventsList));
-		// TODO: UNDO METHOD
 	}
+	
+	public Result addBackRecurrEvent(ArrayList<CalendarObject> events) {
+		String name = new String();
+		
+		for (int i = 0; i < events.size(); i++) {
+			Event newEvent = (Event) events.get(i);
+			int index = newEvent.getIndex();
+			eventsList.add(newEvent);
+			indexStore.addEvent(index, newEvent);
+			name = newEvent.getName();
+		}
 
-	public Result addTask(Task newTask) {
-		tasksList.add(newTask);
-		indexStore.addTask(newTask.getIndex(), newTask);
-		sortTasks();
+		sortEvents();
+		exportToFile();
 
-		String name = newTask.getName();
-		String cmd = String.format(CMD_ADD_TASK, name);
-
-		return new Result(cmd, true, putInHashMap(KEY_TASKS, tasksList));
+		String cmd = String.format(CMD_ADD_RECURR_EVENT, name);
+		return new Result(cmd, true, putInHashMap(KEY_EVENTS, eventsList));
 	}
 
 	public Result addTask(String name, String dueDate) {
@@ -199,6 +179,17 @@ public class Calendar {
 		//savePrevCmd(newTaskIndex, null, newTask, null, CMD_ADD);
 
 		String cmd = String.format(CMD_ADD_TASK, name);
+		return new Result(cmd, true, putInHashMap(KEY_TASKS, tasksList));
+	}
+	
+	public Result addBackTask(Task newTask) {
+		tasksList.add(newTask);
+		indexStore.addTask(newTask.getIndex(), newTask);
+		sortTasks();
+
+		String name = newTask.getName();
+		String cmd = String.format(CMD_ADD_TASK, name);
+
 		return new Result(cmd, true, putInHashMap(KEY_TASKS, tasksList));
 	}
 	
@@ -224,19 +215,24 @@ public class Calendar {
 		
 		String cmd = String.format(CMD_ADD_RECURR_TASK, name);
 		return new Result(cmd, true, putInHashMap(KEY_TASKS, tasksList));
-
-
-		// TODO: UNDO METHOD
 	}
+	
+	public Result addBackRecurrTask(ArrayList<CalendarObject> tasks) {
+		String name = new String();
+		
+		for (int i = 0; i < tasks.size(); i++) {
+			Task newTask = (Task) tasks.get(i);
+			int index = newTask.getIndex();
+			tasksList.add(newTask);
+			indexStore.addTask(index, newTask);
+			name = newTask.getName();
+		}
 
-	public Result addFloatingTask(FloatingTask newTask) {
-		floatingTasksList.add(newTask);
-		indexStore.addTask(newTask.getIndex(), newTask);
-
-		String name = newTask.getName();
-		String cmd = String.format(CMD_ADD_FLOATING, name);
-
-		return new Result(cmd, true, putInHashMap(KEY_FLOATING, floatingTasksList));
+		sortTasks();
+		exportToFile();
+		
+		String cmd = String.format(CMD_ADD_RECURR_TASK, name);
+		return new Result(cmd, true, putInHashMap(KEY_TASKS, tasksList));
 	}
 
 	public Result addFloatingTask(String name) {
@@ -252,16 +248,29 @@ public class Calendar {
 		String cmd = String.format(CMD_ADD_FLOATING, name);
 		return new Result(cmd, true, putInHashMap(KEY_FLOATING, floatingTasksList));
 	}
+	
+
+	public Result addBackFloating(FloatingTask newTask) {
+		floatingTasksList.add(newTask);
+		indexStore.addTask(newTask.getIndex(), newTask);
+
+		String name = newTask.getName();
+		String cmd = String.format(CMD_ADD_FLOATING, name);
+
+		return new Result(cmd, true, putInHashMap(KEY_FLOATING, floatingTasksList));
+	}
 
 	/***** REMOVE COMMAND EXECUTION ******/
 
-	public Result removeEvent(int idx, boolean removeSeries) {
+	public Result removeEvent(int idx, boolean isSeries) {
+		ArrayList<CalendarObject> eventsToRemove = new ArrayList<CalendarObject>();
 		String eventName = new String();
 		int seriesIndex = -1;
 		
 		for (int i = 0; i < eventsList.size(); i++) {
 			Event currEvent = (Event)eventsList.get(i);
 			if (currEvent.getIndex() == idx) {
+				eventsToRemove.add(currEvent);
 				//savePrevCmd(idx, eventsList.get(i), null, null, CMD_REMOVE);
 				seriesIndex = currEvent.getSeriesIndex();
 				eventName = currEvent.getName();
@@ -271,16 +280,30 @@ public class Calendar {
 			}
 		}
 		
-		if(removeSeries){
+		System.out.println("isSeries = " + isSeries); // debug
+		
+		if(isSeries){
 			for(int i = 0; i < eventsList.size(); i++){
 				Event currEvent = (Event)eventsList.get(i);
 				if(currEvent.getSeriesIndex() == seriesIndex){
+					eventsToRemove.add(currEvent);
 					indexStore.removeEvent(currEvent.getIndex());
 					eventsList.remove(i);
 				}
 			}
 		}
 		exportToFile();
+		
+		Command newUndo;
+		
+		if (isSeries) {
+			newUndo = (Command) new UndoRemove(eventsToRemove, true);
+		} else {
+			Event event = (Event) eventsToRemove.get(0);
+			newUndo = (Command) new UndoRemove(event);
+		}
+		
+		history.add(newUndo);
 
 		String cmd = String.format(CMD_REMOVE_EVENT, eventName);
 		return new Result(cmd, true, putInHashMap(KEY_EVENTS, eventsList));
@@ -508,6 +531,12 @@ public class Calendar {
 
 	/***** UNDO COMMAND EXECUTION ******/
 
+	public Result undo() {
+		Result result = history.pop().execute();
+		exportToFile();
+		return result;
+	}
+	
 	/*
 	public Result undo() {
 		Result result = executeUndo();
@@ -516,7 +545,9 @@ public class Calendar {
 
 		return result;
 	}
+	*/
 
+	/*
 	private Result executeUndo() {
 		switch (prevCommand) {
 			case CMD_ADD :
@@ -1026,6 +1057,38 @@ public class Calendar {
 			return false;
 		} else {
 			return true;
+		}
+	}
+	
+	public void sortEvents(){
+		ArrayList<Event> events = new ArrayList<Event>();
+		
+		for(CalendarObject o: eventsList){
+			Event currEvent = (Event)o;
+			events.add(currEvent);
+		}
+		
+		Collections.sort(events);
+		eventsList.clear();
+		
+		for(Event e: events){
+			eventsList.add(e);
+		}
+	}
+	
+	public void sortTasks(){
+		ArrayList<Task> tasks = new ArrayList<Task>();
+		
+		for(CalendarObject o: tasksList){
+			Task currTask = (Task)o;
+			tasks.add(currTask);
+		}
+		
+		Collections.sort(tasks);
+		tasksList.clear();
+		
+		for(Task t: tasks){
+			tasksList.add(t);
 		}
 	}
 }
