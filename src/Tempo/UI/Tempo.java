@@ -84,6 +84,11 @@ public class Tempo {
 			if(result.getIsSuccess()){
 				clearAllLists();
 				System.out.println(String.format(SUCCESSFUL_MESSAGE, result.getCommandPerformed()));
+				
+				if(result.hasWarning()){
+					System.out.println(result.getWarning());
+				}
+				
 				HashMap<String, ArrayList<CalendarObject>> results = result.getResults();
 				
 				tasksToday = results.get(KEY_TASKS_TODAY);
