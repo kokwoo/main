@@ -9,7 +9,7 @@ public class RemoveCommand implements Command {
 	private Calendar cal;
 	private IndexStore indexStore;
 	private int idx;
-	private boolean removeSeries;
+	private boolean isSeries;
 	
 	private static final String MSG_INVALID_ID = "Error: Index provided is invalid!";
 	
@@ -17,16 +17,16 @@ public class RemoveCommand implements Command {
 		this.cal = cal;
 		this.indexStore = indexStore;
 		this.idx = idx;
-		this.removeSeries = removeSeries;
+		this.isSeries = removeSeries;
 	}
 	
 	public Result execute(){
 		if (isEvent()) {
-			return cal.removeEvent(idx, removeSeries);
+			return cal.removeEvent(idx, isSeries);
 		} else if (isFloatingTask()) {
-			return cal.removeFloatingTask(idx, removeSeries);
+			return cal.removeFloatingTask(idx, isSeries);
 		} else if (isTask()) {
-			return cal.removeTask(idx, removeSeries);
+			return cal.removeTask(idx, isSeries);
 		} else {
 			return handleInvalidRemove();
 		}
