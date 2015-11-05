@@ -13,23 +13,25 @@ public class UpdateCommand implements Command {
 	private int idx;
 	private ArrayList<String> fields;
 	private ArrayList<String> newValues;
+	private boolean isSeries;
 	
-	public UpdateCommand(Calendar cal, IndexStore indexStore, int idx, ArrayList<String> fields, ArrayList<String> newValues) {
+	public UpdateCommand(Calendar cal, IndexStore indexStore, int idx, ArrayList<String> fields, ArrayList<String> newValues, boolean isSeries) {
 		this.cal = cal;
 		this.indexStore = indexStore;
 		this.idx = idx;
 		this.fields = fields;
 		this.newValues = newValues;
+		this.isSeries = isSeries;
 	}
 	
 	@Override
 	public Result execute() {
 		if (isEvent()) {
-			return cal.updateEvent(idx, fields, newValues);
+			return cal.updateEvent(idx, fields, newValues, isSeries);
 		} else if (isFloatingTask()) {
-			return cal.updateFloatingTask(idx, fields, newValues);
+			return cal.updateFloatingTask(idx, fields, newValues, isSeries);
 		} else if (isTask()){
-			return cal.updateTask(idx, fields, newValues);
+			return cal.updateTask(idx, fields, newValues, isSeries);
 		} else {
 			return handleInvalidUpdate();
 		}

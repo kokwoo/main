@@ -10,19 +10,19 @@ public class UndoRemove implements Command {
 	
 	private static final String CMD = "Undo remove %1$s";
 	
-	protected int prevModIndex;
+	private int prevModIndex;
 	
-	protected Event prevModEvent;
-	protected Task prevModTask;
-	protected FloatingTask prevModFloating;
+	private Event prevModEvent;
+	private Task prevModTask;
+	private FloatingTask prevModFloating;
 	
-	protected ArrayList<CalendarObject> prevModEvents;
-	protected ArrayList<CalendarObject> prevModTasks;
+	private ArrayList<CalendarObject> prevModEvents;
+	private ArrayList<CalendarObject> prevModTasks;
 	
-	protected boolean isEvent = false;
-	protected boolean isTask = false;
-	protected boolean isFloatingTask = false;
-	protected boolean isEventsSeries = false;
+	private boolean isEvent = false;
+	private boolean isTask = false;
+	private boolean isFloatingTask = false;
+	private boolean isEventsSeries = false;
 	
 	public UndoRemove(Event event) {
 		prevModEvent = event;
