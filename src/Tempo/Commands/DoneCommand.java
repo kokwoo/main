@@ -9,27 +9,31 @@ public class DoneCommand implements Command {
 	private Calendar cal;
 	private IndexStore indexStore;
 	private int idx;
+	private boolean done;
 	
 	private static final String MSG_DONE_ERR_NOT_EVENT = "Error: Index provided is not a valid task!";
 
-	public DoneCommand(Calendar cal, IndexStore indexStore, int idx) {
+	public DoneCommand(Calendar cal, IndexStore indexStore, int idx, boolean done) {
 		this.cal = cal;
 		this.indexStore = indexStore;
 		this.idx = idx;
+		this.done = done;
 	}
 	
-	public ArrayList<String> execute() {
+	public Result execute() {
 		if(isTask() || isFloatingTask()){
-			return cal.markTaskAsDone(idx);
+			if(done){
+				return cal.markTaskAsDone(idx);
+			}else{
+				return cal.markTaskAsUndone(idx);
+			}
 		}else{
 			return handleInvalidDone();
 		}
 	}
 	
-	private ArrayList<String> handleInvalidDone() {
-		ArrayList<String> feedback = new ArrayList<String>();
-		feedback.add(MSG_DONE_ERR_NOT_EVENT);
-		return feedback;
+	private Result handleInvalidDone() {
+		return new Result(MSG_DONE_ERR_NOT_EVENT, false, null);
 	}
 	
 	private boolean isFloatingTask(){

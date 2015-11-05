@@ -11,7 +11,7 @@ public class UndoCommand implements Command{
 		this.cal  = cal;
 	}
 
-	public ArrayList<String> execute() {
+	public Result execute() {
 		return cal.undo();
 	}
 	

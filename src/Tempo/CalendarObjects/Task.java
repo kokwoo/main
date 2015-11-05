@@ -3,17 +3,17 @@ package Tempo.CalendarObjects;
 import java.util.*;
 import java.text.*;
 
-public class Task extends FloatingTask implements Comparable<Task>, CalendarObject{
+public class Task extends FloatingTask implements Comparable<Task> {
 	protected Date _dueDate;
 	private static final String DELIMETER = "!!";
 	
-	public Task(int index, String name, String done, String dueDateString){
-		super(index, name, done);
+	public Task(int index, int seriesIndex, String name, String done, String dueDateString){
+		super(index, seriesIndex, name, done);
 		setDueDate(dueDateString);
 	}
 	
-	public Task(int index, String name, String dueDateString){
-		super(index, name);
+	public Task(int index, int seriesIndex, String name, String dueDateString) {
+		super(index, seriesIndex, name);
 		setDueDate(dueDateString);
 	}
 	

@@ -23,7 +23,7 @@ public class UpdateCommand implements Command {
 	}
 	
 	@Override
-	public ArrayList<String> execute() {
+	public Result execute() {
 		if (isEvent()) {
 			return cal.updateEvent(idx, fields, newValues);
 		} else if (isFloatingTask()) {
@@ -35,10 +35,8 @@ public class UpdateCommand implements Command {
 		}
 	}
 	
-	private ArrayList<String> handleInvalidUpdate() {
-		ArrayList<String> feedback = new ArrayList<String>();
-		feedback.add(MSG_INVALID_ID);
-		return feedback;
+	private Result handleInvalidUpdate() {
+		return new Result(MSG_INVALID_ID, false, null);
 	}
 	
 	private boolean isEvent() {
