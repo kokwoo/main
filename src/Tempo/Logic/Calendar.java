@@ -462,6 +462,48 @@ public class Calendar {
 			return new Result(cmd, true, putInHashMap(KEY_FLOATING, floatingTasksList));
 		}
 	}
+	
+	public Result markTaskAsUndone(int idx) {
+		if (isFloatingTask(idx)) {
+			return markFloatingTaskAsDone(idx);
+		}
+
+		int arrayListIndex = getArrayListIndexOfTask(idx);
+		Task taskToMark = (Task) tasksList.get(arrayListIndex);
+		Task originalTask = taskToMark;
+
+		String taskName = taskToMark.getName();
+
+		if (!taskToMark.isDone()) {
+			//disableUndo();
+			return new Result(CMD_DONE_TASK, false, null);
+		} else {
+			//savePrevCmd(taskToMark.getIndex(), null, originalTask, null, CMD_DONE);
+			taskToMark.markAsUndone();
+			exportToFile();
+			String cmd = String.format(CMD_DONE_TASK, taskName);
+			return new Result(cmd, true, putInHashMap(KEY_TASKS, tasksList));
+		}
+	}
+
+	public Result markFloatingTaskAsUndone(int idx) {
+		int arrayListIndex = getArrayListIndexOfFloatingTask(idx);
+		FloatingTask taskToMark = (FloatingTask) floatingTasksList.get(arrayListIndex);
+		FloatingTask originalTask = taskToMark;
+
+		String taskName = taskToMark.getName();
+
+		if (!taskToMark.isDone()) {
+			//disableUndo();
+			return new Result(CMD_DONE_FLOATING, false, null);
+		} else {
+			//savePrevCmd(taskToMark.getIndex(), null, null, originalTask, CMD_DONE);
+			taskToMark.markAsUndone();
+			exportToFile();
+			String cmd = String.format(CMD_DONE_FLOATING, taskName);
+			return new Result(cmd, true, putInHashMap(KEY_FLOATING, floatingTasksList));
+		}
+	}
 
 	/***** UNDO COMMAND EXECUTION ******/
 
