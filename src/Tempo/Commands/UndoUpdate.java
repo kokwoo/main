@@ -7,7 +7,6 @@ import Tempo.Logic.IndexStore;
 
 public class UndoUpdate implements Command {
 	private static Calendar calendar = Calendar.getInstance();
-	private static IndexStore idxStore = IndexStore.getInstance();
 	
 	private static final String CMD_UNDO = "undo <update %1$s %2$s>";
 	private static final String OBJ_EVENT = "event";
@@ -108,10 +107,16 @@ public class UndoUpdate implements Command {
 	
 	private void initialiseNameOfPrevObj() {
 		if (isEvent) {
-			Event event = (Event) idxStore.getEventById(prevModIndex);
+			nameOfPrevObj = prevModEvent.getName();
+		} else if (isTask) {
+			nameOfPrevObj = prevModTask.getName();
+		} else if (isFloatingTask) {
+			nameOfPrevObj = prevModFloating.getName();	
+		} else if (isEventsSeries) {
+			Event event = (Event) prevModEvents.get(0);
 			nameOfPrevObj = event.getName();
 		} else {
-			FloatingTask task = (FloatingTask) idxStore.getTaskById(prevModIndex);
+			Task task = (Task) prevModTasks.get(0);
 			nameOfPrevObj = task.getName();
 		}
 	}

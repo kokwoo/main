@@ -187,6 +187,7 @@ public class Controller {
 	ArrayList<TableView> views;
 	
 	
+	
 	public ComboBox getCurrentSearchBox() {
 		int currTab = getCurrentTab();
 		ComboBox currentBox = inputBoxes.get(currTab);
@@ -202,7 +203,7 @@ public class Controller {
 	private void refresh(Page currPage,String view) {
 		SingleSelectionModel<Tab> selected = tabView.getSelectionModel();
 		selected.select(5);
-		System.out.println("currPage.entries size : \t" + currPage.entries.size());
+	
 		ObservableList<TableEntry> events = FXCollections.observableArrayList(currPage.entries);
 		TableView currentTable = views.get(5);
 		currentTable.setItems(events);		
@@ -211,14 +212,17 @@ public class Controller {
 	}
 	
 	private void refresh(String view) {
-
+		System.out.println("VIEW " + view);
 		SingleSelectionModel<Tab> selected = tabView.getSelectionModel();
 		int currIndex = selected.getSelectedIndex();
 		Page currPage = null;
-		System.out.println("PAGE SEL " + currIndex);
-		if(currIndex == 0) {
+		
+		if(currIndex == 0 ) {
+		
 			currPage = new Page();
 			populateAllPage(currPage);
+			System.out.println(currPage.entries.size());
+			
 		}
 
 		else if (currIndex == 1) {
@@ -250,7 +254,7 @@ public class Controller {
 
 
 
-		System.out.println("tableEvent size " + currPage.tableEvents.size());
+		
 
 		ObservableList<TableEntry> events;
 		if(view.equals("task")) {
@@ -271,8 +275,11 @@ public class Controller {
 			events = FXCollections.observableArrayList(currPage.tableFloatingTasks);
 		}
 		else if(view.equals("all")){
+			
+			System.out.println("CURR PGE " + currPage.entries);
 			System.out.println("displaying all");
 			System.out.println("currPage.entries size : \t" + currPage.entries.size());
+			//System.exit(0);
 			events = FXCollections.observableArrayList(currPage.entries);
 			events = FXCollections.observableArrayList(currPage.entries);
 		}
@@ -326,7 +333,7 @@ public class Controller {
 
 	private void populateUndoneTasks(Page currPage) {
 		// TODO Auto-generated method stub
-		System.out.println("SIZE TODAYS TASK" + Display.getInstance().getMissedTasks());
+		
 		Result CalendarObjects = Display.getInstance().getUndoneFloatingTasks();
 		ArrayList<CalendarObject> todaysTasksCalendarObjects = CalendarObjects.getResults().get("Tasks");
 		ArrayList<FloatingTask> todaysTasks = toFloatingTasks(todaysTasksCalendarObjects);
@@ -343,7 +350,7 @@ public class Controller {
 	
 	private void populateMissedTasks(Page currPage) {
 		// TODO Auto-generated method stub
-		System.out.println("SIZE TODAYS TASK" + Display.getInstance());
+	
 		Result CalendarObjects = Display.getInstance().getMissedTasks();
 		ArrayList<CalendarObject> todaysTasksCalendarObjects = CalendarObjects.getResults().get("Tasks");
 		ArrayList<Task> todaysTasks = toTasks(todaysTasksCalendarObjects);
@@ -357,7 +364,7 @@ public class Controller {
 	
 	private void populateUpCommingTasks(Page currPage) {
 		// TODO Auto-generated method stub
-		System.out.println("SIZE TODAYS TASK" + Display.getInstance().getTasksToday());
+	
 		Result CalendarObjects = Display.getInstance().getUpcomingTasks();
 		ArrayList<CalendarObject> todaysTasksCalendarObjects = CalendarObjects.getResults().get("Tasks");
 		ArrayList<Task> todaysTasks = toTasks(todaysTasksCalendarObjects);
@@ -367,7 +374,7 @@ public class Controller {
 
 	private void populateUpCommingEvents(Page currPage) {
 		// TODO Auto-generated method stub
-		System.out.println("SIZE TODAYS TASK" + Display.getInstance().getTasksToday());
+		
 		Result todaysCalendarObjects = Display.getInstance().getEventsToday();
 		ArrayList<CalendarObject> todaysTasksCalendarObjects = todaysCalendarObjects.getResults().get("Events");
 		ArrayList<Event> upComingTasks = toEvents(todaysTasksCalendarObjects);
@@ -388,7 +395,7 @@ public class Controller {
 	
 	
 	private void populateTodaysTasks(Page currPage) {
-		System.out.println("SIZE TODAYS TASK" + Display.getInstance().getTasksToday());
+		
 		Result todaysCalendarObjects = Display.getInstance().getTasksToday();
 		ArrayList<CalendarObject> todaysTasksCalendarObjects = todaysCalendarObjects.getResults().get("Tasks");
 		ArrayList<Task> todaysTasks = toTasks(todaysTasksCalendarObjects);
@@ -396,7 +403,7 @@ public class Controller {
 	}
 
 	private void populateTodaysEvents(Page currPage) {
-		System.out.println("SIZE TODAYS TASK" + Display.getInstance().getEventsToday().getResults().get("Events").size());
+		
 		Result todaysEventsCalendarObjects = Display.getInstance().getEventsToday();
 		ArrayList<Event> todaysEvents = toEvents(todaysEventsCalendarObjects.getResults().get("Events"));
 		fillEvents(currPage,todaysEvents);
@@ -414,11 +421,16 @@ public class Controller {
 		if(evt.getCode().equals(KeyCode.ENTER)) {
 			currentBox.setValue("");
 			if(userInput.equals("all")) {
+				System.out.println("********************ALLLLLL***********************");
 				SingleSelectionModel<Tab> selected = tabView.getSelectionModel();
+				view = "all";
 				selected.select(0);
-
+				refresh("all");
+				return;
 			}
-			
+			else if(userInput.equals("view all")) {
+				view = "all";
+			}
 			
 			else if(userInput.equals("td")) {
 				SingleSelectionModel<Tab> selected = tabView.getSelectionModel();
@@ -461,13 +473,12 @@ public class Controller {
 				return;
 			}
 			
-			System.out.println("size before : " + tempRH.getCalendar().getEventsList().size());
-
+			
 			System.out.println("USER ENTERED : " + inputBox.getValue().toString());
 			Result userResult = tempRH.processCommand(userInput);
-			System.out.println("preformed " + userResult.getCommandPerformed());
+			
 			if(userResult.getCommandPerformed().contains(("search"))) {
-				System.out.println("SEARCH");
+				
 				processSearch(userResult);
 				return;
 				//System.exit(0);
@@ -475,23 +486,23 @@ public class Controller {
 			refresh(view);
 
 			table.refresh();
-			System.out.println("size after : " + tempRH.getCalendar().getEventsList().size());
+			
 			return;
 		}
 
 		else if(evt.getCode() == KeyCode.KP_LEFT) {
-			System.out.println("left");
+		
 
 		}
 
-		System.out.println("something else");
+		
 
 	
 	
 	}	
 
 	private void processSearch(Result search ) {
-		System.out.println("sze " + search.getResults().get("events").size());
+	
 		Page searchPage = new Page();
 		populateSearchEvents(searchPage,search);
 		populateSearchTasks(searchPage,search);
@@ -505,7 +516,7 @@ public class Controller {
 	private void populateSearchFloatingTask(Page page,Result result) {
 		//ArrayList<Event> userEvents = calendar.getEventsList();
 		ArrayList<CalendarObject> userCalendarObjects = result.getResults().get("floating tasks");
-		System.out.println("userCalenderObjects Size: " + result.getResults().get("floating tasks").size());
+		
 		ArrayList<FloatingTask> userFloatingTasks = toFloatingTasks(userCalendarObjects);
 		for(int i = 0; i < userFloatingTasks.size(); i++) {
 			TableEntry entry = newTableFloatingTaskEntry(userFloatingTasks.get(i));
@@ -518,7 +529,7 @@ public class Controller {
 	private void populateSearchEvents(Page page,Result result) {
 		//ArrayList<Event> userEvents = calendar.getEventsList();
 		ArrayList<CalendarObject> userCalendarObjects = result.getResults().get("events");
-		System.out.println("userCalenderObjects Size: " + result.getResults().get("events").size());
+		
 		ArrayList<Event> userEvents = toEvents(userCalendarObjects);
 		for(int i = 0; i < userEvents.size(); i++) {
 			TableEntry entry = newTableEventEntry(userEvents.get(i));
@@ -531,7 +542,7 @@ public class Controller {
 	private void populateSearchTasks(Page page,Result result) {
 		//ArrayList<Event> userEvents = calendar.getEventsList();
 		ArrayList<CalendarObject> userCalendarObjects = result.getResults().get("tasks");
-		System.out.println("userCalenderObjects Size: " + result.getResults().get("tasks").size());
+	
 		ArrayList<Task> userEvents = toTasks(userCalendarObjects);
 		for(int i = 0; i < userEvents.size(); i++) {
 			TableEntry entry = newTableTaskEntry(userEvents.get(i));
@@ -544,7 +555,7 @@ public class Controller {
 	
 	@FXML 
 	public void handleType(KeyEvent evt) {
-		System.out.println("SOMETHING PRESSED");
+		
 	}
 
 	
@@ -635,10 +646,9 @@ public class Controller {
 
 
 		populateAllPage(allPage);
-		System.out.println("tableEvent size " + allPage.tableEvents.size());
-		ObservableList<TableEntry> events = FXCollections.observableArrayList(allPage.entries);
-		System.out.println("TABLE ENTRY EVENTS SIZE " + events.size());
 
+		ObservableList<TableEntry> events = FXCollections.observableArrayList(allPage.entries);
+		
 		setAttributes();
 
 		table.setItems(events);
@@ -691,7 +701,7 @@ public class Controller {
 	private void populateEvents(Page page) {
 		//ArrayList<Event> userEvents = calendar.getEventsList();
 		ArrayList<CalendarObject> userCalendarObjects = calendar.getEventsList();
-		System.out.println("userCalenderObjects Size: " + calendar.getEventsList().size());
+		
 		ArrayList<Event> userEvents = toEvents(userCalendarObjects);
 		for(int i = 0; i < userEvents.size(); i++) {
 			TableEntry entry = newTableEventEntry(userEvents.get(i));
@@ -705,9 +715,9 @@ public class Controller {
 		ArrayList<CalendarObject> userCalendarObjects = calendar.getTasksList();
 		ArrayList<Task> userTasks = toTasks(userCalendarObjects);
 		//ArrayList<Task> userTasks = calendar.getTasksList();
-		System.out.println("TASK LIST SIZE : "  + userTasks.size());
+		
 		for(int i = 0; i < userTasks.size(); i++) {
-			System.out.println("ADDING "  + userTasks.get(i) + "to tasks" );
+			
 			TableEntry entry = newTableTaskEntry(userTasks.get(i));
 			page.tableTasks.add(entry);
 		}
@@ -715,7 +725,7 @@ public class Controller {
 
 	private TableEntry newTableFloatingTaskEntry(FloatingTask t) {
 		TableEntry entry = new TableEntry(t.getIndex(),t.getName(),Boolean.toString(t.isDone())," "," "," "," ");
-		System.out.println(entry.getDone());
+	
 		return entry;
 	}
 
@@ -734,7 +744,7 @@ public class Controller {
 	//	ArrayList<FloatingTask> userFloatingTasks = calendar.getFloatingTasksList();
 	
 		ArrayList<CalendarObject> userCalendarObjects = calendar.getFloatingTasksList();
-		System.out.println("userCalenderObjects Size: " + calendar.getFloatingTasksList().size());
+
 		ArrayList<FloatingTask> userFloatingTasks = toFloatingTasks(userCalendarObjects);
 		for(int i = 0; i < userFloatingTasks.size(); i++) {
 			System.out.println("ADDING "  + userFloatingTasks.get(i) + "to tasks" );
@@ -748,10 +758,10 @@ public class Controller {
 
 
 	private void coalesce(ArrayList<TableEntry> result, ArrayList<TableEntry> copyOne, ArrayList<TableEntry> copyTwo) {
-		System.out.println("before c : " + result.size());
+		
 		combine(result,copyOne);
 		combine(result,copyTwo);
-		System.out.println("after c " + result.size());
+		
 	}
 
 	private void combine(ArrayList<TableEntry>mergedList,ArrayList<TableEntry>listToCopy) {
