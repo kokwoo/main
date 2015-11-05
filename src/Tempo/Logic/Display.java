@@ -74,6 +74,7 @@ public class Display {
 	private final String NO_UNDONE_FLOATING_TASKS = "You have no task without deadline";
 	private final String DONE_FLOATING_TASKS = "These are the list of tasks without deadline that are done";
 	private final String NO_DONE_FLOATING_TASKS = "You have no task without deadline that are done";
+	private final String EMPTY_STRING = "";
 
 	// create an object of SingleObject
 	private static Display instance = new Display();
@@ -204,6 +205,7 @@ public class Display {
 			upcomingEventsStr.add(NO_UPCOMING_EVENTS);
 		} else {
 			upcomingEventsStr.add(UPCOMING_EVENTS);
+			upcomingEventsStr.add(EMPTY_STRING);
 			upcomingEventsStr = addStrEventToArray(upcomingEventsStr, upcomingEvents);
 		}
 		
@@ -231,6 +233,7 @@ public class Display {
 			eventsTodayStr.add(NO_TODAY_EVENTS);
 		} else {
 			eventsTodayStr.add(TODAY_EVENTS);
+			eventsTodayStr.add(EMPTY_STRING);
 			eventsTodayStr = addStrEventToArray(eventsTodayStr, eventsToday);
 		}
 
@@ -258,6 +261,7 @@ public class Display {
 			pastEventsStr.add(NO_PAST_EVENTS);
 		} else {
 			pastEventsStr.add(PAST_EVENTS);
+			pastEventsStr.add(EMPTY_STRING);
 			pastEventsStr = addStrEventToArray(pastEventsStr, pastEvents);
 		}
 
@@ -295,6 +299,7 @@ public class Display {
 			tasksTodayStr.add(NO_TODAY_TASKS);
 		} else {
 			tasksTodayStr.add(TODAY_TASKS);
+			tasksTodayStr.add(EMPTY_STRING);
 			tasksTodayStr = addStrTasksToArray(tasksTodayStr, tasksToday);
 		}
 
@@ -321,6 +326,7 @@ public class Display {
 			upcomingTasksStr.add(NO_UPCOMING_TASKS);
 		} else {
 			upcomingTasksStr.add(UPCOMING_TASKS);
+			upcomingTasksStr.add(EMPTY_STRING);
 			upcomingTasksStr = addStrTasksToArray(upcomingTasksStr, upcomingTasks);
 		}
 		
@@ -347,6 +353,7 @@ public class Display {
 			missedTasksStr.add(NO_MISSED_TASKS);
 		} else {
 			missedTasksStr.add(MISSED_TASKS);
+			missedTasksStr.add(EMPTY_STRING);
 			missedTasksStr = addStrTasksToArray(missedTasksStr, missedTasks);
 		}
 
@@ -372,6 +379,7 @@ public class Display {
 			undoneTasksStr.add(NO_UNDONE_TASKS);
 		} else {
 			undoneTasksStr.add(UNDONE_TASKS);
+			undoneTasksStr.add(EMPTY_STRING);
 			undoneTasksStr = addStrTasksToArray(undoneTasksStr, undoneTasks);
 		}
 		
@@ -397,6 +405,7 @@ public class Display {
 			doneTasksStr.add(NO_DONE_TASKS);
 		} else {
 			doneTasksStr.add(DONE_TASKS);
+			doneTasksStr.add(EMPTY_STRING);
 			doneTasksStr = addStrTasksToArray(doneTasksStr, doneTasks);
 		}
 		return doneTasksStr;
@@ -433,6 +442,7 @@ public class Display {
 			undoneFTasksStr.add(NO_UNDONE_FLOATING_TASKS);
 		} else {
 			undoneFTasksStr.add(UNDONE_FLOATING_TASKS);
+			undoneFTasksStr.add(EMPTY_STRING);
 			undoneFTasksStr = addStrFTasksToArray(undoneFTasksStr, undoneFloatingTasks);
 		}
 		return undoneFTasksStr;
@@ -457,6 +467,7 @@ public class Display {
 			doneFTasksStr.add(NO_DONE_FLOATING_TASKS);
 		} else {
 			doneFTasksStr.add(DONE_FLOATING_TASKS);
+			doneFTasksStr.add(EMPTY_STRING);
 			doneFTasksStr = addStrFTasksToArray(doneFTasksStr, doneFloatingTasks);
 		}
 		return doneFTasksStr;
@@ -495,8 +506,11 @@ public class Display {
 		
 		 ArrayList<String> eventsStr = new ArrayList<String>();
 		 eventsStr.addAll(getEventsTodayString());
+		 eventsStr.add(EMPTY_STRING);
 		 eventsStr.addAll(getUpcomingEventsString());
+		 eventsStr.add(EMPTY_STRING);
 		 eventsStr.addAll(getPastEventsString());
+		 eventsStr.add(EMPTY_STRING);
 
 		return eventsStr;
 
@@ -505,12 +519,7 @@ public class Display {
 	public Result getTasks() {
 		refresh();
 		
-		 ArrayList<String> tasksStr = new ArrayList<String>();
-		 tasksStr.addAll(getUndoneFloatingTasksString());
-		 tasksStr.addAll(getDoneFloatingTasksString());
-		 tasksStr.addAll(getTasksTodayString());
-		 tasksStr.addAll(getUpcomingTasksString());
-		 tasksStr.addAll(getMissedTasksString());
+		 ArrayList<String> tasksStr = getTasksString();
 		 
 		 String returnString = strArrayToString(tasksStr);
 
@@ -529,10 +538,15 @@ public class Display {
 		
 		 ArrayList<String> tasksStr = new ArrayList<String>();
 		 tasksStr.addAll(getUndoneFloatingTasksString());
+		 tasksStr.add(EMPTY_STRING);
 		 tasksStr.addAll(getDoneFloatingTasksString());
+		 tasksStr.add(EMPTY_STRING);
 		 tasksStr.addAll(getTasksTodayString());
+		 tasksStr.add(EMPTY_STRING);
 		 tasksStr.addAll(getUpcomingTasksString());
+		 tasksStr.add(EMPTY_STRING);
 		 tasksStr.addAll(getMissedTasksString());
+		 tasksStr.add(EMPTY_STRING);
 
 		return tasksStr;
 	}
