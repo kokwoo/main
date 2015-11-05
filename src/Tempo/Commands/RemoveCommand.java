@@ -13,11 +13,11 @@ public class RemoveCommand implements Command {
 	
 	private static final String MSG_INVALID_ID = "Error: Index provided is invalid!";
 	
-	public RemoveCommand(Calendar cal, IndexStore indexStore, int idx, boolean removeSeries) {
+	public RemoveCommand(Calendar cal, IndexStore indexStore, int idx, boolean isSeries) {
 		this.cal = cal;
 		this.indexStore = indexStore;
 		this.idx = idx;
-		this.isSeries = removeSeries;
+		this.isSeries = isSeries;
 	}
 	
 	public Result execute(){
