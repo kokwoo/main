@@ -36,7 +36,8 @@ public class TempoRun extends Application {
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		// TODO Auto-generated method stub
-		String fname = 	"gom";			// getFileFromUser();
+		//String fname = 	"gom";			
+		String fname =  AskForFile.display("Enter a filename", "Welcome to Tempo!");
 		
 		RequestHandler tempRH = RequestHandler.getInstance();
 		System.out.println(tempRH.initialize(fname));
