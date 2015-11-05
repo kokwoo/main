@@ -160,6 +160,26 @@ public class Controller {
 	
 	@FXML
 	TabPane tabView;
+	
+	@FXML
+	TableView searchTable;
+	@FXML
+	ComboBox searchInput;
+	@FXML 
+	TableColumn searchId;
+	@FXML
+	TableColumn searchName;
+	@FXML
+	TableColumn searchDone;
+	@FXML
+	TableColumn searchStartDate;
+	@FXML 
+	TableColumn searchStartTime;
+	@FXML
+	TableColumn searchEndDate;
+	@FXML
+	TableColumn searchEndTime;
+	
 	RequestHandler tempRH;
 	Calendar calendar;
 	String view  = "all";
@@ -179,8 +199,16 @@ public class Controller {
 		return selected.getSelectedIndex();
 	}
 	
-	
-	
+	private void refresh(Page currPage,String view) {
+		SingleSelectionModel<Tab> selected = tabView.getSelectionModel();
+		selected.select(5);
+		System.out.println("currPage.entries size : \t" + currPage.entries.size());
+		ObservableList<TableEntry> events = FXCollections.observableArrayList(currPage.entries);
+		TableView currentTable = views.get(5);
+		currentTable.setItems(events);		
+		currentTable.refresh();
+		
+	}
 	
 	private void refresh(String view) {
 
@@ -215,6 +243,7 @@ public class Controller {
 			populateUndonePage(currPage);
 				
 		}
+		
 		
 		tempRH = RequestHandler.getInstance();
 		calendar = tempRH.getCalendar();
@@ -260,7 +289,7 @@ public class Controller {
 		TableView currentTable = views.get(currIndex);
 		currentTable.setItems(events);		
 		currentTable.refresh();
-		inputBox.setValue("add event do something from 10/10/2015 at 10:00 to 10/11/2015 at 11:00");
+		//inputBox.setValue("add event do something from 10/10/2015 at 10:00 to 10/11/2015 at 11:00");
 	}
 	
 	
@@ -383,6 +412,7 @@ public class Controller {
 		ComboBox currentBox = getCurrentSearchBox();
 		String userInput =  currentBox.getValue().toString();
 		if(evt.getCode().equals(KeyCode.ENTER)) {
+			currentBox.setValue("");
 			if(userInput.equals("all")) {
 				SingleSelectionModel<Tab> selected = tabView.getSelectionModel();
 				selected.select(0);
@@ -434,8 +464,14 @@ public class Controller {
 			System.out.println("size before : " + tempRH.getCalendar().getEventsList().size());
 
 			System.out.println("USER ENTERED : " + inputBox.getValue().toString());
-			tempRH.processCommand(userInput);
-
+			Result userResult = tempRH.processCommand(userInput);
+			System.out.println("preformed " + userResult.getCommandPerformed());
+			if(userResult.getCommandPerformed().contains(("search"))) {
+				System.out.println("SEARCH");
+				processSearch(userResult);
+				return;
+				//System.exit(0);
+			}
 			refresh(view);
 
 			table.refresh();
@@ -454,6 +490,56 @@ public class Controller {
 	
 	}	
 
+	private void processSearch(Result search ) {
+		System.out.println("sze " + search.getResults().get("events").size());
+		Page searchPage = new Page();
+		populateSearchEvents(searchPage,search);
+		populateSearchTasks(searchPage,search);
+		coalesce(searchPage.entries,searchPage.tableEvents,searchPage.tableTasks);
+		combine(searchPage.entries,searchPage.tableFloatingTasks);
+		refresh(searchPage,"all");
+		
+	}
+
+	
+	private void populateSearchFloatingTask(Page page,Result result) {
+		//ArrayList<Event> userEvents = calendar.getEventsList();
+		ArrayList<CalendarObject> userCalendarObjects = result.getResults().get("floating tasks");
+		System.out.println("userCalenderObjects Size: " + result.getResults().get("floating tasks").size());
+		ArrayList<FloatingTask> userFloatingTasks = toFloatingTasks(userCalendarObjects);
+		for(int i = 0; i < userFloatingTasks.size(); i++) {
+			TableEntry entry = newTableFloatingTaskEntry(userFloatingTasks.get(i));
+			page.tableFloatingTasks.add(entry);
+		}
+
+	}
+
+	
+	private void populateSearchEvents(Page page,Result result) {
+		//ArrayList<Event> userEvents = calendar.getEventsList();
+		ArrayList<CalendarObject> userCalendarObjects = result.getResults().get("events");
+		System.out.println("userCalenderObjects Size: " + result.getResults().get("events").size());
+		ArrayList<Event> userEvents = toEvents(userCalendarObjects);
+		for(int i = 0; i < userEvents.size(); i++) {
+			TableEntry entry = newTableEventEntry(userEvents.get(i));
+			page.tableEvents.add(entry);
+		}
+
+	}
+
+	
+	private void populateSearchTasks(Page page,Result result) {
+		//ArrayList<Event> userEvents = calendar.getEventsList();
+		ArrayList<CalendarObject> userCalendarObjects = result.getResults().get("tasks");
+		System.out.println("userCalenderObjects Size: " + result.getResults().get("tasks").size());
+		ArrayList<Task> userEvents = toTasks(userCalendarObjects);
+		for(int i = 0; i < userEvents.size(); i++) {
+			TableEntry entry = newTableTaskEntry(userEvents.get(i));
+			page.tableEvents.add(entry);
+		}
+
+	}
+	
 	
 	
 	@FXML 
@@ -511,6 +597,15 @@ public class Controller {
 		undoneEndTime.setCellValueFactory(new PropertyValueFactory<TableEntry,String>("endDate"));
 		undoneDone.setCellValueFactory(new PropertyValueFactory<TableEntry,String>("done"));
 
+
+		searchId.setCellValueFactory(new PropertyValueFactory<TableEntry,String>("index"));
+		searchName.setCellValueFactory(new PropertyValueFactory<TableEntry,String>("name"));
+		searchStartTime.setCellValueFactory(new PropertyValueFactory<TableEntry,String>("startTime"));
+		searchStartDate.setCellValueFactory(new PropertyValueFactory<TableEntry,String>("startDate"));
+		searchEndTime.setCellValueFactory(new PropertyValueFactory<TableEntry,String>("endTime"));
+		searchEndTime.setCellValueFactory(new PropertyValueFactory<TableEntry,String>("endDate"));
+		searchDone.setCellValueFactory(new PropertyValueFactory<TableEntry,String>("done"));
+
 		
 	}	
 	
@@ -524,13 +619,14 @@ public class Controller {
 		inputBoxes.add(inputBoxUpComing);
 		inputBoxes.add(missedInputBox);
 		inputBoxes.add(undoneInputBox);
+		inputBoxes.add(searchInput);
 		views = new ArrayList<TableView>();
 		views.add(table);
 		views.add(todayTable);
 		views.add(upcomingTable);
 		views.add(missedTable);
 		views.add(undoneTable);
-	
+		views.add(searchTable);
 
 		Page allPage = new Page();
 
@@ -546,7 +642,7 @@ public class Controller {
 		setAttributes();
 
 		table.setItems(events);
-		inputBox.setValue("add event do something from 10/10/2015 at 10:00 to 10/11/2015 at 11:00");
+	//	inputBox.setValue("add event do something from 10/10/2015 at 10:00 to 10/11/2015 at 11:00");
 		table.refresh();
 	}  
 	
@@ -626,7 +722,7 @@ public class Controller {
 	
 
 	private TableEntry newTableTaskEntry(Task t) {
-		TableEntry entry = new TableEntry(t.getIndex(),t.getName()," "," "," ",t.getDueDate()," ");
+		TableEntry entry = new TableEntry(t.getIndex(),t.getName()," "," "," ",t.getDueDateSimplified()," ");
 		return entry;
 	}
 
@@ -704,207 +800,5 @@ public class Controller {
 
 	}
 		
-	/**
 
-
-
-	private void populateTodayPage(Page currPage) {
-		// TODO Auto-generated method stub
-		populateTodaysEvents(currPage);
-		populateTodaysTasks(currPage);
-		coalesce(currPage.entries,currPage.tableEvents,currPage.tableTasks);
-
-
-
-	}
-	private void populateTodaysTasks(Page currPage) {
-		System.out.println("SIZE TODAYS TASK" + DisplayTempo.getInstance().getTasksToday().size());
-		ArrayList<Task> todaysEvents = DisplayTempo.getInstance().getTasksToday();
-		fillTasks(currPage,todaysEvents);
-	}
-
-	private void populateTodaysEvents(Page currPage) {
-		HashMap<String,ArrayList<CalendarObject>> result = Display.getInstance().getEventsToday().getResults();
-		ArrayList<CalendarObject> todaysEvents = result.get("events");
-		for(int i = 0; i <todaysEvents.size(); i++) {
-		Event a = 	(Event) todaysEvents.get(i);
-		}
-		fillEvents(currPage,todaysEvents);
-
-
-	}
-
-	private Page fillEvents(Page page,ArrayList<Event> schedule) {
-
-		for(int i = 0; i < schedule.size(); i++) {
-			TableEntry entry = newTableEventEntry(schedule.get(i));
-			page.tableEvents.add(entry);
-		}
-		return page;
-
-	}
-
-	private Page fillTasks(Page page,ArrayList<Task> schedule) {
-
-		for(int i = 0; i < schedule.size(); i++) {
-			TableEntry entry = newTableTaskEntry(schedule.get(i));
-			page.tableEvents.add(entry);
-		}
-		return page;
-
-	}
-
-
-
-
-	private void populateEvents(Page page) {
-		ArrayList<Event> userEvents = calendar.getEventsList();
-		for(int i = 0; i < userEvents.size(); i++) {
-			TableEntry entry = newTableEventEntry(userEvents.get(i));
-			page.tableEvents.add(entry);
-		}
-
-	}
-
-	private void populateTasks(Page page) {
-
-		ArrayList<Task> userTasks = calendar.getTasksList();
-		System.out.println("TASK LIST SIZE : "  + userTasks.size());
-		for(int i = 0; i < userTasks.size(); i++) {
-			System.out.println("ADDING "  + userTasks.get(i) + "to tasks" );
-			TableEntry entry = newTableTaskEntry(userTasks.get(i));
-			page.tableTasks.add(entry);
-		}
-	}
-
-	private void populateFloatingTasks(Page page) {
-
-		ArrayList<FloatingTask> userFloatingTasks = calendar.getFloatingTasksList();
-		System.out.println("TASK LIST SIZE : "  + userFloatingTasks.size());
-		for(int i = 0; i < userFloatingTasks.size(); i++) {
-			System.out.println("ADDING "  + userFloatingTasks.get(i) + "to tasks" );
-			TableEntry entry = newTableFloatingTaskEntry(userFloatingTasks.get(i));
-			page.tableFloatingTasks.add(entry);
-		}
-	}
-
-
-	
-
-	@FXML 
-	public void handleType(KeyEvent evt) {
-		System.out.println("SOMETHING PRESSED");
-	}
-
-
-	@FXML
-	public void handleEnterPressed(KeyEvent evt){
-		ComboBox currentBox = getCurrentSearchBox();
-		String userInput =  currentBox.getValue().toString();
-		if(evt.getCode().equals(KeyCode.ENTER)) {
-			if(userInput.equals("td")) {
-				SingleSelectionModel<Tab> selected = tabView.getSelectionModel();
-				selected.select(1);
-
-			} 
-			else if (userInput.equals("tsk")) {
-				view = "task";
-				refresh(view);
-				System.exit(0);
-				return;
-			}
-			else if (userInput.equals("evt")) {
-				view = "event";
-				refresh(view);
-				return;
-			}
-			else if(userInput.equals("flt")) {
-				view = "float";
-				refresh(view);
-				return;
-			}
-
-			System.out.println("size before : " + tempRH.getCalendar().getEventsList().size());
-
-			System.out.println("USER ENTERED : " + inputBox.getValue().toString());
-			tempRH.processCommand(userInput);
-
-			refresh(view);
-
-			table.refresh();
-			System.out.println("size after : " + tempRH.getCalendar().getEventsList().size());
-			return;
-		}
-
-		else if(evt.getCode() == KeyCode.KP_LEFT) {
-			System.out.println("left");
-
-		}
-
-		System.out.println("something else");
-
-		/**layout.setMinWidth(800);
-		layout.setPrefWidth(800);
-		layout.setMaxWidth(800);
-		System.out.println("SETTING");
-		display.setSpacing(30.0);
-		   System.out.println("test") ;
-
-		 //  display.setVgap(4);
-		 //  display.setHgap(4);
-		   create(0,0,"a");
-		  // create(0,1);
-		   //create(0,2);
-
-		   //create(1,0);
-		  // create(1,1);
-		   //create(1,2);
-
-		   //create(2,0);
-
-		 
-
-
-
-
-
-
-
-
-
-
-		// create(2,0);
-		// create(2,1);
-		// create(2,2);
-		//create(3,0);
-
-
-
-
-
-	
-	}	
-
-	public void displayEventsToday() {
-
-	}
-
-	private TableEntry newTableFloatingTaskEntry(FloatingTask t) {
-		TableEntry entry = new TableEntry(t._index,t._name,Boolean.toString(t._done)," "," "," "," ");
-		System.out.println(entry.getDone());
-		return entry;
-	}
-
-	public void hello() {
-		System.out.println("hello");
-	}
-
-
-	public void create(int x, int y,String name) {
-
-
-
-	}
-
-	*/
 }

@@ -10,7 +10,7 @@ import com.joestelmach.natty.*;
 import Tempo.Commands.AddCommand;
 import Tempo.Commands.Command;
 import Tempo.Commands.DisplayCommand;
-import Tempo.Commands.DoneCommand;
+import Tempo.Commands.ToggleDoneCommand;
 import Tempo.Commands.ExitCommand;
 import Tempo.Commands.RemoveCommand;
 import Tempo.Commands.SearchCommand;
@@ -362,12 +362,14 @@ public class CommandParser {
 	private Command processRemoveCommand(String argumentString) {
 		int idx;
 		Command command;
-		boolean removeSeries;
-
-		if (argumentString.contains("series")) {
+		boolean removeSeries = false;
+		
+		
+		String all = getFirstWord(argumentString);
+		
+		if(all.equalsIgnoreCase("all")){
 			removeSeries = true;
-		} else {
-			removeSeries = false;
+			argumentString = removeFirstWord(argumentString);
 		}
 
 		idx = getId(argumentString);
@@ -378,12 +380,20 @@ public class CommandParser {
 
 	private Command processUpdateCommand(String arguments) {
 		int idx = getId(getFirstWord(arguments));
+		boolean removeSeries = false;
+		
+		String all = getFirstWord(arguments);
+		
+		if(all.equalsIgnoreCase("all")){
+			removeSeries = true;
+			arguments = removeFirstWord(arguments);
+		}
 
 		ArrayList<String> fields = getFieldsList(arguments);
 		ArrayList<String> newValues = getNewValuesList(arguments);
 
 		if (idx != -1) {
-			Command command = new UpdateCommand(calendar, indexStore, idx, fields, newValues);
+			Command command = new UpdateCommand(calendar, indexStore, idx, fields, newValues, removeSeries);
 			return command;
 		} else {
 			// DISPLAY ERROR MESSAGE
@@ -399,7 +409,7 @@ public class CommandParser {
 		idx = getId(argumentString);
 
 		if (idx != -1) {
-			command = new DoneCommand(calendar, indexStore, idx, true);
+			command = new ToggleDoneCommand(calendar, indexStore, idx, true);
 			return command;
 		} else {
 			// DISPLAY ERROR MESSAGE (TO-DO)
@@ -414,7 +424,7 @@ public class CommandParser {
 		idx = getId(argumentString);
 
 		if (idx != -1) {
-			command = new DoneCommand(calendar, indexStore, idx, false);
+			command = new ToggleDoneCommand(calendar, indexStore, idx, false);
 			return command;
 		} else {
 			// DISPLAY ERROR MESSAGE (TO-DO)

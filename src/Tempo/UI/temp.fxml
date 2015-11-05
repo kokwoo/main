@@ -109,16 +109,16 @@
          <content>
             <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                <children>
-                  <ComboBox fx:id="undoneInputBox1" editable="true" layoutY="1.0" onKeyPressed="#handleEnterPressed" onKeyTyped="#handleType" prefHeight="45.0" prefWidth="750.0" />
-                  <TableView fx:id="undoneTable1" layoutY="46.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="495.0" prefWidth="750.0">
+                  <ComboBox fx:id="searchInput" editable="true" layoutY="1.0" onKeyPressed="#handleEnterPressed" onKeyTyped="#handleType" prefHeight="45.0" prefWidth="750.0" />
+                  <TableView fx:id="searchTable" layoutY="46.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="495.0" prefWidth="750.0">
                      <columns>
-                        <TableColumn fx:id="undoneId1" prefWidth="46.0" text="ID" />
-                        <TableColumn fx:id="undoneName1" prefWidth="227.0" text="Name" />
-                        <TableColumn fx:id="undoneDone1" prefWidth="64.0" text="Done" />
-                        <TableColumn fx:id="undoneStartTime1" prefWidth="85.0" text="Start Time" />
-                        <TableColumn fx:id="undoneStartDate1" minWidth="0.0" prefWidth="101.0" text="Start Date" />
-                        <TableColumn fx:id="undoneEndDate1" prefWidth="95.0" text="End Date" />
-                        <TableColumn fx:id="undoneEndTime1" prefWidth="131.0" text="End Time" />
+                        <TableColumn fx:id="searchId" prefWidth="46.0" text="ID" />
+                        <TableColumn fx:id="searchName" prefWidth="227.0" text="Name" />
+                        <TableColumn fx:id="searchDone" prefWidth="64.0" text="Done" />
+                        <TableColumn fx:id="searchStartTime" prefWidth="85.0" text="Start Time" />
+                        <TableColumn fx:id="searchStartDate" minWidth="0.0" prefWidth="101.0" text="Start Date" />
+                        <TableColumn fx:id="searchEndDate" prefWidth="95.0" text="End Date" />
+                        <TableColumn fx:id="searchEndTime" prefWidth="131.0" text="End Time" />
                      </columns>
                   </TableView>
                </children>
