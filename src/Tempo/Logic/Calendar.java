@@ -97,6 +97,10 @@ public class Calendar {
 		_fileName = fileName;
 		return exporter.setFileName(_fileName);
 	}
+	
+	public String getFilename(){
+		return _fileName;
+	}
 
 	/***** ADD COMMAND EXECUTION ******/
 
