@@ -6,6 +6,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 
+import Tempo.CalendarObjects.CalendarObject;
 import Tempo.CalendarObjects.Event;
 import Tempo.CalendarObjects.FloatingTask;
 import Tempo.CalendarObjects.Task;
@@ -25,7 +26,7 @@ getDoneFloatingTasks
 getAll
 getEvents
 getTasks
-getSearchResults*/
+*/
 
 /*All my "get" methods will first refresh where it updates all the new changes it will then 
  * create a new ArrayList<String> to store the new changes and return this ArrayList<String>
@@ -36,19 +37,19 @@ public class Display {
 	private Calendar cal = Calendar.getInstance();
 
 	// Global variables
-	private ArrayList<Event> events;
-	private ArrayList<Event> eventsToday;
-	private ArrayList<Event> upcomingEvents;
-	private ArrayList<Event> pastEvents;
-	private ArrayList<Task> tasks;
-	private ArrayList<Task> tasksToday;
-	private ArrayList<Task> upcomingTasks;
-	private ArrayList<Task> missedTasks;
-	private ArrayList<FloatingTask> floatingTasks;
-	private ArrayList<Task> undoneTasks;
-	private ArrayList<FloatingTask> undoneFloatingTasks;
-	private ArrayList<Task> doneTasks;
-	private ArrayList<FloatingTask> doneFloatingTasks;
+	private ArrayList<CalendarObject> events;
+	private ArrayList<CalendarObject> eventsToday;
+	private ArrayList<CalendarObject> upcomingEvents;
+	private ArrayList<CalendarObject> pastEvents;
+	private ArrayList<CalendarObject> tasks;
+	private ArrayList<CalendarObject> tasksToday;
+	private ArrayList<CalendarObject> upcomingTasks;
+	private ArrayList<CalendarObject> missedTasks;
+	private ArrayList<CalendarObject> floatingTasks;
+	private ArrayList<CalendarObject> undoneTasks;
+	private ArrayList<CalendarObject> undoneFloatingTasks;
+	private ArrayList<CalendarObject> doneTasks;
+	private ArrayList<CalendarObject> doneFloatingTasks;
 	// private ArrayList<String> wordFoundLines;
 	private CurrentTime date;
 
@@ -95,19 +96,19 @@ public class Display {
 		floatingTasks = cal.getFloatingTasksList();
 		date = new CurrentTime();
 
-		eventsToday = new ArrayList<Event>();
-		upcomingEvents = new ArrayList<Event>();
-		pastEvents = new ArrayList<Event>();
+		eventsToday = new ArrayList<CalendarObject>();
+		upcomingEvents = new ArrayList<CalendarObject>();
+		pastEvents = new ArrayList<CalendarObject>();
 
-		tasksToday = new ArrayList<Task>();
-		upcomingTasks = new ArrayList<Task>();
-		missedTasks = new ArrayList<Task>();
+		tasksToday = new ArrayList<CalendarObject>();
+		upcomingTasks = new ArrayList<CalendarObject>();
+		missedTasks = new ArrayList<CalendarObject>();
 
-		undoneTasks = new ArrayList<Task>();
-		undoneFloatingTasks = new ArrayList<FloatingTask>();
+		undoneTasks = new ArrayList<CalendarObject>();
+		undoneFloatingTasks = new ArrayList<CalendarObject>();
 
-		doneTasks = new ArrayList<Task>();
-		doneFloatingTasks = new ArrayList<FloatingTask>();
+		doneTasks = new ArrayList<CalendarObject>();
+		doneFloatingTasks = new ArrayList<CalendarObject>();
 		
 	//	System.out.println(events.size());
 	//	System.out.println(cal.getEventsList().get(0).getStartDate());
@@ -126,7 +127,7 @@ public class Display {
 		Date dateCurr = getDateInDateFormat(currentDate);
 	//	System.out.println(currentDate);
 		for (int i = 0; i < events.size(); i++) {
-			Date dateCompare = getDateInDateFormat(events.get(i).getStartDate());
+			Date dateCompare = getDateInDateFormat(((Event) events.get(i)).getStartDate());
 			if (dateCurr.compareTo(dateCompare) == 0) {
 				eventsToday.add(events.get(i));
 			} else if (dateCurr.compareTo(dateCompare) < 0) {
@@ -150,7 +151,7 @@ public class Display {
 
 	private void splitFtasks() {
 		for (int i = 0; i < floatingTasks.size(); i++) {
-			if (!floatingTasks.get(i).isDone()) {
+			if (!((FloatingTask) floatingTasks.get(i)).isDone()) {
 				undoneFloatingTasks.add(floatingTasks.get(i));
 			} else {
 				doneFloatingTasks.add(floatingTasks.get(i));
@@ -160,7 +161,7 @@ public class Display {
 
 	private void splitTasks() {
 		for (int i = 0; i < tasks.size(); i++) {
-			if (!tasks.get(i).isDone()) {
+			if (!((FloatingTask) tasks.get(i)).isDone()) {
 				undoneTasks.add(tasks.get(i));
 			} else {
 				doneTasks.add(tasks.get(i));
@@ -173,7 +174,7 @@ public class Display {
 		Date dateCurr = getDateInDateFormat(currentDate);
 
 		for (int i = 0; i < undoneTasks.size(); i++) {
-			Date dateCompare = getDateInDateFormat(undoneTasks.get(i).getDueDateSimplified());
+			Date dateCompare = getDateInDateFormat(((Task) undoneTasks.get(i)).getDueDateSimplified());
 			if (dateCurr.compareTo(dateCompare) == 0) {
 				tasksToday.add(undoneTasks.get(i));
 			} else if (dateCurr.compareTo(dateCompare) < 0) {
@@ -194,7 +195,7 @@ public class Display {
 //			upcomingEventsStr = addStrEventToArray(upcomingEventsStr, upcomingEvents);
 //		}
 		
-		HashMap<String, ArrayList<FloatingTask>> hm = new HashMap<String, ArrayList<FloatingTask>>();
+		HashMap<String, ArrayList<CalendarObject>> hm = new HashMap<String, ArrayList<CalendarObject>>();
 		hm.put("Events", upcomingEvents);		
 		Result upcomingEvents = new Result("displayUpcomingEvents", true, hm);
 		return upcomingEvents;
@@ -210,7 +211,7 @@ public class Display {
 //			eventsTodayStr = addStrEventToArray(eventsTodayStr, eventsToday);
 //		}
 		
-		HashMap<String, ArrayList<FloatingTask>> hm = new HashMap<String, ArrayList<FloatingTask>>();
+		HashMap<String, ArrayList<CalendarObject>> hm = new HashMap<String, ArrayList<CalendarObject>>();
 		hm.put("Events", eventsToday);		
 		Result eventsToday = new Result("displayEventsToday", true, hm);
 		
@@ -229,7 +230,7 @@ public class Display {
 //			pastEventsStr = addStrEventToArray(pastEventsStr, pastEvents);
 //		}
 		
-		HashMap<String, ArrayList<FloatingTask>> hm = new HashMap<String, ArrayList<FloatingTask>>();
+		HashMap<String, ArrayList<CalendarObject>> hm = new HashMap<String, ArrayList<CalendarObject>>();
 		hm.put("Events", pastEvents);		
 		Result pastEvents = new Result("displayPastEvents", true, hm);
 		
@@ -259,7 +260,7 @@ public class Display {
 //			tasksTodayStr = addStrTasksToArray(tasksTodayStr, tasksToday);
 //		}
 		
-		HashMap<String, ArrayList<FloatingTask>> hm = new HashMap<String, ArrayList<FloatingTask>>();
+		HashMap<String, ArrayList<CalendarObject>> hm = new HashMap<String, ArrayList<CalendarObject>>();
 		hm.put("Tasks", tasksToday);		
 		Result tasksToday = new Result("displayTasksToday", true, hm);
 		
@@ -278,7 +279,7 @@ public class Display {
 //		}
 		
 		
-		HashMap<String, ArrayList<FloatingTask>> hm = new HashMap<String, ArrayList<FloatingTask>>();
+		HashMap<String, ArrayList<CalendarObject>> hm = new HashMap<String, ArrayList<CalendarObject>>();
 		hm.put("Tasks", upcomingTasks);		
 		Result upcomingTasks = new Result("displayUpcomingTasks", true, hm);
 		
@@ -297,7 +298,7 @@ public class Display {
 //		}
 		
 		
-		HashMap<String, ArrayList<FloatingTask>> hm = new HashMap<String, ArrayList<FloatingTask>>();
+		HashMap<String, ArrayList<CalendarObject>> hm = new HashMap<String, ArrayList<CalendarObject>>();
 		hm.put("Tasks", missedTasks);		
 		Result missedTasks = new Result("displayMissedTasks", true, hm);
 		
@@ -315,7 +316,7 @@ public class Display {
 //		}
 		
 		
-		HashMap<String, ArrayList<FloatingTask>> hm = new HashMap<String, ArrayList<FloatingTask>>();
+		HashMap<String, ArrayList<CalendarObject>> hm = new HashMap<String, ArrayList<CalendarObject>>();
 		hm.put("Tasks", undoneTasks);		
 		Result undoneTasks = new Result("displayUndoneTasks", true, hm);	
 		return undoneTasks;
@@ -332,7 +333,7 @@ public class Display {
 //		}
 		
 		
-		HashMap<String, ArrayList<FloatingTask>> hm = new HashMap<String, ArrayList<FloatingTask>>();
+		HashMap<String, ArrayList<CalendarObject>> hm = new HashMap<String, ArrayList<CalendarObject>>();
 		hm.put("Tasks", doneTasks);		
 		Result doneTasks = new Result("displayDoneTasks", true, hm);
 		
@@ -359,7 +360,7 @@ public class Display {
 //			undoneFTasksStr = addStrFTasksToArray(undoneFTasksStr, undoneFloatingTasks);
 //		}
 		
-		HashMap<String, ArrayList<FloatingTask>> hm = new HashMap<String, ArrayList<FloatingTask>>();
+		HashMap<String, ArrayList<CalendarObject>> hm = new HashMap<String, ArrayList<CalendarObject>>();
 		hm.put("Tasks", undoneFloatingTasks);		
 		Result undoneFTasks = new Result("displayUndoneFTasks", true, hm);
 		
@@ -376,7 +377,7 @@ public class Display {
 //			doneFTasksStr = addStrFTasksToArray(doneFTasksStr, doneFloatingTasks);
 //		}
 		
-		HashMap<String, ArrayList<FloatingTask>> hm = new HashMap<String, ArrayList<FloatingTask>>();
+		HashMap<String, ArrayList<CalendarObject>> hm = new HashMap<String, ArrayList<CalendarObject>>();
 		hm.put("Tasks", doneFloatingTasks);		
 		Result doneFTasks = new Result("displayDoneFTasks", true, hm);
 		
@@ -399,10 +400,10 @@ public class Display {
 //		eventsStr.addAll(getUpcomingEvents());
 //		eventsStr.addAll(getPastEvents());
 		
-		HashMap<String, ArrayList<FloatingTask>> hm = new HashMap<String, ArrayList<FloatingTask>>();
-		hm.put("Events", eventsToday);
-		hm.put("Events", upcomingEvents);
-		hm.put("Events", pastEvents);
+		HashMap<String, ArrayList<CalendarObject>> hm = new HashMap<String, ArrayList<CalendarObject>>();
+		hm.put("eventsToday", eventsToday);
+		hm.put("upcomingEvents", upcomingEvents);
+		hm.put("pastEvents", pastEvents);
 		Result events = new Result("displayEvents", true, hm);
 		
 		return events;
@@ -418,11 +419,11 @@ public class Display {
 //		tasksStr.addAll(getUpcomingTasks());
 //		tasksStr.addAll(getMissedTasks());
 		
-		HashMap<String, ArrayList<FloatingTask>> hm = new HashMap<String, ArrayList<FloatingTask>>();
-		hm.put("Tasks", tasksToday);
-		hm.put("Tasks", upcomingTasks);
-		hm.put("Tasks", missedTasks);
-		hm.put("Tasks", doneTasks);
+		HashMap<String, ArrayList<CalendarObject>> hm = new HashMap<String, ArrayList<CalendarObject>>();
+		hm.put("tasksToday", tasksToday);
+		hm.put("upcomingTasks", upcomingTasks);
+		hm.put("missedTasks", missedTasks);
+		hm.put("doneTasks", doneTasks);
 		Result tasks = new Result("displayTasks", true, hm);
 		
 		return tasks;
@@ -435,16 +436,16 @@ public class Display {
 //		all.addAll(getEvents());
 //		all.addAll(getTasks());
 		
-		HashMap<String, ArrayList<FloatingTask>> hm = new HashMap<String, ArrayList<FloatingTask>>();
-		hm.put("Tasks", tasksToday);
-		hm.put("Tasks", upcomingTasks);
-		hm.put("Tasks", missedTasks);	
-		hm.put("Tasks", doneTasks);
-		hm.put("Events", eventsToday);
-		hm.put("Events", upcomingEvents);
-		hm.put("Events", pastEvents);
-		hm.put("FloatingTasks", undoneFloatingTasks);
-		hm.put("FloatingTasks", doneFloatingTasks);
+		HashMap<String, ArrayList<CalendarObject>> hm = new HashMap<String, ArrayList<CalendarObject>>();
+		hm.put("tasksToday", tasksToday);
+		hm.put("upcomingTasks", upcomingTasks);
+		hm.put("missedTasks", missedTasks);	
+		hm.put("doneTasks", doneTasks);
+		hm.put("eventsToday", eventsToday);
+		hm.put("upcomingEvents", upcomingEvents);
+		hm.put("pastEvent", pastEvents);
+		hm.put("undoneFloatingTasks", undoneFloatingTasks);
+		hm.put("doneFloatingTasks", doneFloatingTasks);
 		Result all = new Result("displayAll", true, hm);
 		
 		return all;
@@ -452,9 +453,9 @@ public class Display {
 
 	public Result getToday() {
 		
-		HashMap<String, ArrayList<FloatingTask>> hm = new HashMap<String, ArrayList<FloatingTask>>();
-		hm.put("Tasks", tasksToday);		
-		hm.put("Events", eventsToday);
+		HashMap<String, ArrayList<CalendarObject>> hm = new HashMap<String, ArrayList<CalendarObject>>();
+		hm.put("tasksToday", tasksToday);		
+		hm.put("eventsToday", eventsToday);
 //		hm.put("FloatingTasks", floatingTasks);
 		Result today = new Result("displayToday", true, hm);
 			
