@@ -50,18 +50,14 @@ public class AddCommand implements Command {
 	public Result execute() {
 		if (params.size() == LENGTH_ADD_EVENT_PARAMS) {
 			if(isRecurring){
-				System.out.println("Recurring Event");
 				return addRecurringEvent();
 			}else{
-				System.out.println("Event");
 				return addEvent();
 			}
 		} else if (params.size() == LENGTH_ADD_TASK_PARAMS) {
 			if(isRecurring){
-				System.out.println("Recurring Task");
 				return addRecurringTask();
 			}else{
-				System.out.println("Task");
 				return addTask();
 			}
 		} else {
@@ -72,10 +68,7 @@ public class AddCommand implements Command {
 	private Result addEvent() {
 		String name = params.get(0);
 		
-		System.out.println("Name: " + name);
-		
 		if (!hasValidName(name)) {
-			System.out.println(":(((((");
 			return new Result(String.format(ADD_EVENT, BLANK), false, null);
 		}
 		
