@@ -443,7 +443,7 @@ public class Display {
 		hm.put("doneTasks", doneTasks);
 		hm.put("eventsToday", eventsToday);
 		hm.put("upcomingEvents", upcomingEvents);
-		hm.put("pastEvent", pastEvents);
+		hm.put("pastEvents", pastEvents);
 		hm.put("undoneFloatingTasks", undoneFloatingTasks);
 		hm.put("doneFloatingTasks", doneFloatingTasks);
 		Result all = new Result("displayAll", true, hm);

@@ -105,42 +105,35 @@ public class CommandParser {
 		case COMMAND_REMOVE:
 		case COMMAND_DELETE:
 		case COMMAND_CANCEL:
-			System.out.println("Remove command");
 			return processRemoveCommand(arguments);
 
 		// Update Function
 		case COMMAND_UPDATE:
 		case COMMAND_EDIT:
 		case COMMAND_CHANGE:
-			System.out.println("Update command");
 			return processUpdateCommand(arguments);
 
 		// Mark as Done Function
 		case COMMAND_DONE:
 		case COMMAND_FINISHED:
 		case COMMAND_COMPLETED:
-			System.out.println("Done command");
 			return processDoneCommand(arguments);
 			
 		case COMMAND_UNDONE:
-			System.out.println("Undone command");
 			return processUndoneCommand(arguments);
 
 		// Display Function
 		case COMMAND_VIEW:
 		case COMMAND_DISPLAY:
-			System.out.println("Display command");
 			return processDisplayCommand(arguments);
 
 		// Search Function
 		case COMMAND_SEARCH:
 		case COMMAND_FIND:
-			System.out.println("Search command");
 			return processSearchCommand(arguments);
 
 		// Undo Function
 		case COMMAND_UNDO:
-			System.out.println("Undo command");
 			return processUndoCommand();
 
 		// Display help/manual
@@ -308,10 +301,13 @@ public class CommandParser {
 			}
 		}
 
-		if (startDateTimeString != null && endDateTimeString != null) {
+		if (startDateTime != null && endDateTime != null) {
+			SimpleDateFormat df = new SimpleDateFormat(DATETIME_FORMAT);
+			startDateTimeString = df.format(startDateTime);
+			endDateTimeString = df.format(endDateTime);
 			endDateTimeString = adjustDates(startDateTimeString, endDateTimeString);
 		}
-
+		
 		returnList.add(nameString);
 		returnList.add(startDateTimeString);
 		returnList.add(endDateTimeString);
@@ -489,6 +485,9 @@ public class CommandParser {
 				} else {
 					time = dateGroup.getDates().get(0);
 				}
+				
+				SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
+				dateString = dateFormat.format(date);
 
 				SimpleDateFormat timeFormat = new SimpleDateFormat(TIME_FORMAT);
 				timeString = timeFormat.format(time);
@@ -523,7 +522,6 @@ public class CommandParser {
 			date = dateFormat.parse(dateTimeString);
 		} else {
 			dateGroup = parseDateTimeString(dateTimeString);
-
 			if (dateGroup != null) {
 				date = dateGroup.getDates().get(0);
 			} else {
@@ -641,7 +639,7 @@ public class CommandParser {
 		SimpleDateFormat df = new SimpleDateFormat(DATETIME_FORMAT);
 		Date startDate = null;
 		Date endDate = null;
-
+		
 		try {
 			startDate = df.parse(start);
 			endDate = df.parse(end);
