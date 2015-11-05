@@ -8,7 +8,7 @@ import Tempo.Logic.Calendar;
 public class UndoRemove implements Command {
 	private static Calendar calendar = Calendar.getInstance();
 	
-	private static final String CMD = "Undo add %1$s";
+	private static final String CMD = "Undo remove %1$s";
 	
 	protected int prevModIndex;
 	
