@@ -123,11 +123,17 @@ public class IndexStore {
 	}
 	
 	public void removeEvent(int index) {
+		Event eventToRemove = (Event) events.get(index);
+		int seriesId = eventToRemove.getSeriesIndex();
+		recycledSecId.add(seriesId);
 		events.remove(index);
 		recycledPriId.add(index);
 	}
 	
 	public void removeTask(int index) {
+		Task taskToRemove = (Task) tasks.get(index);
+		int seriesId = taskToRemove.getSeriesIndex();
+		recycledSecId.add(seriesId);
 		tasks.remove(index);
 		recycledPriId.add(index);
 	}
