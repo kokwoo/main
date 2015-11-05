@@ -83,13 +83,19 @@ public class Calendar {
 		return instance;
 	}
 
-	public void createFile(String fileName) {
+	public boolean createFile(String fileName) {
 		_fileName = fileName;
 		File file = new File(_fileName);
 		if (file.exists()) {
 			importFromFile();
 			indexStore.initialiseStore(eventsList, tasksList, floatingTasksList);
 		}
+		return exporter.setFileName(fileName);
+	}
+	
+	public boolean setFilename(String fileName){
+		_fileName = fileName;
+		return exporter.setFileName(_fileName);
 	}
 
 	/***** ADD COMMAND EXECUTION ******/
