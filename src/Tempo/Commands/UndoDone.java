@@ -4,7 +4,16 @@ import Tempo.Logic.Calendar;
 
 public class UndoDone implements Command {
 	private static Calendar cal = Calendar.getInstance();
-	private static final String CMD = "Undo done %1$s";
+	
+	private static final String CMD_UNDO = "undo <%1$s %2$s %3$s>";
+	private static final String CMD_DONE = "done";
+	private static final String CMD_UNDONE = "undone";
+	
+	private static final String OBJ_TASK = "task";
+	private static final String OBJ_FLOATING = "floating task";
+	
+	private String cmdType;
+	private String objType;
 	
 	private int prevModIndex;
 	private boolean isFloating;
@@ -13,6 +22,13 @@ public class UndoDone implements Command {
 	public UndoDone(int prevModIndex, boolean isFloating, boolean isDoneCmd) {
 		this.prevModIndex = prevModIndex;
 		this.isFloating = isFloating;
+		
+		if(isFloating) {
+			objType = OBJ_FLOATING;
+		} else {
+			objType = OBJ_TASK;
+		}
+		
 		this.isDoneCmd = isDoneCmd;
 	}
 	
@@ -20,12 +36,14 @@ public class UndoDone implements Command {
 		Result result;
 		
 		if (isDoneCmd) {
+			cmdType = CMD_DONE;
 			if(isFloating) {
 				result = cal.markFloatingTaskAsUndone(prevModIndex);
 			} else {
 				result = cal.markTaskAsUndone(prevModIndex); 
 			}
 		} else {
+			cmdType = CMD_UNDONE;
 			if (isFloating) {
 				result = cal.markFloatingTaskAsDone(prevModIndex);
 			} else {
@@ -33,15 +51,21 @@ public class UndoDone implements Command {
 			}
 		}
 		
-		String command = result.getCommandPerformed();
-		String name = getLastWord(command);
-		result.setCommand(String.format(CMD, name));
+		String nameOfItem = getName(result.getCommandPerformed());
+		String command = String.format(CMD_UNDO, cmdType, objType, nameOfItem);
+		result.setCommand(command);
+		
+		removeUndoUndoCommand();
 		
 		return result;
 	}
 	
-	private String getLastWord(String text) {
-		String[] params = text.trim().split(" ");
-		return params[params.length-1];
+	private void removeUndoUndoCommand() {
+		cal.removeLastUndo();
+	}
+	
+	private String getName(String feedbackStr) {
+		String[] params = feedbackStr.trim().split(" task ");
+		return params[1].trim();
 	}
 }
