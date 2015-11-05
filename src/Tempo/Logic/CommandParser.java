@@ -47,17 +47,17 @@ public class CommandParser {
 	private static final String COMMAND_HELP = "help";
 
 	private static final String COMMAND_EXIT = "exit";
-	
+
 	private static final String KEY_DAY = "day";
 	private static final String KEY_WEEK = "week";
 	private static final String KEY_MONTH = "month";
 	private static final String KEY_YEAR = "year";
-	
+
 	private static final String KEY_DAILY = "daily";
 	private static final String KEY_WEEKLY = "weekly";
 	private static final String KEY_MONTHLY = "monthly";
 	private static final String KEY_ANNUALLY = "annually";
-		
+
 	private static final String KEY_EVENTS = "events";
 	private static final String KEY_TASKS = "tasks";
 	private static final String KEY_UPCOMING_EVENTS = "upcoming events";
@@ -65,10 +65,9 @@ public class CommandParser {
 	private static final String KEY_MISSED_TASKS = "missed tasks";
 	private static final String KEY_TODAY = "today";
 	private static final String KEY_ALL = "all";
-	
-	
+
 	private static final String DATE_DELIMETER = "/";
-	
+
 	private static final String DATE_FORMAT = "dd/MM/yyyy";
 	private static final String TIME_FORMAT = "HH:mm";
 	private static final String DATETIME_FORMAT = "dd/MM/yyyy/HH:mm";
@@ -94,55 +93,55 @@ public class CommandParser {
 		String arguments = getArguments(commandString);
 		// process add, process update, process remove
 		switch (commandType.toLowerCase()) {
-			// Add Function
-			case COMMAND_ADD :
-			case COMMAND_CREATE :
-			case COMMAND_NEW :
-				return processAddCommand(arguments);
+		// Add Function
+		case COMMAND_ADD:
+		case COMMAND_CREATE:
+		case COMMAND_NEW:
+			return processAddCommand(arguments);
 
-			// Remove Function
-			case COMMAND_REMOVE :
-			case COMMAND_DELETE :
-			case COMMAND_CANCEL :
-				return processRemoveCommand(arguments);
+		// Remove Function
+		case COMMAND_REMOVE:
+		case COMMAND_DELETE:
+		case COMMAND_CANCEL:
+			return processRemoveCommand(arguments);
 
-			// Update Function
-			case COMMAND_UPDATE :
-			case COMMAND_EDIT :
-			case COMMAND_CHANGE :
-				return processUpdateCommand(arguments);
+		// Update Function
+		case COMMAND_UPDATE:
+		case COMMAND_EDIT:
+		case COMMAND_CHANGE:
+			return processUpdateCommand(arguments);
 
-			// Mark as Done Function
-			case COMMAND_DONE :
-			case COMMAND_FINISHED :
-			case COMMAND_COMPLETED :
-				return processDoneCommand(arguments);
+		// Mark as Done Function
+		case COMMAND_DONE:
+		case COMMAND_FINISHED:
+		case COMMAND_COMPLETED:
+			return processDoneCommand(arguments);
 
-			// Display Function
-			case COMMAND_VIEW :
-			case COMMAND_DISPLAY :
-				return processDisplayCommand(arguments);
+		// Display Function
+		case COMMAND_VIEW:
+		case COMMAND_DISPLAY:
+			return processDisplayCommand(arguments);
 
-			// Search Function
-			case COMMAND_SEARCH :
-			case COMMAND_FIND :
-				return processSearchCommand(arguments);
+		// Search Function
+		case COMMAND_SEARCH:
+		case COMMAND_FIND:
+			return processSearchCommand(arguments);
 
-			// Undo Function
-			case COMMAND_UNDO :
-				return processUndoCommand();
+		// Undo Function
+		case COMMAND_UNDO:
+			return processUndoCommand();
 
-			// Display help/manual
-			case COMMAND_HELP :
-				return null;
+		// Display help/manual
+		case COMMAND_HELP:
+			return null;
 
-			// Exit command
-			case COMMAND_EXIT :
-				return processExitCommand();
+		// Exit command
+		case COMMAND_EXIT:
+			return processExitCommand();
 
-			// Generate Error Command Message
-			default :
-				return null;
+		// Generate Error Command Message
+		default:
+			return null;
 		}
 	}
 
@@ -168,14 +167,14 @@ public class CommandParser {
 		String recurringDate = null;
 
 		Command command;
-		
-		if(argumentString.contains(" repeat ")){
+
+		if (argumentString.contains(" repeat ")) {
 			String[] split = argumentString.split(" repeat ");
-			String recurringArgsString = split[split.length-1];
+			String recurringArgsString = split[split.length - 1];
 			argumentString = getArgumentString(argumentString);
 			isRecurring = true;
 			recurringArgs = processRecurringArgs(recurringArgsString);
-			
+
 			recurringType = recurringArgs.get(0);
 			recurringDate = recurringArgs.get(1);
 		}
@@ -205,14 +204,15 @@ public class CommandParser {
 		Date endDateTime = null;
 		String startDateTimeString = null;
 		String endDateTimeString = null;
-		
+
 		ArrayList<String> returnList = new ArrayList<String>();
 
 		if (argumentString.contains(" from ")) {
 			nameString = getEventNameFrom(argumentString);
 			argumentString = argumentString.split(nameString)[1].trim();
 
-			// ! Try parsing nameString on Natty: if returns a dateGroup, means there is date within the nameString
+			// ! Try parsing nameString on Natty: if returns a dateGroup, means
+			// there is date within the nameString
 			DateGroup dateGroup = parseDateTimeString(nameString);
 			if (dateGroup != null) {
 				// We are in trouble... :(
@@ -220,7 +220,7 @@ public class CommandParser {
 				SimpleDateFormat formatDate = new SimpleDateFormat(DATE_FORMAT);
 				startDateString = formatDate.format(startDate);
 			}
-			
+
 			if (argumentString.contains(" to ")) {
 				// CASE 1: from and to
 				String[] startEndTime = argumentString.split(" to ");
@@ -237,14 +237,14 @@ public class CommandParser {
 				startDateTimeString = removeFirstWord(argumentString).trim();
 				startDateTime = getDateTime(startDateTimeString);
 			}
-		} else if (argumentString.contains(" to ")){ 
-			//NO "FROM" BUT HAVE "TO"
-			
+		} else if (argumentString.contains(" to ")) {
+			// NO "FROM" BUT HAVE "TO"
+
 			nameString = getEventNameTo(argumentString);
 			argumentString = argumentString.split(nameString)[1].trim();
-			
+
 			DateGroup dateGroup = parseDateTimeString(nameString);
-			
+
 			if (dateGroup != null) {
 				startDateTime = dateGroup.getDates().get(0);
 				endDateTime = getDateTime(argumentString);
@@ -256,9 +256,8 @@ public class CommandParser {
 				startDateTime = null;
 				endDateTime = null;
 			}
-			
-			
-		}else {
+
+		} else {
 			// Try parsing on natty
 			DateGroup dateGroup = parseDateTimeString(argumentString);
 
@@ -272,21 +271,20 @@ public class CommandParser {
 				nameString = argumentString;
 			}
 		}
-		
-		
-		if(startDateString != null){
+
+		if (startDateString != null) {
 			SimpleDateFormat formatTime = new SimpleDateFormat(TIME_FORMAT);
-			if(startDateTime != null){
+			if (startDateTime != null) {
 				startTimeString = formatTime.format(startDateTime);
 				startDateTimeString = startDateString + DATE_DELIMETER + startTimeString;
 			}
-			
-			if(endDateTime != null){
+
+			if (endDateTime != null) {
 				endTimeString = formatTime.format(endDateTime);
 				endDateTimeString = startDateString + DATE_DELIMETER + endTimeString;
 			}
-			
-		}else{
+
+		} else {
 			SimpleDateFormat df = new SimpleDateFormat(DATETIME_FORMAT);
 
 			if (startDateTime != null) {
@@ -297,19 +295,18 @@ public class CommandParser {
 				endDateTimeString = df.format(endDateTime);
 			}
 		}
-		
-		if(startDateTimeString != null && endDateTimeString!= null){
+
+		if (startDateTimeString != null && endDateTimeString != null) {
 			endDateTimeString = adjustDates(startDateTimeString, endDateTimeString);
 		}
-		
+
 		returnList.add(nameString);
 		returnList.add(startDateTimeString);
 		returnList.add(endDateTimeString);
-		
-//		System.out.println("Name: " + nameString);
-//		System.out.println("Start: " + startDateTimeString);
-//		System.out.println("End: " + endDateTimeString);
 
+		// System.out.println("Name: " + nameString);
+		// System.out.println("Start: " + startDateTimeString);
+		// System.out.println("End: " + endDateTimeString);
 
 		return returnList;
 	}
@@ -357,16 +354,18 @@ public class CommandParser {
 	private Command processRemoveCommand(String argumentString) {
 		int idx;
 		Command command;
+		boolean removeSeries;
+
+		if (argumentString.contains("series")) {
+			removeSeries = true;
+		} else {
+			removeSeries = false;
+		}
 
 		idx = getId(argumentString);
 
-		if (idx != -1) {
-			command = new RemoveCommand(calendar, indexStore, idx);
-			return command;
-		} else {
-			// DISPLAY ERROR MESSAGE (TO-DO)
-			return null;
-		}
+		command = new RemoveCommand(calendar, indexStore, idx, removeSeries);
+		return command;
 	}
 
 	private Command processUpdateCommand(String arguments) {
@@ -422,16 +421,16 @@ public class CommandParser {
 
 	private boolean checkArguments(String arguments) {
 		switch (arguments.toLowerCase()) {
-			case KEY_EVENTS:
-			case KEY_TASKS :
-			case KEY_UPCOMING_EVENTS:
-			case KEY_UNDONE_TASKS :
-			case KEY_MISSED_TASKS :
-			case KEY_TODAY:
-			case KEY_ALL:
-				return true;
-			default :
-				return false;
+		case KEY_EVENTS:
+		case KEY_TASKS:
+		case KEY_UPCOMING_EVENTS:
+		case KEY_UNDONE_TASKS:
+		case KEY_MISSED_TASKS:
+		case KEY_TODAY:
+		case KEY_ALL:
+			return true;
+		default:
+			return false;
 		}
 	}
 
@@ -453,7 +452,7 @@ public class CommandParser {
 
 				// splits date according to
 				date = parseDateString(dateString);
-				
+
 				dateGroup = parseDateTimeString(timeString);
 				Date time = null;
 
@@ -529,7 +528,7 @@ public class CommandParser {
 		}
 		return returnString;
 	}
-	
+
 	private String getEventNameTo(String arguments) {
 		String[] parameters = arguments.split(" to ");
 		String returnString = parameters[0];
@@ -539,8 +538,8 @@ public class CommandParser {
 		}
 		return returnString;
 	}
-	
-	private String getArgumentString(String arguments){
+
+	private String getArgumentString(String arguments) {
 		String[] parameters = arguments.split(" repeat ");
 		String returnString = parameters[0];
 
@@ -549,52 +548,52 @@ public class CommandParser {
 		}
 		return returnString;
 	}
-	
-	private ArrayList<String> processRecurringArgs(String recurringArgs){
+
+	private ArrayList<String> processRecurringArgs(String recurringArgs) {
 		String recurringType = null;
 		Date recurringDate = null;
 		String recurringDateStr = null;
-		
+
 		ArrayList<String> args = new ArrayList<String>();
-		
-		if(recurringArgs.contains(" till ")){
+
+		if (recurringArgs.contains(" till ")) {
 			String[] split = recurringArgs.split(" till ");
 			recurringType = split[0];
 			recurringDate = getDateTime(split[1]);
-			
+
 			SimpleDateFormat df = new SimpleDateFormat(DATE_FORMAT);
-			
-			try{
+
+			try {
 				recurringDateStr = df.format(recurringDate);
-			}catch(Exception e){
+			} catch (Exception e) {
 				recurringDateStr = null;
 			}
-		}else{
+		} else {
 			recurringType = recurringArgs;
 		}
-		
-		if(recurringType.contains("every ")){
+
+		if (recurringType.contains("every ")) {
 			recurringType = processRecurringType(recurringType);
 		}
-		
+
 		args.add(recurringType);
 		args.add(recurringDateStr);
-		
+
 		return args;
 	}
-	
-	private String processRecurringType(String recurringType){
-		switch(recurringType.toLowerCase()){
-			case KEY_DAY: 
-				return KEY_DAILY;
-			case KEY_WEEK:
-				return KEY_WEEKLY;
-			case KEY_MONTH:
-				return KEY_MONTHLY;
-			case KEY_YEAR:
-				return KEY_ANNUALLY;
-			default:
-				return null;
+
+	private String processRecurringType(String recurringType) {
+		switch (recurringType.toLowerCase()) {
+		case KEY_DAY:
+			return KEY_DAILY;
+		case KEY_WEEK:
+			return KEY_WEEKLY;
+		case KEY_MONTH:
+			return KEY_MONTHLY;
+		case KEY_YEAR:
+			return KEY_ANNUALLY;
+		default:
+			return null;
 		}
 	}
 
@@ -610,31 +609,31 @@ public class CommandParser {
 		Date dueDate = getDateTime(dueDateString);
 		return dueDate;
 	}
-	
-	private String adjustDates(String start, String end){
+
+	private String adjustDates(String start, String end) {
 		SimpleDateFormat df = new SimpleDateFormat(DATETIME_FORMAT);
 		Date startDate = null;
 		Date endDate = null;
-		
-		try{
+
+		try {
 			startDate = df.parse(start);
 			endDate = df.parse(end);
-		}catch(Exception e){
-			//EXCEPTION HANDLING???
+		} catch (Exception e) {
+			// EXCEPTION HANDLING???
 		}
-		
+
 		long startDateMilli = startDate.getTime();
 		long endDateMilli = endDate.getTime();
-		
-		if(endDateMilli < startDateMilli){
+
+		if (endDateMilli < startDateMilli) {
 			SimpleDateFormat formatDate = new SimpleDateFormat(DATE_FORMAT);
 			SimpleDateFormat formatTime = new SimpleDateFormat(TIME_FORMAT);
-	
+
 			String startDateString = formatDate.format(startDate);
 			String endTimeString = formatTime.format(endDate);
-			
-			end = startDateString + "/" + endTimeString;	
-		}	
+
+			end = startDateString + "/" + endTimeString;
+		}
 		return end;
 	}
 

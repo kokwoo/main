@@ -1,6 +1,6 @@
 package Tempo.CalendarObjects;
 
-public class FloatingTask extends CalendarObject{
+public class FloatingTask implements CalendarObject{
 	protected String name;
 	protected boolean done;
 	protected int index;
@@ -8,15 +8,22 @@ public class FloatingTask extends CalendarObject{
 	
 	private static final String DELIMETER = "!!";
 	
+	public FloatingTask(int index, String name, String done){
+		this.name = name;
+		this.index = index;
+		this.name = name;
+		this.done = false;
+	}
+	
 	public FloatingTask(int index, int seriesIndex, String name){
-		super(name);
+		this.name = name;
 		this.index = index;
 		this.name = name;
 		this.done = false;
 	}
 	
 	public FloatingTask(int index, int seriesIndex, String name, String done) {
-		super(name);
+		this.name = name;
 		this.index = index;
 		this.seriesIndex = seriesIndex;
 		this.done = Boolean.parseBoolean(done);
