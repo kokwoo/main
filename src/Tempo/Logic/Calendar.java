@@ -83,19 +83,23 @@ public class Calendar {
 		return instance;
 	}
 
-	public boolean createFile(String fileName) {
+	public void createFile(String fileName) {
 		_fileName = fileName;
 		File file = new File(_fileName);
 		if (file.exists()) {
 			importFromFile();
 			indexStore.initialiseStore(eventsList, tasksList, floatingTasksList);
 		}
-		return exporter.setFileName(fileName);
 	}
 	
 	public boolean setFilename(String fileName){
 		_fileName = fileName;
-		return exporter.setFileName(_fileName);
+		if(exporter.setFileName(_fileName)){
+			exporter.export();
+			return true;
+		}else{
+			return false;
+		}
 	}
 	
 	public String getFilename(){
@@ -858,7 +862,7 @@ public class Calendar {
 			eventsList = importer.getEventsList();
 			tasksList = importer.getTasksList();
 			floatingTasksList = importer.getFloatingTasksList();
-
+			
 			sortEvents();
 			sortTasks();
 
