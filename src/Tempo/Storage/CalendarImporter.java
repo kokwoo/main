@@ -50,8 +50,8 @@ public class CalendarImporter {
 //				--FLOATING TASKS--
 //				0!!Do homework!!false
 				
-				if(split.length == 4){
-					if(isBoolean(split[2])){
+				if(split.length == 5){
+					if(isBoolean(split[3])){
 						//is a task
 						//tasks
 						int taskIndex = Integer.parseInt(split[0]);
@@ -66,7 +66,7 @@ public class CalendarImporter {
 						Event newEvent  = new Event(eventIndex, eventSeriesIndex, split[2], split[3], split[4]);
 						events.add(newEvent);
 					}
-				}else if (split.length == 3){
+				}else if (split.length == 4){
 					//floating tasks
 					int floatingTaskIndex = Integer.parseInt(split[0]);
 					int floatingTaskSeriesIndex = Integer.parseInt(split[1]);
@@ -74,6 +74,7 @@ public class CalendarImporter {
 					floatingTasks.add(newFloatingTask);
 				}else{
 					//unrecognized
+					
 				}
 			}
 		} catch (IOException e) {
@@ -91,13 +92,7 @@ public class CalendarImporter {
 		}
 	}
 	
-	public ArrayList<CalendarObject> getEventsList(){
-		System.out.println("Events List:");
-		for(CalendarObject o: events){
-			Event e = (Event)o;
-			System.out.println(e);
-		}
-		
+	public ArrayList<CalendarObject> getEventsList(){		
 		return events;
 	}
 	
