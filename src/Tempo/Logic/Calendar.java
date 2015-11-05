@@ -139,6 +139,7 @@ public class Calendar {
 		int newSeriesIndex = indexStore.getNewSeriesId();
 		Event newEvent = new Event(newEventIndex,newSeriesIndex, name, start, end);
 		eventsList.add(newEvent);
+		
 		indexStore.addEvent(newEventIndex, newEvent);
 		sortEvents();
 		exportToFile();
