@@ -5,24 +5,24 @@ import java.util.ArrayList;
 import Tempo.Logic.Calendar;
 import Tempo.Logic.IndexStore;
 
-public class DoneCommand implements Command {
+public class ToggleDoneCommand implements Command {
 	private Calendar cal;
 	private IndexStore indexStore;
 	private int idx;
-	private boolean done;
+	private boolean isDoneCmd;
 	
 	private static final String MSG_DONE_ERR_NOT_EVENT = "Error: Index provided is not a valid task!";
 
-	public DoneCommand(Calendar cal, IndexStore indexStore, int idx, boolean done) {
+	public ToggleDoneCommand(Calendar cal, IndexStore indexStore, int idx, boolean isDoneCmd) {
 		this.cal = cal;
 		this.indexStore = indexStore;
 		this.idx = idx;
-		this.done = done;
+		this.isDoneCmd = isDoneCmd;
 	}
 	
 	public Result execute() {
 		if(isTask() || isFloatingTask()){
-			if(done){
+			if(isDoneCmd){
 				return cal.markTaskAsDone(idx);
 			}else{
 				return cal.markTaskAsUndone(idx);

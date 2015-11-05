@@ -8,19 +8,29 @@ public class UndoDone implements Command {
 	
 	private int prevModIndex;
 	private boolean isFloating;
+	private boolean isDoneCmd = false;
 	
-	public UndoDone(int prevModIndex, boolean isFloating) {
+	public UndoDone(int prevModIndex, boolean isFloating, boolean isDoneCmd) {
 		this.prevModIndex = prevModIndex;
 		this.isFloating = isFloating;
+		this.isDoneCmd = isDoneCmd;
 	}
 	
 	public Result execute() {
 		Result result;
 		
-		if(isFloating) {
-			result = cal.markFloatingTaskAsUndone(prevModIndex);
+		if (isDoneCmd) {
+			if(isFloating) {
+				result = cal.markFloatingTaskAsUndone(prevModIndex);
+			} else {
+				result = cal.markTaskAsUndone(prevModIndex); 
+			}
 		} else {
-			result = cal.markTaskAsUndone(prevModIndex); 
+			if (isFloating) {
+				result = cal.markFloatingTaskAsDone(prevModIndex);
+			} else {
+				result = cal.markTaskAsDone(prevModIndex);
+			}
 		}
 		
 		String command = result.getCommandPerformed();

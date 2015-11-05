@@ -9,9 +9,7 @@ public class UndoRemove implements Command {
 	private static Calendar calendar = Calendar.getInstance();
 	
 	private static final String CMD = "Undo remove %1$s";
-	
-	private int prevModIndex;
-	
+		
 	private Event prevModEvent;
 	private Task prevModTask;
 	private FloatingTask prevModFloating;

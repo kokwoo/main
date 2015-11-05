@@ -383,6 +383,11 @@ public class Calendar {
 		
 		exportToFile();
 		
+		if (isSeries) {
+			Command newUndo = (Command) new UndoUpdate(eventsToUpdate, true);
+			history.add(newUndo);
+		}
+		
 		String name = eventToUpdate.getName();
 		String cmd = String.format(CMD_UPDATE_EVENT, name);
 
@@ -478,7 +483,6 @@ public class Calendar {
 
 		int arrayListIndex = getArrayListIndexOfTask(idx);
 		Task taskToMark = (Task) tasksList.get(arrayListIndex);
-		Task originalTask = taskToMark;
 
 		String taskName = taskToMark.getName();
 
@@ -486,7 +490,7 @@ public class Calendar {
 			return new Result(CMD_DONE_TASK, false, null);
 		} else {
 			taskToMark.markAsDone();
-			Command newUndo = (Command) new UndoDone(idx, false);
+			Command newUndo = (Command) new UndoDone(idx, false, true);
 			history.add(newUndo);
 			exportToFile();
 			String cmd = String.format(CMD_DONE_TASK, taskName);
@@ -497,7 +501,6 @@ public class Calendar {
 	public Result markFloatingTaskAsDone(int idx) {
 		int arrayListIndex = getArrayListIndexOfFloatingTask(idx);
 		FloatingTask taskToMark = (FloatingTask) floatingTasksList.get(arrayListIndex);
-		FloatingTask originalTask = taskToMark;
 
 		String taskName = taskToMark.getName();
 
@@ -505,7 +508,7 @@ public class Calendar {
 			return new Result(CMD_DONE_FLOATING, false, null);
 		} else {
 			taskToMark.markAsDone();
-			Command newUndo = (Command) new UndoDone(idx, true);
+			Command newUndo = (Command) new UndoDone(idx, true, true);
 			history.add(newUndo);
 			exportToFile();
 			String cmd = String.format(CMD_DONE_FLOATING, taskName);
@@ -520,16 +523,15 @@ public class Calendar {
 
 		int arrayListIndex = getArrayListIndexOfTask(idx);
 		Task taskToMark = (Task) tasksList.get(arrayListIndex);
-		Task originalTask = taskToMark;
 
 		String taskName = taskToMark.getName();
 
 		if (!taskToMark.isDone()) {
-			//disableUndo();
 			return new Result(CMD_DONE_TASK, false, null);
 		} else {
-			//savePrevCmd(taskToMark.getIndex(), null, originalTask, null, CMD_DONE);
 			taskToMark.markAsUndone();
+			Command newUndo = (Command) new UndoDone(idx, false, false);
+			history.add(newUndo);
 			exportToFile();
 			String cmd = String.format(CMD_DONE_TASK, taskName);
 			return new Result(cmd, true, putInHashMap(KEY_TASKS, tasksList));
@@ -539,16 +541,15 @@ public class Calendar {
 	public Result markFloatingTaskAsUndone(int idx) {
 		int arrayListIndex = getArrayListIndexOfFloatingTask(idx);
 		FloatingTask taskToMark = (FloatingTask) floatingTasksList.get(arrayListIndex);
-		FloatingTask originalTask = taskToMark;
 
 		String taskName = taskToMark.getName();
 
 		if (!taskToMark.isDone()) {
-			//disableUndo();
 			return new Result(CMD_DONE_FLOATING, false, null);
 		} else {
-			//savePrevCmd(taskToMark.getIndex(), null, null, originalTask, CMD_DONE);
 			taskToMark.markAsUndone();
+			Command newUndo = (Command) new UndoDone(idx, true, false);
+			history.add(newUndo);
 			exportToFile();
 			String cmd = String.format(CMD_DONE_FLOATING, taskName);
 			return new Result(cmd, true, putInHashMap(KEY_FLOATING, floatingTasksList));
