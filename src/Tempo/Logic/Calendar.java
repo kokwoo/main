@@ -36,7 +36,6 @@ public class Calendar {
 	private static final String CMD_DONE_TASK = "done task %1$s";
 	private static final String CMD_DONE_FLOATING = "done floating task %1$s";
 	private static final String CMD_UNDO = "undo ";
-	private static final String CMD_INVALID_UNDO = "invalid undo";
 	private static final String CMD_SEARCH = "search %1$s";
 
 	private static final String KEY_EVENTS = "events";
@@ -54,13 +53,7 @@ public class Calendar {
 	private static final int INDEX_INVALID = -1;
 
 	private String _fileName;
-
-	private int prevModIndex = INDEX_INVALID;
-	private Event prevModEvent = null;
-	private Task prevModTask = null;
-	private FloatingTask prevModFloatingTask = null;
-	private String prevCommand = CMD_INVALID_UNDO;
-
+	
 	private ArrayList<CalendarObject> eventsList;
 	private ArrayList<CalendarObject> tasksList;
 	private ArrayList<CalendarObject> floatingTasksList;
@@ -480,11 +473,11 @@ public class Calendar {
 		String taskName = taskToMark.getName();
 
 		if (taskToMark.isDone()) {
-			//disableUndo();
 			return new Result(CMD_DONE_TASK, false, null);
 		} else {
-			//savePrevCmd(taskToMark.getIndex(), null, originalTask, null, CMD_DONE);
 			taskToMark.markAsDone();
+			Command newUndo = (Command) new UndoDone(idx, false);
+			history.add(newUndo);
 			exportToFile();
 			String cmd = String.format(CMD_DONE_TASK, taskName);
 			return new Result(cmd, true, putInHashMap(KEY_TASKS, tasksList));
@@ -499,11 +492,11 @@ public class Calendar {
 		String taskName = taskToMark.getName();
 
 		if (taskToMark.isDone()) {
-			//disableUndo();
 			return new Result(CMD_DONE_FLOATING, false, null);
 		} else {
-			//savePrevCmd(taskToMark.getIndex(), null, null, originalTask, CMD_DONE);
 			taskToMark.markAsDone();
+			Command newUndo = (Command) new UndoDone(idx, true);
+			history.add(newUndo);
 			exportToFile();
 			String cmd = String.format(CMD_DONE_FLOATING, taskName);
 			return new Result(cmd, true, putInHashMap(KEY_FLOATING, floatingTasksList));
@@ -555,6 +548,9 @@ public class Calendar {
 	/***** UNDO COMMAND EXECUTION ******/
 
 	public Result undo() {
+		if (history.isEmpty()) {
+			return new Result(CMD_UNDO, false, null);
+		}
 		Result result = history.pop().execute();
 		exportToFile();
 		return result;
