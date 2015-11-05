@@ -35,6 +35,8 @@ public class CommandParser {
 	private static final String COMMAND_DONE = "done";
 	private static final String COMMAND_COMPLETED = "completed";
 	private static final String COMMAND_FINISHED = "finished";
+	
+	private static final String COMMAND_UNDONE = "undone";
 
 	private static final String COMMAND_VIEW = "view";
 	private static final String COMMAND_DISPLAY = "display";
@@ -103,32 +105,42 @@ public class CommandParser {
 		case COMMAND_REMOVE:
 		case COMMAND_DELETE:
 		case COMMAND_CANCEL:
+			System.out.println("Remove command");
 			return processRemoveCommand(arguments);
 
 		// Update Function
 		case COMMAND_UPDATE:
 		case COMMAND_EDIT:
 		case COMMAND_CHANGE:
+			System.out.println("Update command");
 			return processUpdateCommand(arguments);
 
 		// Mark as Done Function
 		case COMMAND_DONE:
 		case COMMAND_FINISHED:
 		case COMMAND_COMPLETED:
+			System.out.println("Done command");
 			return processDoneCommand(arguments);
+			
+		case COMMAND_UNDONE:
+			System.out.println("Undone command");
+			return processUndoneCommand(arguments);
 
 		// Display Function
 		case COMMAND_VIEW:
 		case COMMAND_DISPLAY:
+			System.out.println("Display command");
 			return processDisplayCommand(arguments);
 
 		// Search Function
 		case COMMAND_SEARCH:
 		case COMMAND_FIND:
+			System.out.println("Search command");
 			return processSearchCommand(arguments);
 
 		// Undo Function
 		case COMMAND_UNDO:
+			System.out.println("Undo command");
 			return processUndoCommand();
 
 		// Display help/manual
@@ -391,7 +403,22 @@ public class CommandParser {
 		idx = getId(argumentString);
 
 		if (idx != -1) {
-			command = new DoneCommand(calendar, indexStore, idx);
+			command = new DoneCommand(calendar, indexStore, idx, true);
+			return command;
+		} else {
+			// DISPLAY ERROR MESSAGE (TO-DO)
+			return null;
+		}
+	}
+	
+	private Command processUndoneCommand(String argumentString){
+		int idx;
+		Command command;
+		
+		idx = getId(argumentString);
+
+		if (idx != -1) {
+			command = new DoneCommand(calendar, indexStore, idx, false);
 			return command;
 		} else {
 			// DISPLAY ERROR MESSAGE (TO-DO)

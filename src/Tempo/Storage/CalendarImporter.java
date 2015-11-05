@@ -92,6 +92,12 @@ public class CalendarImporter {
 	}
 	
 	public ArrayList<CalendarObject> getEventsList(){
+		System.out.println("Events List:");
+		for(CalendarObject o: events){
+			Event e = (Event)o;
+			System.out.println(e);
+		}
+		
 		return events;
 	}
 	
