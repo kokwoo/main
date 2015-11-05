@@ -11,11 +11,13 @@ public class Result {
 	private String commandPerformed;
 	private String warning;
 	private boolean isSuccess;
+	private boolean isDisplay;
 	private HashMap<String, ArrayList<CalendarObject>> results;
 	
 	public Result(String commandPerformed, boolean isSuccess, HashMap<String, ArrayList<CalendarObject>> result){
 		this.commandPerformed = commandPerformed;
 		this.warning = null;
+		this.isDisplay = false;
 		this.isSuccess = isSuccess;
 		this.results = result;
 	}
@@ -23,6 +25,15 @@ public class Result {
 	public Result(String commandPerformed, String warning, boolean isSuccess, HashMap<String, ArrayList<CalendarObject>> result){
 		this.commandPerformed = commandPerformed;
 		this.warning = warning;
+		this.isDisplay = false;
+		this.isSuccess = isSuccess;
+		this.results = result;
+	}
+	
+	public Result(String commandPerformed, boolean isDisplayResult, boolean isSuccess, HashMap<String, ArrayList<CalendarObject>> result){
+		this.commandPerformed = commandPerformed;
+		this.warning = null;
+		this.isDisplay = isDisplayResult;
 		this.isSuccess = isSuccess;
 		this.results = result;
 	}
@@ -41,6 +52,10 @@ public class Result {
 	
 	public String getWarning(){
 		return warning;
+	}
+	
+	public boolean getIsDisplay(){
+		return isDisplay;
 	}
 	
 	public boolean getIsSuccess(){
