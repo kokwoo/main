@@ -35,6 +35,8 @@ public class CommandParser {
 	private static final String COMMAND_DONE = "done";
 	private static final String COMMAND_COMPLETED = "completed";
 	private static final String COMMAND_FINISHED = "finished";
+	
+	private static final String COMMAND_UNDONE = "undone";
 
 	private static final String COMMAND_VIEW = "view";
 	private static final String COMMAND_DISPLAY = "display";
@@ -116,6 +118,9 @@ public class CommandParser {
 		case COMMAND_FINISHED:
 		case COMMAND_COMPLETED:
 			return processDoneCommand(arguments);
+			
+		case COMMAND_UNDONE:
+			return processUndoneCommand(arguments);
 
 		// Display Function
 		case COMMAND_VIEW:
@@ -391,7 +396,22 @@ public class CommandParser {
 		idx = getId(argumentString);
 
 		if (idx != -1) {
-			command = new DoneCommand(calendar, indexStore, idx);
+			command = new DoneCommand(calendar, indexStore, idx, true);
+			return command;
+		} else {
+			// DISPLAY ERROR MESSAGE (TO-DO)
+			return null;
+		}
+	}
+	
+	private Command processUndoneCommand(String argumentString){
+		int idx;
+		Command command;
+		
+		idx = getId(argumentString);
+
+		if (idx != -1) {
+			command = new DoneCommand(calendar, indexStore, idx, false);
 			return command;
 		} else {
 			// DISPLAY ERROR MESSAGE (TO-DO)
