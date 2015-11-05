@@ -8,6 +8,7 @@ import java.util.List;
 import com.joestelmach.natty.*;
 
 import Tempo.Commands.AddCommand;
+import Tempo.Commands.ClearCommand;
 import Tempo.Commands.Command;
 import Tempo.Commands.DisplayCommand;
 import Tempo.Commands.EditFilenameCommand;
@@ -150,7 +151,7 @@ public class CommandParser {
 			return processFilenameCommand(arguments);
 			
 		case COMMAND_CLEAR:
-			//return processClearCommand();
+			return processClearCommand();
 
 		// Display help/manual
 		case COMMAND_HELP:
@@ -491,6 +492,11 @@ public class CommandParser {
 	
 	private Command processFilenameCommand(String arguments) {
 		return new EditFilenameCommand(calendar,arguments);
+	}
+	
+	private Command processClearCommand(){
+		return new ClearCommand();
+		
 	}
 
 	private Command processExitCommand() {
