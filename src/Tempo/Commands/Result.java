@@ -30,4 +30,8 @@ public class Result {
 		return results;
 	}
 	
+	public void setCommand(String newCommand) {
+		commandPerformed = newCommand;
+	}
+	
 }
