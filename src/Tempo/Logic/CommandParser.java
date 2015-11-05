@@ -301,10 +301,13 @@ public class CommandParser {
 			}
 		}
 
-		if (startDateTimeString != null && endDateTimeString != null) {
+		if (startDateTime != null && endDateTime != null) {
+			SimpleDateFormat df = new SimpleDateFormat(DATETIME_FORMAT);
+			startDateTimeString = df.format(startDateTime);
+			endDateTimeString = df.format(endDateTime);
 			endDateTimeString = adjustDates(startDateTimeString, endDateTimeString);
 		}
-
+		
 		returnList.add(nameString);
 		returnList.add(startDateTimeString);
 		returnList.add(endDateTimeString);
@@ -482,6 +485,9 @@ public class CommandParser {
 				} else {
 					time = dateGroup.getDates().get(0);
 				}
+				
+				SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
+				dateString = dateFormat.format(date);
 
 				SimpleDateFormat timeFormat = new SimpleDateFormat(TIME_FORMAT);
 				timeString = timeFormat.format(time);
@@ -516,7 +522,6 @@ public class CommandParser {
 			date = dateFormat.parse(dateTimeString);
 		} else {
 			dateGroup = parseDateTimeString(dateTimeString);
-
 			if (dateGroup != null) {
 				date = dateGroup.getDates().get(0);
 			} else {
@@ -634,7 +639,7 @@ public class CommandParser {
 		SimpleDateFormat df = new SimpleDateFormat(DATETIME_FORMAT);
 		Date startDate = null;
 		Date endDate = null;
-
+		
 		try {
 			startDate = df.parse(start);
 			endDate = df.parse(end);
