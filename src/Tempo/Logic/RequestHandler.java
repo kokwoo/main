@@ -24,16 +24,16 @@ public class RequestHandler {
 
 	public Result processCommand(String commandString) {
 		Command command = null;
-		try {
+//		try {
 			command = parser.parse(commandString);
 			if (command != null) {
 				return command.execute();
 			} else {
 			}
 			return handleInvalidCommand(commandString);
-		} catch (Exception e) {
-			return handleInvalidCommand(commandString);
-		}
+//		} catch (Exception e) {
+//			return handleInvalidCommand(commandString);
+//		}
 
 	}
 
