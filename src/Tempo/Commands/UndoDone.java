@@ -19,7 +19,8 @@ public class UndoDone implements Command {
 	private boolean isFloating;
 	private boolean isDoneCmd = false;
 	
-	public UndoDone(int prevModIndex, boolean isFloating, boolean isDoneCmd) {
+	public UndoDone(int prevModIndex, boolean isFloating, 
+					boolean isDoneCmd) {
 		this.prevModIndex = prevModIndex;
 		this.isFloating = isFloating;
 		
@@ -37,27 +38,36 @@ public class UndoDone implements Command {
 		
 		if (isDoneCmd) {
 			cmdType = CMD_DONE;
-			if(isFloating) {
-				result = cal.markFloatingTaskAsUndone(prevModIndex);
-			} else {
-				result = cal.markTaskAsUndone(prevModIndex); 
-			}
+			result = executeMarkUndone();
 		} else {
 			cmdType = CMD_UNDONE;
-			if (isFloating) {
-				result = cal.markFloatingTaskAsDone(prevModIndex);
-			} else {
-				result = cal.markTaskAsDone(prevModIndex);
-			}
+			result = executeMarkDone();
 		}
 		
 		String nameOfItem = getName(result.getCommandPerformed());
-		String command = String.format(CMD_UNDO, cmdType, objType, nameOfItem);
+		String command = String.format(CMD_UNDO, cmdType, objType, 
+									   nameOfItem);
 		result.setCommand(command);
 		
 		removeUndoUndoCommand();
 		
 		return result;
+	}
+	
+	private Result executeMarkUndone() {
+		if(isFloating) {
+			return cal.markFloatingTaskAsUndone(prevModIndex);
+		} else {
+			return cal.markTaskAsUndone(prevModIndex); 
+		}
+	}
+	
+	private Result executeMarkDone() {
+		if (isFloating) {
+			return cal.markFloatingTaskAsDone(prevModIndex);
+		} else {
+			return cal.markTaskAsDone(prevModIndex);
+		}
 	}
 	
 	private void removeUndoUndoCommand() {

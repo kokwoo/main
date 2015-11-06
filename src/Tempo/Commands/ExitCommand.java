@@ -1,11 +1,10 @@
 package Tempo.Commands;
 
-import java.util.ArrayList;
-
 public class ExitCommand implements Command{
-	private static final String GOODBYE_MESSAGE = "Thank you for using Tempo!";
+	private static final String MSG_BYE = "Thank you for using Tempo!";
+	
 	public Result execute() {
-		System.out.println(GOODBYE_MESSAGE);
+		System.out.println(MSG_BYE);
 		System.exit(0);
 		return null;
 	}

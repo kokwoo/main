@@ -11,7 +11,7 @@ import Tempo.Commands.AddCommand;
 import Tempo.Commands.ClearCommand;
 import Tempo.Commands.Command;
 import Tempo.Commands.DisplayCommand;
-import Tempo.Commands.EditFilenameCommand;
+import Tempo.Commands.EditFileNameCommand;
 import Tempo.Commands.ToggleDoneCommand;
 import Tempo.Commands.ExitCommand;
 import Tempo.Commands.RedoCommand;
@@ -501,7 +501,7 @@ public class CommandParser {
 	}
 	
 	private Command processFilenameCommand(String arguments) {
-		return new EditFilenameCommand(calendar,arguments);
+		return new EditFileNameCommand(calendar,arguments);
 	}
 	
 	private Command processClearCommand(){

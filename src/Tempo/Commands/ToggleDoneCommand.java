@@ -1,9 +1,7 @@
 package Tempo.Commands;
 
-import java.util.ArrayList;
-
 import Tempo.Logic.Calendar;
-import Tempo.Logic.IndexStore;
+import Tempo.Logic.*;
 
 public class ToggleDoneCommand implements Command {
 	private Calendar cal;
@@ -11,9 +9,11 @@ public class ToggleDoneCommand implements Command {
 	private int idx;
 	private boolean isDoneCmd;
 	
-	private static final String MSG_DONE_ERR_NOT_EVENT = "Error: Index provided is not a valid task!";
+	private static final String MSG_DONE_ERR_NOT_EVENT = 
+			"Error: Index provided is not a valid task!";
 
-	public ToggleDoneCommand(Calendar cal, IndexStore indexStore, int idx, boolean isDoneCmd) {
+	public ToggleDoneCommand(Calendar cal, IndexStore indexStore, 
+							int idx, boolean isDoneCmd) {
 		this.cal = cal;
 		this.indexStore = indexStore;
 		this.idx = idx;
@@ -21,15 +21,20 @@ public class ToggleDoneCommand implements Command {
 	}
 	
 	public Result execute() {
-		cal.saveCmd((Command) new ToggleDoneCommand(cal, indexStore, idx, isDoneCmd));
+		saveCommand();
+		
 		if(isTask() || isFloatingTask()){
-			if(isDoneCmd){
-				return cal.markTaskAsDone(idx);
-			}else{
-				return cal.markTaskAsUndone(idx);
-			}
-		}else{
+			return executeDoneOrUndoneCmd();
+		} else {
 			return handleInvalidDone();
+		}
+	}
+	
+	private Result executeDoneOrUndoneCmd() {
+		if(isDoneCmd){
+			return cal.markTaskAsDone(idx);
+		} else {
+			return cal.markTaskAsUndone(idx);
 		}
 	}
 	
@@ -43,5 +48,10 @@ public class ToggleDoneCommand implements Command {
 
 	private boolean isTask() {
 		return indexStore.isTask(idx);
+	}
+	
+	private void saveCommand() {
+		cal.saveCmd((Command) new ToggleDoneCommand(cal, indexStore, 
+													idx, isDoneCmd));
 	}
 }
