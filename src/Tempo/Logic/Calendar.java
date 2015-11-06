@@ -15,6 +15,7 @@ public class Calendar {
 	private static IndexStore indexStore;
 	private static CalendarImporter importer;
 	private static CalendarExporter exporter;
+	private static Display display;
 
 	private static Stack<Command> undoHistory;
 	private static Stack<Command> redoHistory;
@@ -46,7 +47,7 @@ public class Calendar {
 	private static final String CMD_REDO = "redo";
 
 	private static final String CMD_SEARCH = "search %1$s";
-	
+
 	private static final String CMD_CLEAR = "%1$s is cleared!";
 
 	private static final String KEY_EVENTS = "events";
@@ -56,7 +57,10 @@ public class Calendar {
 	private static final String KEY_WEEKLY = "weekly";
 	private static final String KEY_MONTHLY = "monthly";
 	private static final String KEY_ANNUALLY = "annually";
-
+	
+	private static final String KEY_BEST_MATCHES = "bestMatches";
+	private static final String KEY_ALTERNATIVE_MATCHES = "alternativeMatches";
+	
 	private static final String FIELD_START_DATE = "start date";
 	private static final String FIELD_START_TIME = "start time";
 	private static final String FIELD_END_DATE = "end date";
@@ -67,7 +71,7 @@ public class Calendar {
 	public static final String DATE_DELIMETER = "/";
 
 	private static final int INDEX_INVALID = -1;
-	
+
 	private boolean isUndoCmd = false;
 
 	private String _fileName;
@@ -83,6 +87,7 @@ public class Calendar {
 		indexStore = IndexStore.getInstance();
 		importer = CalendarImporter.getInstance();
 		exporter = CalendarExporter.getInstance();
+		display = Display.getInstance();
 		undoHistory = new Stack<Command>();
 		redoHistory = new Stack<Command>();
 		cmdHistory = new Stack<Command>();
@@ -100,31 +105,31 @@ public class Calendar {
 			indexStore.initialiseStore(eventsList, tasksList, floatingTasksList);
 		}
 	}
-	
-	public boolean setFilename(String fileName){
+
+	public boolean setFilename(String fileName) {
 		_fileName = fileName;
-		if(exporter.setFileName(_fileName)){
+		if (exporter.setFileName(_fileName)) {
 			exporter.export();
 			return true;
-		}else{
+		} else {
 			return false;
 		}
 	}
-	
-	public String getFilename(){
+
+	public String getFilename() {
 		return _fileName;
 	}
-	
-	public Result clearFile(){
+
+	public Result clearFile() {
 		eventsList = new ArrayList<CalendarObject>();
 		tasksList = new ArrayList<CalendarObject>();
 		floatingTasksList = new ArrayList<CalendarObject>();
-		
+
 		indexStore.resetStore();
-		
+
 		exportToFile();
 		String returnString = String.format(CMD_CLEAR, _fileName);
-		
+
 		return new Result(returnString, true, true, null);
 	}
 
@@ -154,7 +159,7 @@ public class Calendar {
 		if (hasClash) {
 			return new Result(cmd, MSG_WARNING_CLASH, true, putInHashMap(KEY_EVENTS, eventsList));
 		}
-		
+
 		if (!isUndoCmd) {
 			clearRedoHistory();
 		}
@@ -205,14 +210,14 @@ public class Calendar {
 
 		sortEvents();
 		exportToFile();
-		
+
 		Command newUndo = (Command) new UndoAdd(newEventIndex, true, false, true);
 		undoHistory.add(newUndo);
-		
+
 		if (!isUndoCmd) {
 			clearRedoHistory();
 		}
-		
+
 		String cmd = String.format(CMD_ADD_RECURR_EVENT, name);
 		return new Result(cmd, true, putInHashMap(KEY_EVENTS, eventsList));
 	}
@@ -277,11 +282,11 @@ public class Calendar {
 
 		Command newUndo = (Command) new UndoAdd(newTaskIndex, false, true, false);
 		undoHistory.add(newUndo);
-		
+
 		if (!isUndoCmd) {
 			clearRedoHistory();
 		}
-		
+
 		String cmd = String.format(CMD_ADD_TASK, name);
 		return new Result(cmd, true, putInHashMap(KEY_TASKS, tasksList));
 	}
@@ -316,14 +321,14 @@ public class Calendar {
 
 		sortTasks();
 		exportToFile();
-		
+
 		Command newUndo = (Command) new UndoAdd(newTaskIndex, false, true, true);
 		undoHistory.add(newUndo);
-		
+
 		if (!isUndoCmd) {
 			clearRedoHistory();
 		}
-		
+
 		String cmd = String.format(CMD_ADD_RECURR_TASK, name);
 		return new Result(cmd, true, putInHashMap(KEY_TASKS, tasksList));
 	}
@@ -356,11 +361,11 @@ public class Calendar {
 
 		Command newUndo = (Command) new UndoAdd(newTaskIndex, false, false, false);
 		undoHistory.add(newUndo);
-		
+
 		if (!isUndoCmd) {
 			clearRedoHistory();
 		}
-		
+
 		String cmd = String.format(CMD_ADD_FLOATING, name);
 		return new Result(cmd, true, putInHashMap(KEY_FLOATING, floatingTasksList));
 	}
@@ -381,7 +386,7 @@ public class Calendar {
 		ArrayList<CalendarObject> eventsToRemove = new ArrayList<CalendarObject>();
 		String eventName = new String();
 		int seriesIndex = -1;
-		
+
 		for (int i = 0; i < eventsList.size(); i++) {
 			Event currEvent = (Event) eventsList.get(i);
 			if (currEvent.getIndex() == idx) {
@@ -393,7 +398,7 @@ public class Calendar {
 				break;
 			}
 		}
-		
+
 		if (isSeries) {
 			for (int i = 0; i < eventsList.size(); i++) {
 				Event currEvent = (Event) eventsList.get(i);
@@ -418,11 +423,11 @@ public class Calendar {
 		}
 
 		undoHistory.add(newUndo);
-		
+
 		if (!isUndoCmd) {
 			clearRedoHistory();
 		}
-		
+
 		String cmd = String.format(CMD_REMOVE_EVENT, eventName);
 		return new Result(cmd, true, putInHashMap(KEY_EVENTS, eventsList));
 	}
@@ -467,11 +472,11 @@ public class Calendar {
 		}
 
 		undoHistory.add(newUndo);
-		
+
 		if (!isUndoCmd) {
 			clearRedoHistory();
 		}
-		
+
 		String cmd = String.format(CMD_REMOVE_TASK, taskName);
 		return new Result(cmd, true, putInHashMap(KEY_TASKS, tasksList));
 	}
@@ -494,11 +499,11 @@ public class Calendar {
 
 		Command newUndo = (Command) new UndoRemove(taskToRemove);
 		undoHistory.add(newUndo);
-		
+
 		if (!isUndoCmd) {
 			clearRedoHistory();
 		}
-		
+
 		String cmd = String.format(CMD_REMOVE_FLOATING, taskName);
 		return new Result(cmd, true, putInHashMap(KEY_FLOATING, tasksList));
 	}
@@ -550,11 +555,11 @@ public class Calendar {
 		}
 
 		undoHistory.add(newUndo);
-		
+
 		if (!isUndoCmd) {
 			clearRedoHistory();
 		}
-		
+
 		String name = eventToUpdate.getName();
 		String cmd = String.format(CMD_UPDATE_EVENT, name);
 
@@ -612,11 +617,11 @@ public class Calendar {
 		}
 
 		undoHistory.add(newUndo);
-		
+
 		if (!isUndoCmd) {
 			clearRedoHistory();
 		}
-		
+
 		String name = taskToUpdate.getName();
 		String cmd = String.format(CMD_UPDATE_TASK, name);
 
@@ -645,11 +650,11 @@ public class Calendar {
 
 		Command newUndo = (Command) new UndoUpdate(oldTask);
 		undoHistory.add(newUndo);
-		
+
 		if (!isUndoCmd) {
 			clearRedoHistory();
 		}
-		
+
 		String name = taskToUpdate.getName();
 		String cmd = String.format(CMD_UPDATE_FLOATING, name);
 
@@ -684,7 +689,7 @@ public class Calendar {
 			undoHistory.add(newUndo);
 			if (!isUndoCmd) {
 				clearRedoHistory();
-			}			
+			}
 			exportToFile();
 			String cmd = String.format(CMD_DONE_TASK, taskName);
 			return new Result(cmd, true, putInHashMap(KEY_TASKS, tasksList));
@@ -705,7 +710,7 @@ public class Calendar {
 			undoHistory.add(newUndo);
 			if (!isUndoCmd) {
 				clearRedoHistory();
-			}			
+			}
 			exportToFile();
 			String cmd = String.format(CMD_DONE_FLOATING, taskName);
 			return new Result(cmd, true, putInHashMap(KEY_FLOATING, floatingTasksList));
@@ -777,7 +782,7 @@ public class Calendar {
 	public void removeLastUndo() {
 		undoHistory.pop();
 	}
-	
+
 	/***** REDO COMMAND EXECUTION ******/
 	public Result redo() {
 		if (redoHistory.isEmpty()) {
@@ -785,58 +790,47 @@ public class Calendar {
 		}
 		Result result = redoHistory.pop().execute();
 		exportToFile();
-		
+
 		return result;
 	}
-	
+
 	public void saveCmd(Command cmd) {
 		cmdHistory.add(cmd);
 	}
-	
+
 	private void clearRedoHistory() {
 		redoHistory.clear();
 	}
-	
 
 	/***** SEARCH COMMAND EXECUTION ******/
 
 	public Result search(String arguments) {
-		String command = String.format(CMD_SEARCH, arguments);
+		String bestMatchRegex = generateBestMatchRegex(arguments);
+		String alternativeMatchRegex = generateAlternativeMatchRegex(arguments);
+		
+		ArrayList<CalendarObject> eventsToSearch =  copyEventsList();
+		ArrayList<CalendarObject> tasksToSearch =  copyTasksList();
+		ArrayList<CalendarObject> floatingTasksToSearch = copyFloatingTasksList();
+		
+		HashMap<String,ArrayList<CalendarObject>> eventSearchResult = getMatches(eventsToSearch, bestMatchRegex, alternativeMatchRegex);
+		HashMap<String,ArrayList<CalendarObject>> taskSearchResult = getMatches(tasksToSearch, bestMatchRegex, alternativeMatchRegex);
+		HashMap<String,ArrayList<CalendarObject>> floatingTaskSearchResult = getMatches(floatingTasksToSearch, bestMatchRegex, alternativeMatchRegex);
+	
+		ArrayList<CalendarObject> eventsBestMatch = eventSearchResult.get(KEY_BEST_MATCHES);
+		ArrayList<CalendarObject> eventsAlternativeMatch = eventSearchResult.get(KEY_ALTERNATIVE_MATCHES);
 
-		ArrayList<CalendarObject> eventsFound = new ArrayList<CalendarObject>();
-		ArrayList<CalendarObject> tasksFound = new ArrayList<CalendarObject>();
-		ArrayList<CalendarObject> floatingTasksFound = new ArrayList<CalendarObject>();
+		ArrayList<CalendarObject> tasksBestMatch = taskSearchResult.get(KEY_BEST_MATCHES);
+		ArrayList<CalendarObject> tasksAlternativeMatch = taskSearchResult.get(KEY_ALTERNATIVE_MATCHES);
 
-		String regex = generateRegex(arguments);
-
-		for (CalendarObject event : eventsList) {
-			if (event.toString().matches(regex)) {
-				eventsFound.add(event);
-			}
-		}
-
-		for (CalendarObject task : tasksList) {
-			if (tasksFound.toString().matches(regex)) {
-				tasksFound.add(task);
-			}
-		}
-
-		for (CalendarObject floatingTask : floatingTasksList) {
-			if (floatingTask.toString().matches(regex)) {
-				floatingTasksFound.add(floatingTask);
-			}
-		}
-
-		HashMap<String, ArrayList<CalendarObject>> results = new HashMap<String, ArrayList<CalendarObject>>();
-
-		results.put(KEY_EVENTS, eventsFound);
-		results.put(KEY_TASKS, tasksFound);
-		results.put(KEY_FLOATING, floatingTasksFound);
-
-		return new Result(command, true, results);
+		ArrayList<CalendarObject> floatingTaskBestMatch = floatingTaskSearchResult.get(KEY_BEST_MATCHES);
+		ArrayList<CalendarObject> floatingTasksAlternativeMatch = floatingTaskSearchResult.get(KEY_ALTERNATIVE_MATCHES);
+		
+		Result result = display.formatSearchResults(eventsBestMatch, eventsAlternativeMatch, tasksBestMatch, tasksAlternativeMatch, floatingTaskBestMatch, floatingTasksAlternativeMatch);
+		
+		return result;
 	}
 
-	private String generateRegex(String args) {
+	private String generateBestMatchRegex(String args) {
 		String[] splittedArgs = args.split("\\s+");
 
 		String regex = "(?i:.*";
@@ -848,7 +842,78 @@ public class Calendar {
 		regex += ")";
 		return regex;
 	}
+
+	private String generateAlternativeMatchRegex(String args) {
+		String[] splittedArgs = args.split("\\s+");
+
+		String regex = "(?i:.*";
+
+		for (int i = 0; i < splittedArgs.length - 1; i++) {
+			regex += splittedArgs[i] + ".*|.*";
+		}
+
+		if (!(splittedArgs.length - 1 < 0)) {
+			regex += splittedArgs[splittedArgs.length - 1] + ".*";
+		}
+
+		regex += ")";
+		return regex;
+	}
 	
+	private ArrayList<CalendarObject> copyEventsList(){
+		ArrayList<CalendarObject> returnArray = new ArrayList<CalendarObject>();
+		
+		for(CalendarObject obj: eventsList){
+			returnArray.add(obj);
+		}
+		return returnArray;
+	}
+	
+	private ArrayList<CalendarObject> copyTasksList(){
+		ArrayList<CalendarObject> returnArray = new ArrayList<CalendarObject>();
+		
+		for(CalendarObject obj: tasksList){
+			returnArray.add(obj);
+		}
+		return returnArray;
+	}
+	
+	private ArrayList<CalendarObject> copyFloatingTasksList(){
+		ArrayList<CalendarObject> returnArray = new ArrayList<CalendarObject>();
+		
+		for(CalendarObject obj: floatingTasksList){
+			returnArray.add(obj);
+		}
+		return returnArray;
+	}
+	
+	private HashMap<String, ArrayList<CalendarObject>> getMatches(ArrayList<CalendarObject> objectsToMatch, String bestMatchRegex, String alternativeMatchRegex){
+		HashMap<String, ArrayList<CalendarObject>> returnHashMap = new HashMap<String, ArrayList<CalendarObject>>();
+		ArrayList<CalendarObject> bestMatches = new ArrayList<CalendarObject>();
+		ArrayList<CalendarObject> alternativeMatches = new ArrayList<CalendarObject>();
+		
+		while(objectsToMatch.size() > 0){
+			CalendarObject currObject =  objectsToMatch.get(0);
+			
+			if(currObject.toString().matches(bestMatchRegex)){
+				bestMatches.add(currObject);
+				objectsToMatch.remove(0);
+			}else if(currObject.toString().matches(alternativeMatchRegex)){
+				alternativeMatches.add(currObject);
+				objectsToMatch.remove(0);
+			}else{
+				objectsToMatch.remove(0);
+			}
+		}
+		
+		returnHashMap.put(KEY_BEST_MATCHES, bestMatches);
+		returnHashMap.put(KEY_ALTERNATIVE_MATCHES, alternativeMatches);
+		
+		return returnHashMap;
+	}
+	
+	
+
 	/***** OTHER METHODS ******/
 
 	public ArrayList<CalendarObject> getEventsList() {
@@ -876,7 +941,7 @@ public class Calendar {
 			eventsList = importer.getEventsList();
 			tasksList = importer.getTasksList();
 			floatingTasksList = importer.getFloatingTasksList();
-			
+
 			sortEvents();
 			sortTasks();
 
@@ -1106,7 +1171,8 @@ public class Calendar {
 					startYear++;
 				}
 
-				String currDate = formatCurrDateString(startDay, String.valueOf(startMonth), String.valueOf(startYear),startTime);
+				String currDate = formatCurrDateString(startDay, String.valueOf(startMonth), String.valueOf(startYear),
+						startTime);
 
 				try {
 					startMilli = dateToMilli(parseDate(currDate));
