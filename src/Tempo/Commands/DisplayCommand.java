@@ -52,6 +52,8 @@ public class DisplayCommand implements Command {
 	*/
 	
 	public Result execute() {
+		display = Display.getInstance();
+		
 		switch (displayType) {
 		case (ARG_EVENTS_TODAY):
 			return display.getEventsToday();

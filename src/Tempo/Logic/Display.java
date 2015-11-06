@@ -75,6 +75,19 @@ public class Display {
 	private final String DONE_FLOATING_TASKS = "These are the list of tasks without deadline that are done";
 	private final String NO_DONE_FLOATING_TASKS = "You have no task without deadline that are done";
 	private final String EMPTY_STRING = "";
+	
+	private static final String KEY_EVENTS_BEST_MATCHES = "eventsBestMatches";
+	private static final String KEY_EVENTS_ALTERNATIVE_MATCHES = "eventsAlternativeMatches";
+	private static final String KEY_TASKS_BEST_MATCHES = "tasksBestMatches";
+	private static final String KEY_TASKS_ALTERNATIVE_MATCHES = "tasksAlternativeMatches";
+	private static final String KEY_FLOATING_TASKS_BEST_MATCHES = "floatingTasksBestMatches";
+	private static final String KEY_FLOATING_TASKS_ALTERNATIVE_MATCHES = "floatingTasksAlternativeMatches";
+
+	private static final String NO_BEST_MATCH = "There are no best matches found!";
+	private static final String BEST_MATCH_STRING = "These are the best matches found:";
+	private static final String NO_ALTERNATIVE_MATCH = "There are no alternative matches found!";
+	private static final String NO_MATCHES = "There are no matches found!";
+	private static final String ALTERNATIVE_MATCH_STRING = "Other Results:";
 
 	// create an object of SingleObject
 	private static Display instance = new Display();
@@ -90,7 +103,8 @@ public class Display {
 	}
 
 	private void refresh() {
-
+		cal = Calendar.getInstance();
+		
 		events = cal.getEventsList();
 		tasks = cal.getTasksList();
 		floatingTasks = cal.getFloatingTasksList();
@@ -607,6 +621,56 @@ public class Display {
 			todayString = addStrEventToArray(todayString, tasksToday);
 		}
 		return todayString;
+	}
+	
+	public Result formatSearchResults(ArrayList<CalendarObject> eventsBestMatch, ArrayList<CalendarObject> eventsAlternativeMatch, ArrayList<CalendarObject>tasksBestMatch, ArrayList<CalendarObject>tasksAlternativeMatch, ArrayList<CalendarObject>floatingTaskBestMatch, ArrayList<CalendarObject>floatingTasksAlternativeMatch){
+		ArrayList<String> searchResults = new ArrayList<String>();
+		
+		boolean hasBestMatches = true;
+		boolean hasAlternativeMatches = false;
+		
+		if(eventsBestMatch.isEmpty() && tasksBestMatch.isEmpty() && floatingTaskBestMatch.isEmpty()){
+			hasBestMatches = false;
+			searchResults.add(NO_BEST_MATCH);
+		}else{
+			searchResults.add(BEST_MATCH_STRING);
+			searchResults.add(EMPTY_STRING);
+			searchResults = addStrEventToArray(searchResults, eventsBestMatch);
+			searchResults = addStrTasksToArray(searchResults, tasksBestMatch);
+			searchResults = addStrFTasksToArray(searchResults, floatingTaskBestMatch);
+		}
+		
+		searchResults.add(EMPTY_STRING);
+		
+		if(eventsAlternativeMatch.isEmpty() && tasksAlternativeMatch.isEmpty() && floatingTasksAlternativeMatch.isEmpty()){
+			hasAlternativeMatches = false;
+			searchResults.add(NO_ALTERNATIVE_MATCH);
+		}else{
+			searchResults.add(ALTERNATIVE_MATCH_STRING);
+			searchResults.add(EMPTY_STRING);
+			searchResults = addStrEventToArray(searchResults, eventsAlternativeMatch);
+			searchResults = addStrTasksToArray(searchResults, tasksAlternativeMatch);
+			searchResults = addStrFTasksToArray(searchResults, floatingTasksAlternativeMatch);
+		}
+		
+		if(!hasBestMatches && !hasAlternativeMatches){
+			searchResults = new ArrayList<String>();
+			searchResults.add(NO_MATCHES);
+		}
+		
+		String returnString = strArrayToString(searchResults);
+		
+		HashMap<String, ArrayList<CalendarObject>> hm = new HashMap<String, ArrayList<CalendarObject>>();
+		
+		hm.put(KEY_EVENTS_BEST_MATCHES, eventsBestMatch);
+		hm.put(KEY_EVENTS_ALTERNATIVE_MATCHES, eventsBestMatch);
+		hm.put(KEY_TASKS_BEST_MATCHES, tasksBestMatch);
+		hm.put(KEY_TASKS_ALTERNATIVE_MATCHES, tasksAlternativeMatch);
+		hm.put(KEY_FLOATING_TASKS_BEST_MATCHES, floatingTaskBestMatch);
+		hm.put(KEY_FLOATING_TASKS_ALTERNATIVE_MATCHES, floatingTasksAlternativeMatch);
+		
+		Result result = new Result(returnString, true, true, hm);
+		return result;
 	}
 	
 	public String strArrayToString(ArrayList<String> in){
