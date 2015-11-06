@@ -21,6 +21,7 @@ public class ToggleDoneCommand implements Command {
 	}
 	
 	public Result execute() {
+		cal.saveCmd((Command) new ToggleDoneCommand(cal, indexStore, idx, isDoneCmd));
 		if(isTask() || isFloatingTask()){
 			if(isDoneCmd){
 				return cal.markTaskAsDone(idx);
