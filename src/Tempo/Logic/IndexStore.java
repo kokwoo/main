@@ -34,13 +34,11 @@ public class IndexStore {
 		tasks = new HashMap<Integer, CalendarObject>();
 	}
 		
-	public void initialiseStore(ArrayList<CalendarObject> eventsList, 
-								ArrayList<CalendarObject> tasksList, 
+	public void initialiseStore(ArrayList<CalendarObject> eventsList, ArrayList<CalendarObject> tasksList, 
 			  					ArrayList<CalendarObject> floatingTasksList) {
 		initialiseEventsMap(eventsList);
 		initialiseTasksMap(tasksList, floatingTasksList);
 		updateRecycledId();
-		updateRecycledSecId();
 	}
 	
 	private void initialiseEventsMap(ArrayList<CalendarObject> eventsList) {
@@ -48,7 +46,6 @@ public class IndexStore {
 			Event currEvent = (Event) eventsList.get(i);
 			addEvent(currEvent.getIndex(), currEvent);
 			updateNextUnusedId(currEvent.getIndex());
-			updateNextUnusedSecId(currEvent.getSeriesIndex());
 		}
 	}
 	
@@ -58,7 +55,6 @@ public class IndexStore {
 			Task currTask = (Task) tasksList.get(i);
 			addTask(currTask.getIndex(), currTask);
 			updateNextUnusedId(currTask.getIndex());
-			updateNextUnusedSecId(currTask.getSeriesIndex());
 		}
 		
 		for (int i = 0; i < floatingTasksList.size(); i++) {
