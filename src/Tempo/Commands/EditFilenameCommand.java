@@ -3,7 +3,7 @@ package Tempo.Commands;
 import Tempo.Logic.Calendar;
 
 public class EditFileNameCommand implements Command{
-	private static final String command = "change filename %1$s";
+	private static final String command = "rename file as %1$s";
 	
 	private Calendar cal;
 	private String fileName;
@@ -16,15 +16,16 @@ public class EditFileNameCommand implements Command{
 	public Result execute() {
 		saveCommand();
 		String originalFileName = cal.getFilename();
-		boolean success = cal.setFilename(fileName);
+		boolean isSuccess = cal.setFilename(fileName);
 		String returnCommand = String.format(command, fileName);
 		
-		if(success){
-			return new Result(returnCommand,success,null);
+		if(isSuccess){
+			cal.addToUndoHistory((Command) new UndoEditFileName(originalFileName));
+			return new Result(returnCommand,isSuccess,null);
 	
 		}else{
 			cal.setFilename(originalFileName);
-			return new Result(returnCommand,success,null);
+			return new Result(returnCommand,isSuccess,null);
 		}
 	}
 	
