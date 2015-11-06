@@ -33,6 +33,8 @@ public class Calendar {
 	private static final String CMD_REMOVE_TASK = "remove task %1$s";
 	private static final String CMD_REMOVE_FLOATING = "remove floating task %1$s";
 
+	private static final String CMD_EDIT_FILENAME = "renamed file as <%1$s>.";
+
 	private static final String CMD_UPDATE_EVENT = "update event %1$s";
 	private static final String CMD_UPDATE_TASK = "update task %1$s";
 	private static final String CMD_UPDATE_FLOATING = "update floating task %1$s";
@@ -44,12 +46,13 @@ public class Calendar {
 	private static final String CMD_UNDONE_FLOATING = "undone floating task %1$s";
 
 	private static final String CMD_UNDO = "undo";
+	private static final String CMD_UNDO_CLEAR = "clear %1$s";
+	
 	private static final String CMD_REDO = "redo";
 
 	private static final String CMD_SEARCH = "search %1$s";
 
 	private static final String CMD_CLEAR = "%1$s has been cleared.";
-	private static final String CMD_UNDO_CLEAR = "clear %1$s";
 
 	private static final String KEY_EVENTS = "events";
 	private static final String KEY_TASKS = "tasks";
@@ -107,14 +110,31 @@ public class Calendar {
 		}
 	}
 
+	public Result editFilename(String fileName) {
+		if (!isUndoCmd) {
+			clearRedoHistory();
+		}
+		
+		if (setFilename(fileName)) {
+			String cmd = String.format(CMD_EDIT_FILENAME, fileName);
+			return new Result(cmd, true, null);
+		} else {
+			return new Result(null, false, null);
+		}
+	}
+	
 	public boolean setFilename(String fileName) {
+		if (!isUndoCmd) {
+			clearRedoHistory();
+		}
+		
+		boolean isSuccess = false;
 		this.fileName = fileName;
 		if (exporter.setFileName(fileName)) {
 			exporter.export();
-			return true;
-		} else {
-			return false;
-		}
+			isSuccess = true;
+		} 
+		return isSuccess;
 	}
 
 	public String getFilename() {
@@ -808,6 +828,10 @@ public class Calendar {
 
 	public void removeLastUndo() {
 		undoHistory.pop();
+	}
+	
+	public void addToUndoHistory(Command cmd) {
+		undoHistory.add(cmd);
 	}
 
 	/***** REDO COMMAND EXECUTION ******/
