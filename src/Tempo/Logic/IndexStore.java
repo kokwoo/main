@@ -18,12 +18,7 @@ public class IndexStore {
 	public static HashMap<Integer, CalendarObject> tasks;
 	
 	private IndexStore() {
-		nextUnusedPriId = 0;
-		nextUnusedSecId = 0;
-		recycledPriId = new LinkedList<Integer>();
-		recycledSecId = new LinkedList<Integer>();
-		events = new HashMap<Integer, CalendarObject>();
-		tasks = new HashMap<Integer, CalendarObject>();
+		resetStore();	
 	}
 	
 	public static IndexStore getInstance() {
@@ -31,6 +26,8 @@ public class IndexStore {
 	}
 	
 	public void resetStore(){
+		nextUnusedPriId = 0;
+		nextUnusedSecId = 0;
 		recycledPriId = new LinkedList<Integer>();
 		recycledSecId = new LinkedList<Integer>();
 		events = new HashMap<Integer, CalendarObject>();
