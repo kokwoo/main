@@ -53,7 +53,6 @@ public class AddCommand implements Command {
 		} else {
 			cal.saveCmd((Command) new AddCommand(cal, params));
 		}
-		cal.saveCmd((Command) new AddCommand(cal, params));
 		if (params.size() == LENGTH_ADD_EVENT_PARAMS) {
 			if(isRecurring){
 				return addRecurringEvent();
