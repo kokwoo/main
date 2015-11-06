@@ -29,7 +29,6 @@ public class Event implements CalendarObject, Comparable<Event>{
 		}
 	
 	public void update(String field, String newValue) {
-		System.out.println("Updating field " + field + " now..."); // debug
 		switch(field) {
 			case PARAM_NAME: 
 				setName(newValue);

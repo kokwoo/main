@@ -538,22 +538,16 @@ public class Calendar {
 	/***** UPDATE COMMAND EXECUTION ******/
 
 	public Result updateEvent(int idx, ArrayList<String> fields, ArrayList<String> newValues, boolean isSeries) {
-		System.out.println("Updating event now..."); // debug
 		boolean hasClash = false;
 		ArrayList<CalendarObject> eventsToUpdate = new ArrayList<CalendarObject>();
 
 		int arrayListIndex = getArrayListIndexOfEvent(idx);
-		System.out.println("Got the arraylist index!"); // debug		
 		Event eventToUpdate = (Event) eventsList.get(arrayListIndex);
 		int seriesIndex = eventToUpdate.getSeriesIndex();
 		Event oldEvent = copyEvent(eventToUpdate);
 		
-		System.out.println("Going into for loop now..."); // debug
-
 		for (int i = 0; i < fields.size(); i++) {
 			eventToUpdate.update(fields.get(i), newValues.get(i));
-			System.out.println("Field to be updated: " + fields.get(i)); // debug
-			System.out.println("Corr. new value: " + newValues.get(i)); // debug
 			if (!hasClash && hasChangedTime(fields.get(i)) && hasClash(eventToUpdate)) {
 				hasClash = true;
 			}
