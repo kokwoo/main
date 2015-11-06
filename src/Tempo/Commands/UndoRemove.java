@@ -4,7 +4,6 @@ import java.util.*;
 
 import Tempo.CalendarObjects.*;
 import Tempo.Logic.Calendar;
-import Tempo.Logic.IndexStore;
 
 public class UndoRemove implements Command {
 	private static Calendar cal = Calendar.getInstance();
@@ -17,7 +16,6 @@ public class UndoRemove implements Command {
 	private String objType;
 	private String nameOfPrevObj;
 		
-	private int prevModIndex;
 	private Event prevModEvent;
 	private Task prevModTask;
 	private FloatingTask prevModFloating;
@@ -32,26 +30,24 @@ public class UndoRemove implements Command {
 	
 	public UndoRemove(Event event) {
 		prevModEvent = event;
-		prevModIndex = event.getIndex();
 		isEvent = true;
 		objType = OBJ_EVENT;
 	}
 	
 	public UndoRemove(Task task) {
 		prevModTask = task;
-		prevModIndex = task.getIndex();
 		isTask = true;
 		objType = OBJ_TASK;
 	}
 	
 	public UndoRemove(FloatingTask floatingTask) {
 		prevModFloating = floatingTask;
-		prevModIndex = floatingTask.getIndex();
 		isFloatingTask = true;
 		objType = OBJ_FLOATING;
 	}
 	
-	public UndoRemove(ArrayList<CalendarObject> series, boolean isEventsSeries) {
+	public UndoRemove(ArrayList<CalendarObject> series, 
+					  boolean isEventsSeries) {
 		this.isEventsSeries = isEventsSeries;
 		initialiseSeries(series);
 	}
@@ -72,8 +68,8 @@ public class UndoRemove implements Command {
 		}
 		
 		initialiseNameOfPrevObj();
-			
-		String command = String.format(CMD_UNDO, objType, nameOfPrevObj);
+		String command = String.format(CMD_UNDO, objType, 
+									   nameOfPrevObj);
 		result.setCommand(command);
 				
 		return result;
@@ -82,13 +78,9 @@ public class UndoRemove implements Command {
 	private void initialiseSeries(ArrayList<CalendarObject> series) {
 		if (isEventsSeries) {
 			prevModEvents = series;
-			Event event = (Event) series.get(0);
-			prevModIndex = event.getIndex();
 			objType = OBJ_EVENT;
 		} else {
 			prevModTasks = series;
-			Task task = (Task) series.get(0);
-			prevModIndex = task.getIndex();
 			objType = OBJ_TASK;
 		}
 	}

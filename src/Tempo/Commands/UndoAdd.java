@@ -21,7 +21,8 @@ public class UndoAdd implements Command {
 	private boolean isTask = false;
 	private boolean isSeries = false;
 	
-	public UndoAdd(int prevModIndex, boolean isEvent, boolean isTask, boolean isSeries) {
+	public UndoAdd(int prevModIndex, boolean isEvent, boolean isTask, 
+					boolean isSeries) {
 		this.prevModIndex = prevModIndex;
 		this.isEvent = isEvent;
 		this.isTask = isTask;
@@ -60,7 +61,8 @@ public class UndoAdd implements Command {
 			Event event = (Event) idxStore.getEventById(prevModIndex);
 			nameOfPrevObj = event.getName();
 		} else {
-			FloatingTask task = (FloatingTask) idxStore.getTaskById(prevModIndex);
+			FloatingTask task = (FloatingTask) idxStore.getTaskById(
+														prevModIndex);
 			nameOfPrevObj = task.getName();
 		}
 	}

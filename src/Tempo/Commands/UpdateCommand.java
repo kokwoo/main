@@ -9,13 +9,16 @@ public class UpdateCommand implements Command {
 	private static Calendar cal;
 	private static IndexStore indexStore;
 	
-	private static final String MSG_INVALID_ID = "Error: Index provided is invalid!";
+	private static final String MSG_INVALID_ID = 
+			"Error: Index provided is invalid!";
 	private int idx;
 	private ArrayList<String> fields;
 	private ArrayList<String> newValues;
 	private boolean isSeries;
 	
-	public UpdateCommand(Calendar cal, IndexStore indexStore, int idx, ArrayList<String> fields, ArrayList<String> newValues, boolean isSeries) {
+	public UpdateCommand(Calendar cal, IndexStore indexStore, 
+						 int idx, ArrayList<String> fields, 
+						 ArrayList<String> newValues, boolean isSeries) {
 		this.cal = cal;
 		this.indexStore = indexStore;
 		this.idx = idx;
@@ -26,16 +29,29 @@ public class UpdateCommand implements Command {
 	
 	@Override
 	public Result execute() {
-		cal.saveCmd((Command) new UpdateCommand(cal, indexStore, idx, fields, newValues, isSeries));
+		saveCommand();
+		
 		if (isEvent()) {
-			return cal.updateEvent(idx, fields, newValues, isSeries);
+			return executeUpdateEvent();
 		} else if (isFloatingTask()) {
-			return cal.updateFloatingTask(idx, fields, newValues, isSeries);
+			return executeUpdateFloating();
 		} else if (isTask()){
-			return cal.updateTask(idx, fields, newValues, isSeries);
+			return executeUpdateTask();
 		} else {
 			return handleInvalidUpdate();
 		}
+	}
+	
+	private Result executeUpdateEvent() {
+		return cal.updateEvent(idx, fields, newValues, isSeries);
+	}
+	
+	private Result executeUpdateFloating() {
+		return cal.updateFloatingTask(idx, fields, newValues, isSeries);
+	}
+	
+	private Result executeUpdateTask() {
+		return cal.updateTask(idx, fields, newValues, isSeries);
 	}
 	
 	private Result handleInvalidUpdate() {
@@ -52,6 +68,12 @@ public class UpdateCommand implements Command {
 	
 	private boolean isTask() {
 		return indexStore.isTask(idx);
+	}
+	
+	private void saveCommand() {
+		cal.saveCmd((Command) new UpdateCommand(cal, indexStore, idx, 
+												fields, newValues, 
+												isSeries));
 	}
 		
 }
