@@ -29,6 +29,13 @@ public class IndexStore {
 	public static IndexStore getInstance() {
 		return instance;
 	}
+	
+	public void resetStore(){
+		recycledPriId = new LinkedList<Integer>();
+		recycledSecId = new LinkedList<Integer>();
+		events = new HashMap<Integer, CalendarObject>();
+		tasks = new HashMap<Integer, CalendarObject>();
+	}
 		
 	public void initialiseStore(ArrayList<CalendarObject> eventsList, ArrayList<CalendarObject> tasksList, 
 			  					ArrayList<CalendarObject> floatingTasksList) {
