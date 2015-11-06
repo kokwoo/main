@@ -10,7 +10,12 @@ public class ClearCommand implements Command{
 	}
 	
 	public Result execute() {
+		saveCommand();
 		return cal.clearFile();
+	}
+	
+	private void saveCommand() {
+		cal.saveCmd((Command) new ClearCommand(cal));
 	}
 
 }

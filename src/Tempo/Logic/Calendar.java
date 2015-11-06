@@ -33,6 +33,8 @@ public class Calendar {
 	private static final String CMD_REMOVE_TASK = "remove task %1$s";
 	private static final String CMD_REMOVE_FLOATING = "remove floating task %1$s";
 
+	private static final String CMD_EDIT_FILENAME = "renamed file as <%1$s>.";
+
 	private static final String CMD_UPDATE_EVENT = "update event %1$s";
 	private static final String CMD_UPDATE_TASK = "update task %1$s";
 	private static final String CMD_UPDATE_FLOATING = "update floating task %1$s";
@@ -44,11 +46,13 @@ public class Calendar {
 	private static final String CMD_UNDONE_FLOATING = "undone floating task %1$s";
 
 	private static final String CMD_UNDO = "undo";
+	private static final String CMD_UNDO_CLEAR = "clear %1$s";
+	
 	private static final String CMD_REDO = "redo";
 
 	private static final String CMD_SEARCH = "search %1$s";
 
-	private static final String CMD_CLEAR = "%1$s is cleared!";
+	private static final String CMD_CLEAR = "%1$s has been cleared.";
 
 	private static final String KEY_EVENTS = "events";
 	private static final String KEY_TASKS = "tasks";
@@ -74,7 +78,7 @@ public class Calendar {
 
 	private boolean isUndoCmd = false;
 
-	private String _fileName;
+	private String fileName;
 
 	private ArrayList<CalendarObject> eventsList;
 	private ArrayList<CalendarObject> tasksList;
@@ -98,29 +102,49 @@ public class Calendar {
 	}
 
 	public void createFile(String fileName) {
-		_fileName = fileName;
-		File file = new File(_fileName);
+		this.fileName = fileName;
+		File file = new File(fileName);
 		if (file.exists()) {
 			importFromFile();
 			indexStore.initialiseStore(eventsList, tasksList, floatingTasksList);
 		}
 	}
 
-	public boolean setFilename(String fileName) {
-		_fileName = fileName;
-		if (exporter.setFileName(_fileName)) {
-			exporter.export();
-			return true;
-		} else {
-			return false;
+	public Result editFilename(String fileName) {
+		if (!isUndoCmd) {
+			clearRedoHistory();
 		}
+		
+		if (setFilename(fileName)) {
+			String cmd = String.format(CMD_EDIT_FILENAME, fileName);
+			return new Result(cmd, true, null);
+		} else {
+			return new Result(null, false, null);
+		}
+	}
+	
+	public boolean setFilename(String fileName) {
+		if (!isUndoCmd) {
+			clearRedoHistory();
+		}
+		
+		boolean isSuccess = false;
+		this.fileName = fileName;
+		if (exporter.setFileName(fileName)) {
+			exporter.export();
+			isSuccess = true;
+		} 
+		return isSuccess;
 	}
 
 	public String getFilename() {
-		return _fileName;
+		return fileName;
 	}
 
 	public Result clearFile() {
+		Command newUndo = (Command) new UndoClear(eventsList, tasksList, floatingTasksList);
+		undoHistory.add(newUndo);
+
 		eventsList = new ArrayList<CalendarObject>();
 		tasksList = new ArrayList<CalendarObject>();
 		floatingTasksList = new ArrayList<CalendarObject>();
@@ -128,8 +152,12 @@ public class Calendar {
 		indexStore.resetStore();
 
 		exportToFile();
-		String returnString = String.format(CMD_CLEAR, _fileName);
-
+		String returnString = String.format(CMD_CLEAR, fileName);
+				
+		if (!isUndoCmd) {
+			clearRedoHistory();
+		}
+		
 		return new Result(returnString, true, true, null);
 	}
 
@@ -220,6 +248,24 @@ public class Calendar {
 
 		String cmd = String.format(CMD_ADD_RECURR_EVENT, name);
 		return new Result(cmd, true, putInHashMap(KEY_EVENTS, eventsList));
+	}
+	
+	public Result addBackAll(ArrayList<CalendarObject> events, 
+							 ArrayList<CalendarObject> tasks, 
+							 ArrayList<CalendarObject> floatingTasks) {
+		eventsList = events;
+		tasksList = tasks;
+		floatingTasksList = floatingTasks;
+		indexStore.initialiseStore(events, tasks, floatingTasks);
+		
+		HashMap<String, ArrayList<CalendarObject>> listsMap;
+		listsMap = new HashMap<String, ArrayList<CalendarObject>>();
+		listsMap.put(KEY_EVENTS, events);
+		listsMap.put(KEY_TASKS, tasks);
+		listsMap.put(KEY_FLOATING, floatingTasks);
+		
+		String cmd = String.format(CMD_UNDO_CLEAR, fileName);
+		return new Result(cmd, true, listsMap);
 	}
 
 	private long getStartEndDiff(String start, String end) {
@@ -454,8 +500,9 @@ public class Calendar {
 				Task currTask = (Task) tasksList.get(i);
 				if (currTask.getSeriesIndex() == seriesIndex) {
 					tasksToRemove.add(currTask);
-					indexStore.removeEvent(currTask.getIndex());
+					indexStore.removeTask(currTask.getIndex());
 					tasksList.remove(i);
+					i--;
 				}
 			}
 		}
@@ -518,7 +565,7 @@ public class Calendar {
 		Event eventToUpdate = (Event) eventsList.get(arrayListIndex);
 		int seriesIndex = eventToUpdate.getSeriesIndex();
 		Event oldEvent = copyEvent(eventToUpdate);
-
+		
 		for (int i = 0; i < fields.size(); i++) {
 			eventToUpdate.update(fields.get(i), newValues.get(i));
 			if (!hasClash && hasChangedTime(fields.get(i)) && hasClash(eventToUpdate)) {
@@ -782,6 +829,10 @@ public class Calendar {
 	public void removeLastUndo() {
 		undoHistory.pop();
 	}
+	
+	public void addToUndoHistory(Command cmd) {
+		undoHistory.add(cmd);
+	}
 
 	/***** REDO COMMAND EXECUTION ******/
 	public Result redo() {
@@ -930,14 +981,14 @@ public class Calendar {
 
 	public void exportToFile() {
 		// System.out.println("Exporting: " + _fileName);
-		exporter.setFileName(_fileName);
+		exporter.setFileName(fileName);
 		exporter.export();
 		// System.out.println("Export Successful!");
 	}
 
 	public void importFromFile() {
-		System.out.println("Importing: " + _fileName);
-		if (importer.importFromFile(_fileName)) {
+		System.out.println("Importing: " + fileName);
+		if (importer.importFromFile(fileName)) {
 			eventsList = importer.getEventsList();
 			tasksList = importer.getTasksList();
 			floatingTasksList = importer.getFloatingTasksList();
@@ -957,7 +1008,7 @@ public class Calendar {
 		for (int i = 0; i < eventsList.size(); i++) {
 			Event currEvent = (Event) eventsList.get(i);
 			if (currEvent.getIndex() == id) {
-				i = index;
+				index = i;
 			}
 		}
 
@@ -970,7 +1021,6 @@ public class Calendar {
 		for (int i = 0; i < tasksList.size(); i++) {
 			Task currTask = (Task) tasksList.get(i);
 			if (currTask.getIndex() == id) {
-				// i = index;
 				index = i;
 			}
 		}
@@ -984,7 +1034,6 @@ public class Calendar {
 		for (int i = 0; i < floatingTasksList.size(); i++) {
 			FloatingTask currFloatingTask = (FloatingTask) floatingTasksList.get(i);
 			if (currFloatingTask.getIndex() == id) {
-				// i = index;
 				index = i;
 			}
 		}

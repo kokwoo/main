@@ -477,7 +477,7 @@ public class Controller {
 			System.out.println("USER ENTERED : " + inputBox.getValue().toString());
 			Result userResult = tempRH.processCommand(userInput);
 			
-			if(userResult.getCommandPerformed().contains(("search"))) {
+			if(userResult.getCmdPerformed().contains(("search"))) {
 				
 				processSearch(userResult);
 				return;

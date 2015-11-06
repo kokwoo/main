@@ -1,9 +1,7 @@
 package Tempo.Commands;
 
-import java.util.*;
-
 import Tempo.Logic.Calendar;
-import Tempo.Logic.IndexStore;
+import Tempo.Logic.*;
 
 public class RemoveCommand implements Command {
 	private Calendar cal;
@@ -11,9 +9,11 @@ public class RemoveCommand implements Command {
 	private int idx;
 	private boolean isSeries;
 	
-	private static final String MSG_INVALID_ID = "Error: Index provided is invalid!";
+	private static final String MSG_INVALID_ID = 
+						"Error: Index provided is invalid!";
 	
-	public RemoveCommand(Calendar cal, IndexStore indexStore, int idx, boolean isSeries) {
+	public RemoveCommand(Calendar cal, IndexStore indexStore, 
+						int idx, boolean isSeries) {
 		this.cal = cal;
 		this.indexStore = indexStore;
 		this.idx = idx;
@@ -21,16 +21,29 @@ public class RemoveCommand implements Command {
 	}
 	
 	public Result execute(){
-		cal.saveCmd((Command) new RemoveCommand(cal, indexStore, idx, isSeries));
+		saveCommand();
+		
 		if (isEvent()) {
-			return cal.removeEvent(idx, isSeries);
+			return executeRemoveEvent();
 		} else if (isFloatingTask()) {
-			return cal.removeFloatingTask(idx, isSeries);
+			return executeRemoveFloating();
 		} else if (isTask()) {
-			return cal.removeTask(idx, isSeries);
+			return executeRemoveTask();
 		} else {
 			return handleInvalidRemove();
 		}
+	}
+	
+	private Result executeRemoveEvent() {
+		return cal.removeEvent(idx, isSeries);
+	}
+	
+	private Result executeRemoveFloating() {
+		return cal.removeFloatingTask(idx, isSeries);
+	}
+	
+	private Result executeRemoveTask() {
+		return cal.removeTask(idx, isSeries);
 	}
 	
 	private Result handleInvalidRemove() {
@@ -47,5 +60,10 @@ public class RemoveCommand implements Command {
 
 	private boolean isTask() {
 		return indexStore.isTask(idx);
+	}
+	
+	private void saveCommand() {
+		cal.saveCmd((Command) new RemoveCommand(
+				cal, indexStore, idx, isSeries));
 	}
 }
