@@ -22,6 +22,10 @@ public class AddCommand implements Command {
 	private static final String DELIMETER_DATE = "/";
 	private static final String STR_EMPTY = "";
 	
+	private static final String INVALID_DATE = "Error: Date(s) entered is invalid!";
+	private static final String END_EARLIER_STRING = "Error: End time is earlier than start time!";
+	private static final String BLANK = "";
+	
 	private DateFormat dateTimeFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 	private DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
 	private DateFormat timeFormat = new SimpleDateFormat("HH:mm");
@@ -43,8 +47,14 @@ public class AddCommand implements Command {
 	public Result execute() {
 		saveCommand();
 		if (cmdArgs.size() == LENGTH_ADD_EVENT_PARAMS) {
+			if(cmdArgs.get(1) == null || cmdArgs.get(2) == null){
+				return new Result(INVALID_DATE, true, true, null);
+			}
 			return executeAddEvent();
 		} else if (cmdArgs.size() == LENGTH_ADD_TASK_PARAMS) {
+			if(cmdArgs.get(1) == null){
+				return new Result(INVALID_DATE, true, true, null);
+			}
 			return executeAddTask();
 		} else {
 			return addFloatingTask();		
