@@ -14,6 +14,7 @@ import Tempo.Commands.DisplayCommand;
 import Tempo.Commands.EditFilenameCommand;
 import Tempo.Commands.ToggleDoneCommand;
 import Tempo.Commands.ExitCommand;
+import Tempo.Commands.RedoCommand;
 import Tempo.Commands.RemoveCommand;
 import Tempo.Commands.SearchCommand;
 import Tempo.Commands.UndoCommand;
@@ -48,6 +49,8 @@ public class CommandParser {
 	private static final String COMMAND_FIND = "find";
 
 	private static final String COMMAND_UNDO = "undo";
+	
+	private static final String COMMAND_REDO = "redo";
 	
 	private static final String COMMAND_FILENAME = "filename";
 	
@@ -145,6 +148,9 @@ public class CommandParser {
 		// Undo Function
 		case COMMAND_UNDO:
 			return processUndoCommand();
+			
+		case COMMAND_REDO:
+			return processRedoCommand();
 			
 		// Filename Function
 		case COMMAND_FILENAME:
@@ -490,12 +496,16 @@ public class CommandParser {
 		return new UndoCommand(calendar);
 	}
 	
+	private Command processRedoCommand(){
+		return new RedoCommand(calendar);
+	}
+	
 	private Command processFilenameCommand(String arguments) {
 		return new EditFilenameCommand(calendar,arguments);
 	}
 	
 	private Command processClearCommand(){
-		return new ClearCommand();
+		return new ClearCommand(calendar);
 		
 	}
 
