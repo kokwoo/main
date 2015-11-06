@@ -21,6 +21,7 @@ public class RemoveCommand implements Command {
 	}
 	
 	public Result execute(){
+		cal.saveCmd((Command) new RemoveCommand(cal, indexStore, idx, isSeries));
 		if (isEvent()) {
 			return cal.removeEvent(idx, isSeries);
 		} else if (isFloatingTask()) {
