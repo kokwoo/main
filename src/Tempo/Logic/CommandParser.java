@@ -505,7 +505,7 @@ public class CommandParser {
 	}
 	
 	private Command processClearCommand(){
-		return new ClearCommand();
+		return new ClearCommand(calendar);
 		
 	}
 

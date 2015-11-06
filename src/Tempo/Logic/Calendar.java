@@ -46,6 +46,8 @@ public class Calendar {
 	private static final String CMD_REDO = "redo";
 
 	private static final String CMD_SEARCH = "search %1$s";
+	
+	private static final String CMD_CLEAR = "%1$s is cleared!";
 
 	private static final String KEY_EVENTS = "events";
 	private static final String KEY_TASKS = "tasks";
@@ -109,6 +111,19 @@ public class Calendar {
 	
 	public String getFilename(){
 		return _fileName;
+	}
+	
+	public Result clearFile(){
+		eventsList = new ArrayList<CalendarObject>();
+		tasksList = new ArrayList<CalendarObject>();
+		floatingTasksList = new ArrayList<CalendarObject>();
+		
+		indexStore.resetStore();
+		
+		exportToFile();
+		String returnString = String.format(CMD_CLEAR, _fileName);
+		
+		return new Result(returnString, true, true, null);
 	}
 
 	/***** ADD COMMAND EXECUTION ******/
