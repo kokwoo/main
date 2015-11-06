@@ -8,14 +8,17 @@ import java.util.List;
 import com.joestelmach.natty.*;
 
 import Tempo.Commands.AddCommand;
+import Tempo.Commands.ClearCommand;
 import Tempo.Commands.Command;
 import Tempo.Commands.DisplayCommand;
+import Tempo.Commands.EditFilenameCommand;
 import Tempo.Commands.ToggleDoneCommand;
 import Tempo.Commands.ExitCommand;
 import Tempo.Commands.RemoveCommand;
 import Tempo.Commands.SearchCommand;
 import Tempo.Commands.UndoCommand;
 import Tempo.Commands.UpdateCommand;
+import Tempo.Storage.CalendarExporter;
 
 public class CommandParser {
 	private static CommandParser instance = new CommandParser();
@@ -45,6 +48,12 @@ public class CommandParser {
 	private static final String COMMAND_FIND = "find";
 
 	private static final String COMMAND_UNDO = "undo";
+	
+	private static final String COMMAND_FILENAME = "filename";
+	
+	private static final String COMMAND_SWAP = "swap";
+	
+	private static final String COMMAND_CLEAR = "clear";
 
 	private static final String COMMAND_HELP = "help";
 
@@ -77,6 +86,7 @@ public class CommandParser {
 	private Calendar calendar = Calendar.getInstance();
 	private IndexStore indexStore = IndexStore.getInstance();
 	private Display display = Display.getInstance();
+	private CalendarExporter exporter = CalendarExporter.getInstance();
 
 	private CommandParser() {
 
@@ -135,6 +145,13 @@ public class CommandParser {
 		// Undo Function
 		case COMMAND_UNDO:
 			return processUndoCommand();
+			
+		// Filename Function
+		case COMMAND_FILENAME:
+			return processFilenameCommand(arguments);
+			
+		case COMMAND_CLEAR:
+			return processClearCommand();
 
 		// Display help/manual
 		case COMMAND_HELP:
@@ -437,6 +454,8 @@ public class CommandParser {
 		command = new SearchCommand(calendar, arguments);
 		return command;
 	}
+	
+	
 
 	private Command processDisplayCommand(String arguments) {
 		Command command;
@@ -469,6 +488,15 @@ public class CommandParser {
 
 	private Command processUndoCommand() {
 		return new UndoCommand(calendar);
+	}
+	
+	private Command processFilenameCommand(String arguments) {
+		return new EditFilenameCommand(calendar,arguments);
+	}
+	
+	private Command processClearCommand(){
+		return new ClearCommand();
+		
 	}
 
 	private Command processExitCommand() {

@@ -91,6 +91,20 @@ public class Calendar {
 			indexStore.initialiseStore(eventsList, tasksList, floatingTasksList);
 		}
 	}
+	
+	public boolean setFilename(String fileName){
+		_fileName = fileName;
+		if(exporter.setFileName(_fileName)){
+			exporter.export();
+			return true;
+		}else{
+			return false;
+		}
+	}
+	
+	public String getFilename(){
+		return _fileName;
+	}
 
 	/***** ADD COMMAND EXECUTION ******/
 
@@ -848,7 +862,7 @@ public class Calendar {
 			eventsList = importer.getEventsList();
 			tasksList = importer.getTasksList();
 			floatingTasksList = importer.getFloatingTasksList();
-
+			
 			sortEvents();
 			sortTasks();
 

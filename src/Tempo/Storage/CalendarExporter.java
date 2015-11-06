@@ -35,13 +35,16 @@ public class CalendarExporter {
 		return instance;
 	}
 	
-	public void setFileName(String filename){
+	public boolean setFileName(String filename){
 		_fileName = filename.trim();
+		
 		try{
 			out = new BufferedWriter(new FileWriter(_fileName));
 		}catch (Exception e){
 			//UNABLE TO OPEN FILENAME
+			return false;
 		}
+		return true;
 	}
 	
 	public void export(){
