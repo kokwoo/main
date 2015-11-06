@@ -26,6 +26,7 @@ public class UpdateCommand implements Command {
 	
 	@Override
 	public Result execute() {
+		cal.saveCmd((Command) new UpdateCommand(cal, indexStore, idx, fields, newValues, isSeries));
 		if (isEvent()) {
 			return cal.updateEvent(idx, fields, newValues, isSeries);
 		} else if (isFloatingTask()) {
