@@ -2,29 +2,34 @@ package Tempo.Commands;
 
 import Tempo.Logic.Calendar;
 
-public class EditFilenameCommand implements Command{
+public class EditFileNameCommand implements Command{
 	private static final String command = "change filename %1$s";
 	
-	private Calendar calendar;
-	private String filename;
+	private Calendar cal;
+	private String fileName;
 	
-	public EditFilenameCommand(Calendar calendar, String filename){
-		this.calendar = calendar;
-		this.filename = filename;
+	public EditFileNameCommand(Calendar cal, String fileName){
+		this.cal = cal;
+		this.fileName = fileName;
 	}
 	
 	public Result execute() {
-		String originalFileName = calendar.getFilename();
-		boolean success = calendar.setFilename(filename);
-		String returnCommand = String.format(command, filename);
+		saveCommand();
+		String originalFileName = cal.getFilename();
+		boolean success = cal.setFilename(fileName);
+		String returnCommand = String.format(command, fileName);
 		
 		if(success){
 			return new Result(returnCommand,success,null);
 	
 		}else{
-			calendar.setFilename(originalFileName);
+			cal.setFilename(originalFileName);
 			return new Result(returnCommand,success,null);
 		}
+	}
+	
+	private void saveCommand() {
+		cal.saveCmd((Command) new EditFileNameCommand(cal, fileName));
 	}
 
 }
