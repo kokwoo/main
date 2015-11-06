@@ -43,7 +43,7 @@ public class UpdateCommand implements Command {
 	}
 	
 	private Result executeUpdateEvent() {
-		return cal.updateEvent(idx, fields, newValues, isSeries);
+	return cal.updateEvent(idx, fields, newValues, isSeries);
 	}
 	
 	private Result executeUpdateFloating() {
