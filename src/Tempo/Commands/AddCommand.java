@@ -2,15 +2,10 @@ package Tempo.Commands;
 
 import java.util.*;
 import java.text.*;
-
-import Tempo.CalendarObjects.CalendarObject;
-import Tempo.CalendarObjects.Event;
-import Tempo.CalendarObjects.FloatingTask;
 import Tempo.Logic.Calendar;
-import Tempo.Logic.CurrentTime;
+import Tempo.Logic.*;
 
 public class AddCommand implements Command {
-	private String commandString;
 	private Calendar cal;
 	private ArrayList<String> params;
 	private boolean isRecurring = false;
@@ -19,14 +14,12 @@ public class AddCommand implements Command {
 	
 	private static final int LENGTH_ADD_EVENT_PARAMS = 3;
 	private static final int LENGTH_ADD_TASK_PARAMS = 2;
-	private static final int NUM_HOURS_IN_A_DAY = 24;
 	
 	private static final String ADD_EVENT = "Add Event %1$s";
 	private static final String ADD_TASK = "Add Task %1$s";
 	private static final String ADD_FLOATINGTASK = "Add Floating Task %1$s";
-	private static final String DELIMETER_SPACE = " ";
-	private static final String DELIMETER_COLON = ":";
-	private static final String DELIMETER_SLASH = "/";
+	private static final String DELIMETER_TIME = ":";
+	private static final String DELIMETER_DATE = "/";
 	private static final String BLANK = "";
 	
 	private DateFormat dateTimeFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm");
@@ -79,9 +72,7 @@ public class AddCommand implements Command {
 		
 		String start = replaceNullStart(params.get(1));
 		String end = replaceNullEnd(start, params.get(2));
-	
-		String command = String.format(ADD_EVENT, name);
-		
+			
 		Result result = cal.addEvent(name, start, end);
 		
 		return result;
@@ -96,9 +87,7 @@ public class AddCommand implements Command {
 		
 		String start = replaceNullStart(params.get(1));
 		String end = replaceNullEnd(start, params.get(2));
-	
-		String command = String.format(ADD_EVENT, name);
-		
+			
 		Result result = cal.addRecurringEvent(name, start, end, recurringType, recurrenceEndDate);
 		
 		return result;
@@ -172,26 +161,17 @@ public class AddCommand implements Command {
 		CurrentTime curr = getCurrDateTime();
 		return curr.getDateAndTime();
 	}
-	
-	private String getCurrDateStr() {
-		CurrentTime curr = getCurrDateTime();
-		return curr.getDate();
-	}
-	
-	private String getCurrTimeStr() {
-		return timeFormat.format(getCurrDateTime());
-	}
-	
+		
 	private GregorianCalendar getCalendarDate(String dateStr) {
 		String date = dateFormat.format(dateStr);
-		String[] dateParams = date.trim().split(DELIMETER_SLASH);
+		String[] dateParams = date.trim().split(DELIMETER_DATE);
 		
 		int year = Integer.valueOf(dateParams[2]);
 		int month = Integer.valueOf(dateParams[1]);
 		int day = Integer.valueOf(dateParams[0]);
 		
 		String time = timeFormat.format(dateStr);
-		String[] timeParams = date.trim().split(DELIMETER_COLON);
+		String[] timeParams = time.trim().split(DELIMETER_TIME);
 		
 		int hour = Integer.valueOf(timeParams[0]);
 		int min = Integer.valueOf(timeParams[1]);
