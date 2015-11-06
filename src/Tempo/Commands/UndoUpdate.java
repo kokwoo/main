@@ -136,18 +136,22 @@ public class UndoUpdate implements Command {
 	
 	private void initialiseNameOfPrevObj() {
 		if (isEvent) {
-			nameOfPrevObj = prevModEvent.getName();
+			setNameOfPrevObj(prevModEvent.getName());
 		} else if (isTask) {
-			nameOfPrevObj = prevModTask.getName();
+			setNameOfPrevObj(prevModTask.getName());
 		} else if (isFloatingTask) {
-			nameOfPrevObj = prevModFloating.getName();	
+			setNameOfPrevObj(prevModFloating.getName());
 		} else if (isEventsSeries) {
 			Event event = (Event) prevModEvents.get(0);
-			nameOfPrevObj = event.getName();
+			setNameOfPrevObj(event.getName());
 		} else {
 			Task task = (Task) prevModTasks.get(0);
-			nameOfPrevObj = task.getName();
+			setNameOfPrevObj(task.getName());
 		}
+	}
+	
+	private void setNameOfPrevObj(String name) {
+		nameOfPrevObj = name;
 	}
 
 }

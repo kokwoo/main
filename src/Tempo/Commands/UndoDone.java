@@ -44,7 +44,7 @@ public class UndoDone implements Command {
 			result = executeMarkDone();
 		}
 		
-		String nameOfItem = getName(result.getCommandPerformed());
+		String nameOfItem = getName(result.getCmdPerformed());
 		String command = String.format(CMD_UNDO, cmdType, objType, 
 									   nameOfItem);
 		result.setCommand(command);

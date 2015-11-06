@@ -8,17 +8,17 @@ import Tempo.CalendarObjects.Event;
 import Tempo.CalendarObjects.FloatingTask;
 
 public class Result {
-	private String commandPerformed;
+	private String cmdPeformed;
 	private String warning;
 	private boolean isSuccess;
-	private boolean isDisplay;
+	private boolean isDisplayResult;
 	private HashMap<String, ArrayList<CalendarObject>> results;
 	
 	public Result(String commandPerformed, boolean isSuccess, 
 				HashMap<String, ArrayList<CalendarObject>> result) {
-		this.commandPerformed = commandPerformed;
+		this.cmdPeformed = commandPerformed;
 		this.warning = null;
-		this.isDisplay = false;
+		this.isDisplayResult = false;
 		this.isSuccess = isSuccess;
 		this.results = result;
 	}
@@ -26,25 +26,25 @@ public class Result {
 	public Result(String commandPerformed, String warning, 
 				boolean isSuccess, 
 				HashMap<String, ArrayList<CalendarObject>> result) {
-		this.commandPerformed = commandPerformed;
+		this.cmdPeformed = commandPerformed;
 		this.warning = warning;
-		this.isDisplay = false;
+		this.isDisplayResult = false;
 		this.isSuccess = isSuccess;
 		this.results = result;
 	}
 	
-	public Result(String commandPerformed, boolean isDisplayResult, 
+	public Result(String cmdPerformed, boolean isDisplayResult, 
 				boolean isSuccess, 
 				HashMap<String, ArrayList<CalendarObject>> result){
-		this.commandPerformed = commandPerformed;
+		this.cmdPeformed = cmdPerformed;
 		this.warning = null;
-		this.isDisplay = isDisplayResult;
+		this.isDisplayResult = isDisplayResult;
 		this.isSuccess = isSuccess;
 		this.results = result;
 	}
 	
-	public String getCommandPerformed(){
-		return commandPerformed;
+	public String getCmdPerformed(){
+		return cmdPeformed;
 	}
 	
 	public boolean hasWarning(){
@@ -59,11 +59,11 @@ public class Result {
 		return warning;
 	}
 	
-	public boolean getIsDisplay(){
-		return isDisplay;
+	public boolean isDisplayResult(){
+		return isDisplayResult;
 	}
 	
-	public boolean getIsSuccess(){
+	public boolean isSuccess(){
 		return isSuccess;
 	}
 	
@@ -72,7 +72,7 @@ public class Result {
 	}
 	
 	public void setCommand(String newCommand) {
-		commandPerformed = newCommand;
+		cmdPeformed = newCommand;
 	}
 	
 }

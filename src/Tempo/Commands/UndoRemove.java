@@ -56,15 +56,15 @@ public class UndoRemove implements Command {
 		Result result;
 		
 		if (isEvent) {
-			result = cal.addBackEvent(prevModEvent);
+			result = executeRemoveEvent();
 		} else if (isTask) {
-			result = cal.addBackTask(prevModTask);
+			result = executeRemoveTask();
 		} else if (isFloatingTask) {
-			result = cal.addBackFloating(prevModFloating);
+			result = executeRemoveFloating();
 		} else if (isEventsSeries) {
-			result = cal.addBackRecurrEvent(prevModEvents);
+			result = executeRemoveEventsSeries();
 		} else {
-			result = cal.addBackRecurrTask(prevModTasks);
+			result = executeRemoveTasksSeries();
 		}
 		
 		initialiseNameOfPrevObj();
@@ -73,6 +73,26 @@ public class UndoRemove implements Command {
 		result.setCommand(command);
 				
 		return result;
+	}
+	
+	private Result executeRemoveEvent() {
+		return cal.addBackEvent(prevModEvent);
+	}
+	
+	private Result executeRemoveTask() {
+		return cal.addBackTask(prevModTask);
+	}
+	
+	private Result executeRemoveFloating() {	
+		return cal.addBackFloating(prevModFloating);
+	}
+	
+	private Result executeRemoveEventsSeries() {
+		return cal.addBackRecurrEvent(prevModEvents);
+	}
+	
+	private Result executeRemoveTasksSeries() {
+		return cal.addBackRecurrTask(prevModTasks);
 	}
 	
 	private void initialiseSeries(ArrayList<CalendarObject> series) {
@@ -87,17 +107,21 @@ public class UndoRemove implements Command {
 	
 	private void initialiseNameOfPrevObj() {
 		if (isEvent) {
-			nameOfPrevObj = prevModEvent.getName();
+			setNameOfPrevObj(prevModEvent.getName());
 		} else if (isTask) {
-			nameOfPrevObj = prevModTask.getName();
+			setNameOfPrevObj(prevModTask.getName());
 		} else if (isFloatingTask) {
-			nameOfPrevObj = prevModFloating.getName();	
+			setNameOfPrevObj(prevModFloating.getName());
 		} else if (isEventsSeries) {
 			Event event = (Event) prevModEvents.get(0);
-			nameOfPrevObj = event.getName();
+			setNameOfPrevObj(event.getName());
 		} else {
 			Task task = (Task) prevModTasks.get(0);
-			nameOfPrevObj = task.getName();
+			setNameOfPrevObj(task.getName());
 		}
+	}
+	
+	private void setNameOfPrevObj(String name) {
+		nameOfPrevObj = name;
 	}
 }

@@ -9,7 +9,7 @@ public class ToggleDoneCommand implements Command {
 	private int idx;
 	private boolean isDoneCmd;
 	
-	private static final String MSG_DONE_ERR_NOT_EVENT = 
+	private static final String MSG_ERROR = 
 			"Error: Index provided is not a valid task!";
 
 	public ToggleDoneCommand(Calendar cal, IndexStore indexStore, 
@@ -39,7 +39,7 @@ public class ToggleDoneCommand implements Command {
 	}
 	
 	private Result handleInvalidDone() {
-		return new Result(MSG_DONE_ERR_NOT_EVENT, false, null);
+		return new Result(MSG_ERROR, false, null);
 	}
 	
 	private boolean isFloatingTask(){
