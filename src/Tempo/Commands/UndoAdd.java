@@ -35,21 +35,32 @@ public class UndoAdd implements Command {
 		
 		if (isEvent) {
 			objType = OBJ_EVENT;
-			result = cal.removeEvent(prevModIndex, isSeries);
+			result = executeRemoveEvent();
 		} else if (isTask) {
 			objType = OBJ_TASK;
-			result = cal.removeTask(prevModIndex, isSeries);
+			result = executeRemoveTask();
 		} else {
 			objType = OBJ_FLOATING;
-			result = cal.removeFloatingTask(prevModIndex, isSeries);
+			result = executeRemoveFloating();
 		}
 			
-		String command = String.format(CMD_UNDO, objType, nameOfPrevObj);
-		result.setCommand(command);
-		
+		String cmd = String.format(CMD_UNDO, objType, nameOfPrevObj);
+		result.setCommand(cmd);
 		removeUndoUndoCommand();
 				
 		return result;
+	}
+	
+	private Result executeRemoveEvent() {
+		return cal.removeEvent(prevModIndex, isSeries);
+	}
+	
+	private Result executeRemoveTask() {
+		return cal.removeTask(prevModIndex, isSeries);
+	}
+	
+	private Result executeRemoveFloating() {
+		return cal.removeFloatingTask(prevModIndex, isSeries);
 	}
 	
 	private void removeUndoUndoCommand() {
@@ -59,12 +70,16 @@ public class UndoAdd implements Command {
 	private void initialiseNameOfPrevObj() {
 		if (isEvent) {
 			Event event = (Event) idxStore.getEventById(prevModIndex);
-			nameOfPrevObj = event.getName();
+			setNameOfPrevObj(event.getName());
 		} else {
 			FloatingTask task = (FloatingTask) idxStore.getTaskById(
 														prevModIndex);
-			nameOfPrevObj = task.getName();
+			setNameOfPrevObj(task.getName());
 		}
+	}
+	
+	private void setNameOfPrevObj(String name) {
+		nameOfPrevObj = name;
 	}
 
 }

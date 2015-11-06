@@ -13,7 +13,7 @@ public class RedoCommand implements Command{
 	public Result execute(){
 		Result result = cal.redo();
 		String cmd = String.format(CMD_REDO, 
-					 result.getCommandPerformed());
+					 result.getCmdPerformed());
 		result.setCommand(cmd);
 		return result;
 	}
