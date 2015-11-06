@@ -733,6 +733,7 @@ public class Calendar {
 			return new Result(CMD_UNDO, false, null);
 		}
 		Result result = undoHistory.pop().execute();
+		//redoHistory.add(cmdHistory.pop());
 		exportToFile();
 		return result;
 	}
@@ -749,7 +750,6 @@ public class Calendar {
 		Result result = redoHistory.pop().execute();
 		exportToFile();
 		
-		redoHistory.add(cmdHistory.pop());
 		return result;
 	}
 	

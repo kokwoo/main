@@ -10,7 +10,7 @@ public class RedoCommand implements Command{
 	}
 	
 	public Result execute(){
-		//Szeying, feel free to change this as you like! :)
+		System.out.println("Attempted to execute redo"); // debug
 		return cal.redo();
 	}
 

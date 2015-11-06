@@ -47,7 +47,7 @@ public class UndoAdd implements Command {
 		result.setCommand(command);
 		
 		removeUndoUndoCommand();
-		
+				
 		return result;
 	}
 	
