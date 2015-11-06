@@ -13,7 +13,7 @@ public class AddCommand implements Command {
 	private String commandString;
 	private Calendar cal;
 	private ArrayList<String> params;
-	private boolean isRecurring;
+	private boolean isRecurring = false;
 	private String recurringType;
 	private String recurrenceEndDate;
 	
@@ -48,6 +48,11 @@ public class AddCommand implements Command {
 	
 	@Override
 	public Result execute() {
+		if (isRecurring) {
+			cal.saveCmd((Command) new AddCommand(cal, params, isRecurring, recurringType, recurrenceEndDate));
+		} else {
+			cal.saveCmd((Command) new AddCommand(cal, params));
+		}
 		if (params.size() == LENGTH_ADD_EVENT_PARAMS) {
 			if(isRecurring){
 				return addRecurringEvent();

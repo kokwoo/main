@@ -1,7 +1,5 @@
 package Tempo.Commands;
 
-import java.util.ArrayList;
-
 import Tempo.Logic.Calendar;
 
 public class UndoCommand implements Command{
