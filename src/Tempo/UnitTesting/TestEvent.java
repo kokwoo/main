@@ -166,7 +166,7 @@ public class TestEvent extends TestCase {
 	@Test
 	public final void testToString() {
 		Event tempEvent = new Event(0, 0, "Dinner with mum", "07/11/2015/19:00", "23/12/2015/19:00");
-		assertEquals("0!!0!!Dinner with mum!!07/11/2015/19:00!!23/12/2015/19:00", tempEvent.getIndex() + DELIMETER + tempEvent.getSeriesIndex()+ DELIMETER + tempEvent.getName() + DELIMETER + tempEvent.getStartDate() + DATE_DELIMETER + tempEvent.getStartTime() + DELIMETER + tempEvent.getEndDate()+ DATE_DELIMETER +tempEvent.getEndTime());
+		assertEquals("0!!0!!Dinner with mum!!07/11/2015/19:00!!23/12/2015/19:00", tempEvent.toString());
 	}
 	
 	
