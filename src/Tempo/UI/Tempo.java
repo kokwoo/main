@@ -67,6 +67,9 @@ public class Tempo {
 				}
 			} else {
 				System.out.println(String.format(UNSUCESSFUL_MESSAGE, result.getCmdPerformed()));
+				if (result.hasWarning()) {
+					System.out.println(result.getWarning());
+				}
 			}
 		}
 	}

@@ -17,6 +17,7 @@ import Tempo.Commands.ExitCommand;
 import Tempo.Commands.RedoCommand;
 import Tempo.Commands.RemoveCommand;
 import Tempo.Commands.SearchCommand;
+import Tempo.Commands.SwapCommand;
 import Tempo.Commands.UndoCommand;
 import Tempo.Commands.UpdateCommand;
 import Tempo.Storage.CalendarExporter;
@@ -155,6 +156,10 @@ public class CommandParser {
 			// Filename Function
 			case COMMAND_FILENAME :
 				return processFilenameCommand(arguments);
+				
+			//Swap Function
+			case COMMAND_SWAP:
+				return processSwapCommand(arguments);
 
 			case COMMAND_CLEAR :
 				return processClearCommand();
@@ -526,6 +531,10 @@ public class CommandParser {
 	private Command processFilenameCommand(String arguments) {
 		return new EditFileNameCommand(calendar, arguments);
 	}
+	
+	private Command processSwapCommand(String arguments){
+		return new SwapCommand(calendar, arguments);
+	}
 
 	private Command processClearCommand() {
 		return new ClearCommand(calendar);
@@ -536,7 +545,7 @@ public class CommandParser {
 		return new ExitCommand();
 	}
 
-	private Date getDateTime(String dateTimeString) throws Exception {
+	private static Date getDateTime(String dateTimeString) throws Exception {
 		try {
 			if (dateTimeString.contains("at")) {
 				String dateString = dateTimeString.split("at")[0].trim();
@@ -582,7 +591,7 @@ public class CommandParser {
 
 	}
 
-	private Date parseDateString(String dateTimeString) throws Exception {
+	private static Date parseDateString(String dateTimeString) throws Exception {
 		SimpleDateFormat dateFormat;
 		DateGroup dateGroup;
 		Date date;
@@ -653,7 +662,7 @@ public class CommandParser {
 		return returnString;
 	}
 
-	private ArrayList<String> processRecurringArgs(String recurringArgs) throws Exception {
+	public static ArrayList<String> processRecurringArgs(String recurringArgs) throws Exception {
 		String recurringType = null;
 		Date recurringDate = null;
 		String recurringDateStr = null;
@@ -686,7 +695,7 @@ public class CommandParser {
 		return args;
 	}
 
-	private String processRecurringType(String recurringType) {
+	private static String processRecurringType(String recurringType) {
 		switch (recurringType.toLowerCase()) {
 			case KEY_DAY :
 				return KEY_DAILY;
@@ -797,7 +806,7 @@ public class CommandParser {
 		return returnMessage;
 	}
 
-	private DateGroup parseDateTimeString(String dateTimeString) {
+	private static DateGroup parseDateTimeString(String dateTimeString) {
 		Parser parser = new Parser();
 		List<DateGroup> groups = parser.parse(dateTimeString);
 		if (!groups.isEmpty()) {
