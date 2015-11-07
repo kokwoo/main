@@ -350,7 +350,7 @@ public class TestLogic {
 	public final void testUpdateTaskName() {
 		// To test - initialize test.txt
 		String task = "add task Gymming due 12/12/2015";
-		String fileName = "textfile.txt";
+		String fileName = "testfile.txt";
 		RequestHandler tempRH = RequestHandler.getInstance();
 		tempRH.initialize(fileName);
 		// clear up the file
@@ -375,7 +375,7 @@ public class TestLogic {
 	public final void testUpdateTaskDue() {
 		// To test - initialize test.txt
 		String task = "add task Gymming due 12/12/2015";
-		String fileName = "textfile.txt";
+		String fileName = "testfile.txt";
 		RequestHandler tempRH = RequestHandler.getInstance();
 		tempRH.initialize(fileName);
 		// clear up the file
@@ -398,22 +398,94 @@ public class TestLogic {
 		tempRH.processCommand("clear file");
 
 	}
-
+	
 	@Test
-	public final void testDisplay() {
+	public final void testUpdateFTaskName() {
+		// To test - initialize test.txt
+		String task = "add task Gymming";
 		String fileName = "testfile.txt";
 		RequestHandler tempRH = RequestHandler.getInstance();
 		tempRH.initialize(fileName);
-		// String checkStr = "You have no event today\n" + "You have no upcoming
-		// event\n" + "These are the list of past events\n" + "\n"
-		// + "1) do something From: Saturday, 10/10/2015 10:00 To: Tuesday,
-		// 10/11/2015 11:00 [ID:0] ";
+		// clear up the file
+		tempRH.processCommand("clear file");
 
-		assertTrue(tempRH.processCommand("display events").isDisplayResult());
-		assertTrue(tempRH.processCommand("display events").isSuccess());
-		// HashMap<String, ArrayList<CalendarObject>> hm = new HashMap<String,
-		// ArrayList<CalendarObject>>();
+		// checker for due date
+		ArrayList<CalendarObject> checkArray = new ArrayList<CalendarObject>();
+		FloatingTask checkNewDueDate = new FloatingTask(0, 0, "changed");
+		checkArray.add(checkNewDueDate);
 
+		String cmdDueDate = String.format(CMD_UPDATE_FLOATING, "changed");
+		Result tempResult1 = new Result(cmdDueDate, true, putHashMap("floating tasks", checkArray));
+
+		// Compare results object
+		tempRH.processCommand(task);
+		ArrayList<CalendarObject> expectedArrayName = tempResult1.getResults().get("floating tasks");
+		ArrayList<CalendarObject> actualArrayName = tempRH.processCommand("update 0 name:changed").getResults()
+				.get("floating tasks");
+		assertEquals(actualArrayName.toString(), expectedArrayName.toString());
+		tempRH.processCommand("clear file");
+
+	}
+	
+	private final String TODAY_TASKS = "Tasks due today";
+	private final String NO_TODAY_TASKS = "You have no task today";
+	
+	private final String TODAY_EVENTS = "These are your events for the day";
+	private final String NO_TODAY_EVENTS = "You have no event today";
+
+	@Test
+	public final void testDisplayAll() {
+		String fileName = "testfile.txt";
+		RequestHandler tempRH = RequestHandler.getInstance();
+		tempRH.initialize(fileName);
+		tempRH.processCommand("add event Dinner with mum from today at 9pm to tomorrow at 9pm");
+		tempRH.processCommand("add task Dinner with gf due today");
+
+		assertTrue(tempRH.processCommand("display all").isDisplayResult());
+		assertTrue(tempRH.processCommand("display all").isSuccess());
+		
+		//checker
+		ArrayList<String> checkerArray = new ArrayList<String>();
+		checkerArray.add("These are your events for the day");
+		checkerArray.add("");
+		checkerArray.add("1) Dinner with mum From: Sunday, 08/11/2015 21:00 To: Monday, 09/11/2015 21:00	[ID:0] ");
+		checkerArray.add("");
+		checkerArray.add("You have no upcoming event");
+		checkerArray.add("");
+		checkerArray.add("You have no past event");
+		checkerArray.add("");
+		checkerArray.add("You have no task without deadline");
+		checkerArray.add("");
+		checkerArray.add("You have no task without deadline that are done");
+		checkerArray.add("");
+		checkerArray.add("You have no done tasks");
+		checkerArray.add("");
+		checkerArray.add("Tasks due today");
+		checkerArray.add("");
+		checkerArray.add("1) Dinner with gf Due: Sunday, 08/11/2015	[ID:1] ");
+		checkerArray.add("");
+		checkerArray.add("You have no upcoming task");
+		checkerArray.add("");
+	//	checkerArray.add("1) okokokok Due: Saturday, 12/12/2015	[ID:0] ");
+	//	checkerArray.add("");
+		checkerArray.add("You have no missed task");
+		checkerArray.add("");
+		
+		String checkerString = strArrayToString(checkerArray);
+		
+		//compare results
+		assertEquals(checkerString, tempRH.processCommand("display all").getCmdPerformed());
+		tempRH.processCommand("clear file");
+	}
+	
+	public String strArrayToString(ArrayList<String> in){
+		String s = "";
+		
+		for(String str : in){
+			s += str+"\n";
+		}
+		
+		return s;
 	}
 
 }
