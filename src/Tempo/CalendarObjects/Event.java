@@ -52,7 +52,7 @@ public class Event implements CalendarObject, Comparable<Event>{
 		this.name = newName;
 	}
 	
-	private void setStartDateTime(String start) {
+	private void setStartDateTime(String start){
 		try {
 			startDateTime = dateFormatter.parse(start);
 		} catch (ParseException e) {
