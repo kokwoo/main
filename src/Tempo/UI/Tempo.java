@@ -55,18 +55,18 @@ public class Tempo {
 		while (run) {
 			Result result = listenForInput();
 
-			if (result.getIsSuccess()) {
-				if (result.getIsDisplay()) {
-					System.out.println(result.getCommandPerformed());
+			if (result.isSuccess()) {
+				if (result.isDisplayResult()) {
+					System.out.println(result.getCmdPerformed());
 				} else {
-					System.out.println(String.format(SUCCESSFUL_MESSAGE, result.getCommandPerformed()));
+					System.out.println(String.format(SUCCESSFUL_MESSAGE, result.getCmdPerformed()));
 
 					if (result.hasWarning()) {
 						System.out.println(result.getWarning());
 					}
 				}
 			} else {
-				System.out.println(String.format(UNSUCESSFUL_MESSAGE, result.getCommandPerformed()));
+				System.out.println(String.format(UNSUCESSFUL_MESSAGE, result.getCmdPerformed()));
 			}
 		}
 	}

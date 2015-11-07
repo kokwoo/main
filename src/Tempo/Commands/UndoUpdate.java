@@ -3,7 +3,6 @@ package Tempo.Commands;
 import java.util.*;
 import Tempo.CalendarObjects.*;
 import Tempo.Logic.Calendar;
-import Tempo.Logic.IndexStore;
 
 public class UndoUpdate implements Command {
 	private static Calendar calendar = Calendar.getInstance();
@@ -17,7 +16,6 @@ public class UndoUpdate implements Command {
 	private String nameOfPrevObj;
 	
 	private int prevModIndex;
-	
 	private Event prevModEvent;
 	private Task prevModTask;
 	private FloatingTask prevModFloating;
@@ -75,29 +73,60 @@ public class UndoUpdate implements Command {
 		Result result;
 		
 		if (isEvent) {
-			result = calendar.removeEvent(prevModIndex, isEventsSeries);
-			removeUndoUndoCommand();
-			result = calendar.addBackEvent(prevModEvent);
+			result = undoUpdateEvent();
 		} else if (isTask) {
-			result = calendar.removeTask(prevModIndex, isEventsSeries);
-			removeUndoUndoCommand();
-			result = calendar.addBackTask(prevModTask);
+			result = undoUpdateTask();
 		} else if (isFloatingTask) {
-			result = calendar.removeFloatingTask(prevModIndex, isEventsSeries);
-			removeUndoUndoCommand();
-			result = calendar.addBackFloating(prevModFloating);
+			result = undoUpdateFloating();
 		} else if (isEventsSeries) {
-			result = calendar.removeEvent(prevModIndex, isEventsSeries);
-			removeUndoUndoCommand();
-			result = calendar.addBackRecurrEvent(prevModEvents);
+			result = undoUpdateEventsSeries();
 		} else {
-			result = calendar.removeTask(prevModIndex, isEventsSeries);
-			removeUndoUndoCommand();
-			result = calendar.addBackRecurrTask(prevModTasks);
+			result = undoUpdateTasksSeries();
 		}
 		
-		String command = String.format(CMD_UNDO, objType, nameOfPrevObj);
+		String command = String.format(CMD_UNDO, objType, 
+									   nameOfPrevObj);
 		result.setCommand(command);
+		return result;
+	}
+	
+	private Result undoUpdateEvent() {
+		Result result;
+		result = calendar.removeEvent(prevModIndex, isEventsSeries);
+		removeUndoUndoCommand();
+		result = calendar.addBackEvent(prevModEvent);
+		return result;
+	}
+	
+	private Result undoUpdateTask() {
+		Result result;
+		result = calendar.removeTask(prevModIndex, isEventsSeries);
+		removeUndoUndoCommand();
+		result = calendar.addBackTask(prevModTask);
+		return result;
+	}
+	
+	private Result undoUpdateFloating() {
+		Result result;
+		result = calendar.removeFloatingTask(prevModIndex, isEventsSeries);
+		removeUndoUndoCommand();
+		result = calendar.addBackFloating(prevModFloating);
+		return result;
+	}
+	
+	private Result undoUpdateEventsSeries() {
+		Result result;
+		result = calendar.removeEvent(prevModIndex, isEventsSeries);
+		removeUndoUndoCommand();
+		result = calendar.addBackRecurrEvent(prevModEvents);
+		return result;
+	}
+	
+	private Result undoUpdateTasksSeries() {
+		Result result;
+		result = calendar.removeTask(prevModIndex, isEventsSeries);
+		removeUndoUndoCommand();
+		result = calendar.addBackRecurrTask(prevModTasks);
 		return result;
 	}
 	
@@ -107,18 +136,22 @@ public class UndoUpdate implements Command {
 	
 	private void initialiseNameOfPrevObj() {
 		if (isEvent) {
-			nameOfPrevObj = prevModEvent.getName();
+			setNameOfPrevObj(prevModEvent.getName());
 		} else if (isTask) {
-			nameOfPrevObj = prevModTask.getName();
+			setNameOfPrevObj(prevModTask.getName());
 		} else if (isFloatingTask) {
-			nameOfPrevObj = prevModFloating.getName();	
+			setNameOfPrevObj(prevModFloating.getName());
 		} else if (isEventsSeries) {
 			Event event = (Event) prevModEvents.get(0);
-			nameOfPrevObj = event.getName();
+			setNameOfPrevObj(event.getName());
 		} else {
 			Task task = (Task) prevModTasks.get(0);
-			nameOfPrevObj = task.getName();
+			setNameOfPrevObj(task.getName());
 		}
+	}
+	
+	private void setNameOfPrevObj(String name) {
+		nameOfPrevObj = name;
 	}
 
 }
