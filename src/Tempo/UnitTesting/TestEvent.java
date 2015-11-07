@@ -120,10 +120,7 @@ public class TestEvent extends TestCase {
 	
 	@Test
 	public final void testGetEndTime() {
-		// String fileName = "testfile.txt";
-		// RequestHandler tempRH = RequestHandler.getInstance();
-		// tempRH.initialize(fileName);
-		// Calendar tempCal = tempRH.getCalendar();
+	
 
 		Event tempEvent = new Event(0, 0, "Dinner with mum", "22/12/2015/19:00", "23/12/2015/19:00");
 		Event tempEvent1 = new Event(0, 0, "Dinner with mum", "22/12/2015/19:00", "23/12/2015/23:59");
