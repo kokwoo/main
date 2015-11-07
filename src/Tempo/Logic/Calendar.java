@@ -22,6 +22,8 @@ public class Calendar {
 	private static Stack<Command> cmdHistory;
 
 	private static final String MSG_WARNING_CLASH = "Warning: this event clashes with another event.\nEnter 'undo' if you would like to revoke the previous operation.";
+	private static final String MSG_WARNING_INVALID_FIELD = "Warning: One or more fields is invalid! Pleae refer to the help menu for reference";
+	private static final String MSG_WARNING_RECUR_WITHOUT_DUE = "Warning: Unable to recur without due date!";
 
 	private static final String CMD_ADD_EVENT = "add event %1$s";
 	private static final String CMD_ADD_RECURR_EVENT = "add recurring event %1$s";
@@ -47,7 +49,7 @@ public class Calendar {
 
 	private static final String CMD_UNDO = "undo";
 	private static final String CMD_UNDO_CLEAR = "clear %1$s";
-	
+
 	private static final String CMD_REDO = "redo";
 
 	private static final String CMD_SEARCH = "search %1$s";
@@ -61,10 +63,21 @@ public class Calendar {
 	private static final String KEY_WEEKLY = "weekly";
 	private static final String KEY_MONTHLY = "monthly";
 	private static final String KEY_ANNUALLY = "annually";
-	
+
+	private static final String PARAM_NAME = "name";
+	private static final String PARAM_START_DATE = "start date";
+	private static final String PARAM_START_TIME = "start time";
+	private static final String PARAM_END_DATE = "end date";
+	private static final String PARAM_END_TIME = "end time";
+	private static final String PARAM_DUE = "due";
+	private static final String PARAM_REPEAT = "repeat";
+	private static final String PARAM_RECURRING = "recurring";
+
+	private static final String PARAM_DUMMY_DATE = "01/01/1990";
+
 	private static final String KEY_BEST_MATCHES = "bestMatches";
 	private static final String KEY_ALTERNATIVE_MATCHES = "alternativeMatches";
-	
+
 	private static final String FIELD_START_DATE = "start date";
 	private static final String FIELD_START_TIME = "start time";
 	private static final String FIELD_END_DATE = "end date";
@@ -106,6 +119,11 @@ public class Calendar {
 		File file = new File(fileName);
 		if (file.exists()) {
 			importFromFile();
+			System.out.println("Imported from file!");
+			System.out.println("Filename: " + fileName);
+			System.out.println("Events List" + eventsList);
+			System.out.println("Tasks List" + tasksList);
+			System.out.println("Floating Tasks List" + floatingTasksList);
 			indexStore.initialiseStore(eventsList, tasksList, floatingTasksList);
 		}
 	}
@@ -114,7 +132,7 @@ public class Calendar {
 		if (!isUndoCmd) {
 			clearRedoHistory();
 		}
-		
+
 		if (setFilename(fileName)) {
 			String cmd = String.format(CMD_EDIT_FILENAME, fileName);
 			return new Result(cmd, true, null);
@@ -122,18 +140,18 @@ public class Calendar {
 			return new Result(null, false, null);
 		}
 	}
-	
+
 	public boolean setFilename(String fileName) {
 		if (!isUndoCmd) {
 			clearRedoHistory();
 		}
-		
+
 		boolean isSuccess = false;
 		this.fileName = fileName;
 		if (exporter.setFileName(fileName)) {
 			exporter.export();
 			isSuccess = true;
-		} 
+		}
 		return isSuccess;
 	}
 
@@ -141,24 +159,47 @@ public class Calendar {
 		return fileName;
 	}
 
+	public boolean swapFile(String fileName) {
+		this.fileName = fileName;
+		if (exporter.setFileName(fileName)) {
+			clearCalendar();
+			System.out.println("Filename: " + fileName);
+			System.out.println(eventsList);
+			System.out.println(tasksList);
+			System.out.println(floatingTasksList);
+			createFile(fileName);
+			return true;
+		} else {
+			return false;
+		}
+	}
+
 	public Result clearFile() {
 		Command newUndo = (Command) new UndoClear(eventsList, tasksList, floatingTasksList);
 		undoHistory.add(newUndo);
 
+		clearCalendar();
+
+		exportToFile();
+		String returnString = String.format(CMD_CLEAR, fileName);
+
+		if (!isUndoCmd) {
+			clearRedoHistory();
+		}
+
+		return new Result(returnString, true, true, null);
+	}
+
+	public void clearCalendar() {
 		eventsList = new ArrayList<CalendarObject>();
 		tasksList = new ArrayList<CalendarObject>();
 		floatingTasksList = new ArrayList<CalendarObject>();
 
 		indexStore.resetStore();
 
-		exportToFile();
-		String returnString = String.format(CMD_CLEAR, fileName);
-				
-		if (!isUndoCmd) {
-			clearRedoHistory();
-		}
-		
-		return new Result(returnString, true, true, null);
+		System.out.println(eventsList);
+		System.out.println(tasksList);
+		System.out.println(floatingTasksList);
 	}
 
 	/***** ADD COMMAND EXECUTION ******/
@@ -249,21 +290,20 @@ public class Calendar {
 		String cmd = String.format(CMD_ADD_RECURR_EVENT, name);
 		return new Result(cmd, true, putInHashMap(KEY_EVENTS, eventsList));
 	}
-	
-	public Result addBackAll(ArrayList<CalendarObject> events, 
-							 ArrayList<CalendarObject> tasks, 
-							 ArrayList<CalendarObject> floatingTasks) {
+
+	public Result addBackAll(ArrayList<CalendarObject> events, ArrayList<CalendarObject> tasks,
+			ArrayList<CalendarObject> floatingTasks) {
 		eventsList = events;
 		tasksList = tasks;
 		floatingTasksList = floatingTasks;
 		indexStore.initialiseStore(events, tasks, floatingTasks);
-		
+
 		HashMap<String, ArrayList<CalendarObject>> listsMap;
 		listsMap = new HashMap<String, ArrayList<CalendarObject>>();
 		listsMap.put(KEY_EVENTS, events);
 		listsMap.put(KEY_TASKS, tasks);
 		listsMap.put(KEY_FLOATING, floatingTasks);
-		
+
 		String cmd = String.format(CMD_UNDO_CLEAR, fileName);
 		return new Result(cmd, true, listsMap);
 	}
@@ -565,9 +605,25 @@ public class Calendar {
 		Event eventToUpdate = (Event) eventsList.get(arrayListIndex);
 		int seriesIndex = eventToUpdate.getSeriesIndex();
 		Event oldEvent = copyEvent(eventToUpdate);
-		
+		int recurringFieldIdx = -1;
+
+		String name = eventToUpdate.getName();
+		String cmd = String.format(CMD_UPDATE_EVENT, name);
+
+		boolean updateRecurring = false;
+
+		if (hasInvalidFields(fields, KEY_EVENTS)) {
+			return new Result(cmd, MSG_WARNING_INVALID_FIELD, false, null);
+		}
+
+		updateRecurring = hasUpdateRecurring(fields);
+
 		for (int i = 0; i < fields.size(); i++) {
-			eventToUpdate.update(fields.get(i), newValues.get(i));
+			if (!(fields.get(i).equals(PARAM_RECURRING) || fields.get(i).equals(PARAM_REPEAT))) {
+				eventToUpdate.update(fields.get(i), newValues.get(i));
+			} else {
+				recurringFieldIdx = i;
+			}
 			if (!hasClash && hasChangedTime(fields.get(i)) && hasClash(eventToUpdate)) {
 				hasClash = true;
 			}
@@ -591,6 +647,25 @@ public class Calendar {
 			}
 		}
 
+		if (updateRecurring) {
+			if (recurringFieldIdx != -1) {
+				// PROCESS RECURRING END AND TYPE
+				try {
+					ArrayList<String> recurringParams = CommandParser
+							.processRecurringArgs(newValues.get(recurringFieldIdx));
+
+					Event tempEvent = copyEvent(eventToUpdate);
+					removeEvent(eventToUpdate.getIndex(), true);
+					addRecurringEvent(tempEvent.getName(), tempEvent.getStartDateTimeSimplified(),
+							tempEvent.getEndDateTimeSimplified(), recurringParams.get(0), recurringParams.get(1));
+				} catch (Exception e) {
+					return new Result(cmd, MSG_WARNING_INVALID_FIELD, false, null);
+				}
+			} else {
+				// PROBLEM?
+			}
+		}
+
 		exportToFile();
 
 		Command newUndo;
@@ -606,9 +681,6 @@ public class Calendar {
 		if (!isUndoCmd) {
 			clearRedoHistory();
 		}
-
-		String name = eventToUpdate.getName();
-		String cmd = String.format(CMD_UPDATE_EVENT, name);
 
 		if (hasClash) {
 			return new Result(cmd, MSG_WARNING_CLASH, true, putInHashMap(KEY_EVENTS, eventsList));
@@ -634,8 +706,24 @@ public class Calendar {
 		int seriesIndex = taskToUpdate.getSeriesIndex();
 		Task oldTask = copyTask(taskToUpdate);
 
+		String name = taskToUpdate.getName();
+		String cmd = String.format(CMD_UPDATE_TASK, name);
+
+		boolean updateRecurring = false;
+		int recurringFieldIdx = -1;
+
+		if (hasInvalidFields(fields, KEY_TASKS)) {
+			return new Result(cmd, MSG_WARNING_INVALID_FIELD, false, null);
+		}
+
+		updateRecurring = hasUpdateRecurring(fields);
+
 		for (int i = 0; i < fields.size(); i++) {
-			taskToUpdate.update(fields.get(i), newValues.get(i));
+			if (!(fields.get(i).equals(PARAM_RECURRING) || fields.get(i).equals(PARAM_REPEAT))) {
+				taskToUpdate.update(fields.get(i), newValues.get(i));
+			} else {
+				recurringFieldIdx = i;
+			}
 		}
 
 		if (isSeries) {
@@ -648,8 +736,26 @@ public class Calendar {
 					for (int j = 0; j < fields.size(); j++) {
 						currTask.update(fields.get(j), newValues.get(j));
 					}
-
 				}
+			}
+		}
+
+		if (updateRecurring) {
+			if (recurringFieldIdx != -1) {
+				// PROCESS RECURRING END AND TYPE
+				try {
+					ArrayList<String> recurringParams = CommandParser
+							.processRecurringArgs(newValues.get(recurringFieldIdx));
+
+					Task tempTask = copyTask(taskToUpdate);
+					removeTask(taskToUpdate.getIndex(), true);
+					addRecurringTask(tempTask.getName(), tempTask.getDueDateSimplified(), recurringParams.get(0),
+							recurringParams.get(1));
+				} catch (Exception e) {
+					return new Result(cmd, MSG_WARNING_INVALID_FIELD, false, null);
+				}
+			} else {
+				// PROBLEM?
 			}
 		}
 
@@ -669,9 +775,6 @@ public class Calendar {
 			clearRedoHistory();
 		}
 
-		String name = taskToUpdate.getName();
-		String cmd = String.format(CMD_UPDATE_TASK, name);
-
 		return new Result(cmd, true, putInHashMap(KEY_TASKS, eventsList));
 	}
 
@@ -690,9 +793,40 @@ public class Calendar {
 		FloatingTask taskToUpdate = (FloatingTask) floatingTasksList.get(arrayListIndex);
 		FloatingTask oldTask = copyFloatingTask(taskToUpdate);
 
-		for (int i = 0; i < fields.size(); i++) {
-			taskToUpdate.update(fields.get(i), newValues.get(i));
+		String name = taskToUpdate.getName();
+		String cmd = String.format(CMD_UPDATE_FLOATING, name);
+
+		boolean updateDue = false;
+		int dueFieldIdx = -1;
+
+		if (hasInvalidFields(fields, KEY_FLOATING)) {
+			return new Result(cmd, MSG_WARNING_INVALID_FIELD, false, null);
 		}
+
+		updateDue = hasUpdateDue(fields);
+
+		// updateRecurring = hasUpdateRecurring(fields);
+
+		for (int i = 0; i < fields.size(); i++) {
+			if (fields.get(i).equals(PARAM_DUE)) {
+				dueFieldIdx = i;
+			}
+		}
+
+		for (int i = 0; i < fields.size(); i++) {
+			if(!fields.get(i).equals(PARAM_DUE)){
+				taskToUpdate.update(fields.get(i), newValues.get(i));
+			}else{
+				dueFieldIdx = i;
+			}
+		}
+		
+		if(updateDue){
+			FloatingTask tempTask = copyFloatingTask(taskToUpdate);
+			removeFloatingTask(idx, true);
+			addTask(tempTask.getName(), newValues.get(dueFieldIdx));
+		}
+
 		exportToFile();
 
 		Command newUndo = (Command) new UndoUpdate(oldTask);
@@ -701,9 +835,6 @@ public class Calendar {
 		if (!isUndoCmd) {
 			clearRedoHistory();
 		}
-
-		String name = taskToUpdate.getName();
-		String cmd = String.format(CMD_UPDATE_FLOATING, name);
 
 		return new Result(cmd, true, putInHashMap(KEY_FLOATING, eventsList));
 	}
@@ -714,6 +845,93 @@ public class Calendar {
 		String taskName = task.getName();
 		String taskDoneStatus = String.valueOf(task.isDone());
 		return new FloatingTask(idx, seriesIdx, taskName, taskDoneStatus);
+	}
+
+	private boolean hasUpdateRecurring(ArrayList<String> fields) {
+		for (String field : fields) {
+			if (field.equals(PARAM_RECURRING) || field.equals(PARAM_REPEAT)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private boolean hasUpdateDue(ArrayList<String> fields) {
+		for (String field : fields) {
+			if (field.equals(PARAM_DUE)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private boolean hasInvalidFields(ArrayList<String> fields, String key) {
+		if (key.equals(KEY_EVENTS)) {
+			for (String field : fields) {
+				if (isValidEventField(field)) {
+					// DO NOTHING
+				} else {
+					return true;
+				}
+			}
+		} else if (key.equals(KEY_TASKS)) {
+			for (String field : fields) {
+				if (isValidTaskField(field)) {
+					// DO NOTHING
+				} else {
+					return true;
+				}
+			}
+		} else if (key.equals(KEY_FLOATING)) {
+			for (String field : fields) {
+				if (isValidFloatingTaskField(field)) {
+					// DO NOTHING
+				} else {
+					return true;
+				}
+			}
+		} else {
+			return true;
+		}
+
+		return false;
+	}
+
+	private boolean isValidEventField(String field) {
+		switch (field) {
+		case PARAM_NAME:
+		case PARAM_START_DATE:
+		case PARAM_START_TIME:
+		case PARAM_END_DATE:
+		case PARAM_END_TIME:
+		case PARAM_RECURRING:
+		case PARAM_REPEAT:
+			return true;
+		default:
+			return false;
+		}
+	}
+
+	private boolean isValidTaskField(String field) {
+		switch (field) {
+		case PARAM_NAME:
+		case PARAM_DUE:
+		case PARAM_RECURRING:
+		case PARAM_REPEAT:
+			return true;
+		default:
+			return false;
+		}
+	}
+
+	private boolean isValidFloatingTaskField(String field) {
+		switch (field) {
+		case PARAM_NAME:
+		case PARAM_DUE:
+			return true;
+		default:
+			return false;
+		}
 	}
 
 	/***** DONE COMMAND EXECUTION ******/
@@ -829,7 +1047,7 @@ public class Calendar {
 	public void removeLastUndo() {
 		undoHistory.pop();
 	}
-	
+
 	public void addToUndoHistory(Command cmd) {
 		undoHistory.add(cmd);
 	}
@@ -858,15 +1076,18 @@ public class Calendar {
 	public Result search(String arguments) {
 		String bestMatchRegex = generateBestMatchRegex(arguments);
 		String alternativeMatchRegex = generateAlternativeMatchRegex(arguments);
-		
-		ArrayList<CalendarObject> eventsToSearch =  copyEventsList();
-		ArrayList<CalendarObject> tasksToSearch =  copyTasksList();
+
+		ArrayList<CalendarObject> eventsToSearch = copyEventsList();
+		ArrayList<CalendarObject> tasksToSearch = copyTasksList();
 		ArrayList<CalendarObject> floatingTasksToSearch = copyFloatingTasksList();
-		
-		HashMap<String,ArrayList<CalendarObject>> eventSearchResult = getMatches(eventsToSearch, bestMatchRegex, alternativeMatchRegex);
-		HashMap<String,ArrayList<CalendarObject>> taskSearchResult = getMatches(tasksToSearch, bestMatchRegex, alternativeMatchRegex);
-		HashMap<String,ArrayList<CalendarObject>> floatingTaskSearchResult = getMatches(floatingTasksToSearch, bestMatchRegex, alternativeMatchRegex);
-	
+
+		HashMap<String, ArrayList<CalendarObject>> eventSearchResult = getMatches(eventsToSearch, bestMatchRegex,
+				alternativeMatchRegex);
+		HashMap<String, ArrayList<CalendarObject>> taskSearchResult = getMatches(tasksToSearch, bestMatchRegex,
+				alternativeMatchRegex);
+		HashMap<String, ArrayList<CalendarObject>> floatingTaskSearchResult = getMatches(floatingTasksToSearch,
+				bestMatchRegex, alternativeMatchRegex);
+
 		ArrayList<CalendarObject> eventsBestMatch = eventSearchResult.get(KEY_BEST_MATCHES);
 		ArrayList<CalendarObject> eventsAlternativeMatch = eventSearchResult.get(KEY_ALTERNATIVE_MATCHES);
 
@@ -875,9 +1096,10 @@ public class Calendar {
 
 		ArrayList<CalendarObject> floatingTaskBestMatch = floatingTaskSearchResult.get(KEY_BEST_MATCHES);
 		ArrayList<CalendarObject> floatingTasksAlternativeMatch = floatingTaskSearchResult.get(KEY_ALTERNATIVE_MATCHES);
-		
-		Result result = display.formatSearchResults(eventsBestMatch, eventsAlternativeMatch, tasksBestMatch, tasksAlternativeMatch, floatingTaskBestMatch, floatingTasksAlternativeMatch);
-		
+
+		Result result = display.formatSearchResults(eventsBestMatch, eventsAlternativeMatch, tasksBestMatch,
+				tasksAlternativeMatch, floatingTaskBestMatch, floatingTasksAlternativeMatch);
+
 		return result;
 	}
 
@@ -910,60 +1132,59 @@ public class Calendar {
 		regex += ")";
 		return regex;
 	}
-	
-	private ArrayList<CalendarObject> copyEventsList(){
+
+	private ArrayList<CalendarObject> copyEventsList() {
 		ArrayList<CalendarObject> returnArray = new ArrayList<CalendarObject>();
-		
-		for(CalendarObject obj: eventsList){
+
+		for (CalendarObject obj : eventsList) {
 			returnArray.add(obj);
 		}
 		return returnArray;
 	}
-	
-	private ArrayList<CalendarObject> copyTasksList(){
+
+	private ArrayList<CalendarObject> copyTasksList() {
 		ArrayList<CalendarObject> returnArray = new ArrayList<CalendarObject>();
-		
-		for(CalendarObject obj: tasksList){
+
+		for (CalendarObject obj : tasksList) {
 			returnArray.add(obj);
 		}
 		return returnArray;
 	}
-	
-	private ArrayList<CalendarObject> copyFloatingTasksList(){
+
+	private ArrayList<CalendarObject> copyFloatingTasksList() {
 		ArrayList<CalendarObject> returnArray = new ArrayList<CalendarObject>();
-		
-		for(CalendarObject obj: floatingTasksList){
+
+		for (CalendarObject obj : floatingTasksList) {
 			returnArray.add(obj);
 		}
 		return returnArray;
 	}
-	
-	private HashMap<String, ArrayList<CalendarObject>> getMatches(ArrayList<CalendarObject> objectsToMatch, String bestMatchRegex, String alternativeMatchRegex){
+
+	private HashMap<String, ArrayList<CalendarObject>> getMatches(ArrayList<CalendarObject> objectsToMatch,
+			String bestMatchRegex, String alternativeMatchRegex) {
 		HashMap<String, ArrayList<CalendarObject>> returnHashMap = new HashMap<String, ArrayList<CalendarObject>>();
 		ArrayList<CalendarObject> bestMatches = new ArrayList<CalendarObject>();
 		ArrayList<CalendarObject> alternativeMatches = new ArrayList<CalendarObject>();
-		
-		while(objectsToMatch.size() > 0){
-			CalendarObject currObject =  objectsToMatch.get(0);
-			
-			if(currObject.toString().matches(bestMatchRegex)){
+
+		while (objectsToMatch.size() > 0) {
+			CalendarObject currObject = objectsToMatch.get(0);
+
+			if (currObject.toString().matches(bestMatchRegex)) {
 				bestMatches.add(currObject);
 				objectsToMatch.remove(0);
-			}else if(currObject.toString().matches(alternativeMatchRegex)){
+			} else if (currObject.toString().matches(alternativeMatchRegex)) {
 				alternativeMatches.add(currObject);
 				objectsToMatch.remove(0);
-			}else{
+			} else {
 				objectsToMatch.remove(0);
 			}
 		}
-		
+
 		returnHashMap.put(KEY_BEST_MATCHES, bestMatches);
 		returnHashMap.put(KEY_ALTERNATIVE_MATCHES, alternativeMatches);
-		
+
 		return returnHashMap;
 	}
-	
-	
 
 	/***** OTHER METHODS ******/
 
@@ -1057,26 +1278,27 @@ public class Calendar {
 	}
 
 	/******
-	 * HELPER METHODS FOR RECURRING EVENTS NOTE: THE ARRAYLIST THAT IS RETURNED DOES NOT RETURN THE ORIGINAL START DATE FOR EXAMPLE: IF THE START DATE IS ON 12/03/15, THE FIRST DATE TO BE ADDED WILL
-	 * BE ON 13/03/15
+	 * HELPER METHODS FOR RECURRING EVENTS NOTE: THE ARRAYLIST THAT IS RETURNED
+	 * DOES NOT RETURN THE ORIGINAL START DATE FOR EXAMPLE: IF THE START DATE IS
+	 * ON 12/03/15, THE FIRST DATE TO BE ADDED WILL BE ON 13/03/15
 	 ******/
 
 	private ArrayList<String> processRecurringDates(String start, String recurringEnd, String recurringType) {
 		switch (recurringType.toLowerCase()) {
-			case KEY_DAILY :
-				return getDailyRecurringDates(start, recurringEnd);
+		case KEY_DAILY:
+			return getDailyRecurringDates(start, recurringEnd);
 
-			case KEY_WEEKLY :
-				return getWeeklyRecurringDates(start, recurringEnd);
+		case KEY_WEEKLY:
+			return getWeeklyRecurringDates(start, recurringEnd);
 
-			case KEY_MONTHLY :
-				return getMonthlyRecurringDates(start, recurringEnd);
+		case KEY_MONTHLY:
+			return getMonthlyRecurringDates(start, recurringEnd);
 
-			case KEY_ANNUALLY :
-				return getAnnualRecurringDates(start, recurringEnd);
+		case KEY_ANNUALLY:
+			return getAnnualRecurringDates(start, recurringEnd);
 
-			default :
-				return null;
+		default:
+			return null;
 		}
 	}
 
