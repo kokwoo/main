@@ -27,13 +27,20 @@ public class TestLogic {
 	private static final String CMD_REMOVE_EVENT = "remove event %1$s";
 	private static final String CMD_REMOVE_TASK = "remove task %1$s";
 	private static final String CMD_REMOVE_FLOATING = "remove floating task %1$s";
-	
+
 	private static final String CMD_UPDATE_EVENT = "update event %1$s";
 	private static final String CMD_UPDATE_TASK = "update task %1$s";
 	private static final String CMD_UPDATE_FLOATING = "update floating task %1$s";
 
 	@After
 	public void tearDown() throws Exception {
+	}
+
+	private HashMap<String, ArrayList<CalendarObject>> putHashMap(String key, ArrayList<CalendarObject> value) {
+		HashMap<String, ArrayList<CalendarObject>> map;
+		map = new HashMap<String, ArrayList<CalendarObject>>();
+		map.put(key, value);
+		return map;
 	}
 
 	@Test
@@ -69,14 +76,14 @@ public class TestLogic {
 		Result tempResult = new Result(cmd, true, putHashMap("events", checkArray));
 
 		// Compare results object
-
 		assertEquals(tempResult.getCmdPerformed(), tempRH.processCommand(event).getCmdPerformed());
 		assertEquals(tempResult.isSuccess(), tempRH.processCommand(event).isSuccess());
 		assertEquals(tempResult.isDisplayResult(), tempRH.processCommand(event).isDisplayResult());
 		tempRH.processCommand("clear file");
+
 		ArrayList<CalendarObject> checkArray1 = tempResult.getResults().get("events");
-		ArrayList<CalendarObject> checkArray2 =  tempRH.processCommand(event).getResults().get("events");
-		assertEquals(checkArray1.toString(),checkArray2.toString());
+		ArrayList<CalendarObject> checkArray2 = tempRH.processCommand(event).getResults().get("events");
+		assertEquals(checkArray1.toString(), checkArray2.toString());
 		tempRH.processCommand("clear file");
 
 	}
@@ -95,7 +102,7 @@ public class TestLogic {
 		Task checkTask = new Task(0, 0, "Lunch with mum", "12/12/2015");
 		checkArray.add(checkTask);
 		String cmd = String.format(CMD_ADD_TASK, "Lunch with mum");
-		Result tempResult = new Result(cmd, true, putHashMap("events", checkArray));
+		Result tempResult = new Result(cmd, true, putHashMap("tasks", checkArray));
 
 		// Compare results object
 		assertEquals(tempResult.getCmdPerformed(), tempRH.processCommand(task).getCmdPerformed());
@@ -103,36 +110,37 @@ public class TestLogic {
 		assertEquals(tempResult.isDisplayResult(), tempRH.processCommand(task).isDisplayResult());
 		tempRH.processCommand("clear file");
 
-	}
+		ArrayList<CalendarObject> checkArray1 = tempResult.getResults().get("tasks");
+		ArrayList<CalendarObject> checkArray2 = tempRH.processCommand(task).getResults().get("tasks");
+		assertEquals(checkArray1.toString(), checkArray2.toString());
+		tempRH.processCommand("clear file");
 
-	private HashMap<String, ArrayList<CalendarObject>> putHashMap(String key, ArrayList<CalendarObject> value) {
-		HashMap<String, ArrayList<CalendarObject>> map;
-		map = new HashMap<String, ArrayList<CalendarObject>>();
-		map.put(key, value);
-		return map;
 	}
 
 	@Test
 	public final void testAddFTask() {
 		// To test
-		String Ftask = "add task Zinner with mum";
+		String Ftask = "add task Dinner with mum";
 		String fileName = "testfile.txt";
 		RequestHandler tempRH = RequestHandler.getInstance();
 		tempRH.initialize(fileName);
-		tempRH.processCommand(Ftask);
 
 		// checker
 		ArrayList<CalendarObject> checkArray = new ArrayList<CalendarObject>();
-		FloatingTask checkTask = new FloatingTask(0, 0, "Zinner with mum");
+		FloatingTask checkTask = new FloatingTask(0, 0, "Dinner with mum");
 		checkArray.add(checkTask);
-		String cmd = String.format(CMD_ADD_FLOATING, "Zinner with mum");
-		Result tempResult = new Result(cmd, true, putHashMap("events", checkArray));
+		String cmd = String.format(CMD_ADD_FLOATING, "Dinner with mum");
+		Result tempResult = new Result(cmd, true, putHashMap("floating tasks", checkArray));
 
 		// Compare results object
 		assertEquals(tempResult.getCmdPerformed(), tempRH.processCommand(Ftask).getCmdPerformed());
 		assertEquals(tempResult.isSuccess(), tempRH.processCommand(Ftask).isSuccess());
 		assertEquals(tempResult.isDisplayResult(), tempRH.processCommand(Ftask).isDisplayResult());
+		tempRH.processCommand("clear file");
 
+		ArrayList<CalendarObject> expectedArray = tempResult.getResults().get("floating tasks");
+		ArrayList<CalendarObject> actualArray = tempRH.processCommand(Ftask).getResults().get("floating tasks");
+		assertEquals(actualArray.toString(), expectedArray.toString());
 		tempRH.processCommand("clear file");
 
 	}
@@ -157,10 +165,9 @@ public class TestLogic {
 		assertEquals(tempResult.getCmdPerformed(), tempRH.processCommand("remove 0").getCmdPerformed());
 		assertEquals(tempResult.isSuccess(), tempRH.processCommand("remove 1").isSuccess());
 		assertEquals(tempResult.isDisplayResult(), tempRH.processCommand("remove 2").isDisplayResult());
-		// tempRH.processCommand("clear file");
-		// */
+		tempRH.processCommand("clear file");
 	}
-	
+
 	@Test
 	public final void testRemoveTask() {
 		// To test
@@ -184,7 +191,7 @@ public class TestLogic {
 		assertEquals(tempResult.isDisplayResult(), tempRH.processCommand("remove 2").isDisplayResult());
 
 	}
-	
+
 	@Test
 	public final void testRemoveFTask() {
 		// To test
@@ -210,96 +217,380 @@ public class TestLogic {
 	}
 
 	@Test
-	public final void testDisplay() {
+	public final void testUpdateEventEndTime() {
+		// To test - initialize test.txt
+		String event = "add event Dinner with mum from 22/11/2015 at 19:00 to 24/11/2015 at 19:00";
 		String fileName = "testfile.txt";
 		RequestHandler tempRH = RequestHandler.getInstance();
 		tempRH.initialize(fileName);
-		// String checkStr = "You have no event today\n" + "You have no upcoming
-		// event\n" + "These are the list of past events\n" + "\n"
-		// + "1) do something From: Saturday, 10/10/2015 10:00 To: Tuesday,
-		// 10/11/2015 11:00 [ID:0] ";
-
-		assertTrue(tempRH.processCommand("display events").isDisplayResult());
-		assertTrue(tempRH.processCommand("display events").isSuccess());
-		// HashMap<String, ArrayList<CalendarObject>> hm = new HashMap<String,
-		// ArrayList<CalendarObject>>();
-
-	}
-	
-	@Test
-	public final void testUpdateEvent() {
-		// To test
-		String event = "add event Dinner with mum from today at 9pm to tomorrow at 10pm";
-		String fileName = "testfile.txt";
-		RequestHandler tempRH = RequestHandler.getInstance();
-		tempRH.initialize(fileName);
+		// clear up the file
 		tempRH.processCommand("clear file");
-
-		//tempRH.processCommand("update 0 name: hello from the other side");
 
 		// checker
 		ArrayList<CalendarObject> checkArray = new ArrayList<CalendarObject>();
-		Event checkNewName = new Event(0, 0, "hello from the other side", "22/11/2015/19:00", "24/11/2015/19:00");
+		Event checkNewName = new Event(0, 0, "Dinner with mum", "22/11/2015/19:00", "24/11/2015/23:00");
 		checkArray.add(checkNewName);
-		Event checkNewStartDate = new Event(0, 0, "hello from the other side", "23/11/2015/19:00", "24/11/2015/19:00");
-		checkArray.add(checkNewName);
-		
-		
-		
-		String cmd = String.format(CMD_UPDATE_EVENT, "hello from the other side");
-		Result tempResult = new Result(cmd, true, putHashMap("events", checkArray));
 
-		// Compare results object
+		String cmdName = String.format(CMD_UPDATE_EVENT, "Dinner with mum");
+		Result tempResult = new Result(cmdName, true, putHashMap("events", checkArray));
+
 		tempRH.processCommand(event);
-		assertEquals(tempResult.getCmdPerformed(), tempRH.processCommand("update 0 name:hello from the other side").getCmdPerformed());
-		tempRH.processCommand(event);
-		assertEquals(tempResult.isSuccess(), tempRH.processCommand("update 0 name:hello from the other side").isSuccess());
-		tempRH.processCommand(event);
-		assertEquals(tempResult.isDisplayResult(), tempRH.processCommand("update 0 name:hello from the other side").isDisplayResult());
+		ArrayList<CalendarObject> expectedArray = tempResult.getResults().get("events");
+		ArrayList<CalendarObject> actualArray = tempRH.processCommand("update 0 end time:23:00").getResults()
+				.get("events");
+		assertEquals(actualArray.toString(), expectedArray.toString());
 		tempRH.processCommand("clear file");
-
 	}
-	
+
 	@Test
-	public final void testUpdateTask() {
+	public final void testUpdateEventEndDate() {
 		// To test - initialize test.txt
-		String task = "add task Gymming due 12/12/2015";
-		String fileName = "testUpdatefile.txt";
+		String event = "add event Dinner with mum from 22/11/2015 at 19:00 to 24/11/2015 at 19:00";
+		String fileName = "testfile.txt";
 		RequestHandler tempRH = RequestHandler.getInstance();
 		tempRH.initialize(fileName);
-		//clear up the file
+		// clear up the file
 		tempRH.processCommand("clear file");
-		//add task
-		tempRH.processCommand(task);
-		
 
 		// checker
+		ArrayList<CalendarObject> checkArray = new ArrayList<CalendarObject>();
+		Event checkNewName = new Event(0, 0, "Dinner with mum", "22/11/2015/19:00", "25/11/2015/19:00");
+		checkArray.add(checkNewName);
+
+		String cmdName = String.format(CMD_UPDATE_EVENT, "Dinner with mum");
+		Result tempResult = new Result(cmdName, true, putHashMap("events", checkArray));
+
+		tempRH.processCommand(event);
+		ArrayList<CalendarObject> expectedArray = tempResult.getResults().get("events");
+		ArrayList<CalendarObject> actualArray = tempRH.processCommand("update 0 end date:25/11/2015").getResults()
+				.get("events");
+		assertEquals(actualArray.toString(), expectedArray.toString());
+		tempRH.processCommand("clear file");
+	}
+
+	@Test
+	public final void testUpdateEventStartTime() {
+		// To test - initialize test.txt
+		String event = "add event Dinner with mum from 22/11/2015 at 19:00 to 24/11/2015 at 19:00";
+		String fileName = "testfile.txt";
+		RequestHandler tempRH = RequestHandler.getInstance();
+		tempRH.initialize(fileName);
+		// clear up the file
+		tempRH.processCommand("clear file");
+
+		// checker
+		ArrayList<CalendarObject> checkArray = new ArrayList<CalendarObject>();
+		Event checkNewName = new Event(0, 0, "Dinner with mum", "22/11/2015/23:00", "24/11/2015/19:00");
+		checkArray.add(checkNewName);
+
+		String cmdName = String.format(CMD_UPDATE_EVENT, "Dinner with mum");
+		Result tempResult = new Result(cmdName, true, putHashMap("events", checkArray));
+
+		tempRH.processCommand(event);
+		ArrayList<CalendarObject> expectedArray = tempResult.getResults().get("events");
+		ArrayList<CalendarObject> actualArray = tempRH.processCommand("update 0 start time:23:00").getResults()
+				.get("events");
+		assertEquals(actualArray.toString(), expectedArray.toString());
+		tempRH.processCommand("clear file");
+	}
+
+	@Test
+	public final void testUpdateEventStartDate() {
+		// To test - initialize test.txt
+		String event = "add event Dinner with mum from 22/11/2015 at 19:00 to 24/11/2015 at 19:00";
+		String fileName = "testfile.txt";
+		RequestHandler tempRH = RequestHandler.getInstance();
+		tempRH.initialize(fileName);
+		// clear up the file
+		tempRH.processCommand("clear file");
+
+		// checker for updating start date
+		ArrayList<CalendarObject> checkArray = new ArrayList<CalendarObject>();
+		Event checkNewName = new Event(0, 0, "Dinner with mum", "21/11/2015/19:00", "24/11/2015/19:00");
+		checkArray.add(checkNewName);
+
+		String cmdName = String.format(CMD_UPDATE_EVENT, "Dinner with mum");
+		Result tempResult = new Result(cmdName, true, putHashMap("events", checkArray));
+
+		tempRH.processCommand(event);
+		ArrayList<CalendarObject> expectedArray = tempResult.getResults().get("events");
+		ArrayList<CalendarObject> actualArray = tempRH.processCommand("update 0 start date:21/11/2015").getResults()
+				.get("events");
+		assertEquals(actualArray.toString(), expectedArray.toString());
+		tempRH.processCommand("clear file");
+	}
+
+	@Test
+	public final void testUpdateEventName() {
+		// To test - initialize test.txt
+		String event = "add event Dinner with mum from 22/11/2015 at 19:00 to 24/11/2015 at 19:00";
+		String fileName = "testfile.txt";
+		RequestHandler tempRH = RequestHandler.getInstance();
+		tempRH.initialize(fileName);
+		// clear up the file
+		tempRH.processCommand("clear file");
+
+		// checker for both updating name and due date
+		ArrayList<CalendarObject> checkArray = new ArrayList<CalendarObject>();
+		Event checkNewName = new Event(0, 0, "changed", "22/11/2015/19:00", "24/11/2015/19:00");
+		checkArray.add(checkNewName);
+
+		String cmdName = String.format(CMD_UPDATE_EVENT, "changed");
+		Result tempResult = new Result(cmdName, true, putHashMap("events", checkArray));
+
+		tempRH.processCommand(event);
+		ArrayList<CalendarObject> expectedArray = tempResult.getResults().get("events");
+		ArrayList<CalendarObject> actualArray = tempRH.processCommand("update 0 name:changed").getResults()
+				.get("events");
+		assertEquals(actualArray.toString(), expectedArray.toString());
+		tempRH.processCommand("clear file");
+	}
+
+	@Test
+	public final void testUpdateTaskName() {
+		// To test - initialize test.txt
+		String task = "add task Gymming due 12/12/2015";
+		String fileName = "testfile.txt";
+		RequestHandler tempRH = RequestHandler.getInstance();
+		tempRH.initialize(fileName);
+		// clear up the file
+		tempRH.processCommand("clear file");
+
+		// checker for updating name
 		ArrayList<CalendarObject> checkArray = new ArrayList<CalendarObject>();
 		Task checkNewName = new Task(0, 0, "okok", "12/12/2015");
 		checkArray.add(checkNewName);
-//		Task checkNewDueDate = new Task(0, 0, "Gymming", "23/11/2015");
-//		checkArray.add(checkNewDueDate);
-		
-		
+
 		String cmdName = String.format(CMD_UPDATE_TASK, "okok");
 		Result tempResult = new Result(cmdName, true, putHashMap("tasks", checkArray));
-		
-//		String cmdDueDate = String.format(CMD_UPDATE_TASK, "Gymming");
-//		Result tempResult1 = new Result(cmdDueDate, true, putHashMap("tasks", checkArray));
+
+		tempRH.processCommand(task);
+		ArrayList<CalendarObject> expectedArray = tempResult.getResults().get("tasks");
+		ArrayList<CalendarObject> actualArray = tempRH.processCommand("update 0 name:okok").getResults().get("tasks");
+		assertEquals(actualArray.toString(), expectedArray.toString());
+		tempRH.processCommand("clear file");
+	}
+
+	@Test
+	public final void testUpdateTaskDue() {
+		// To test - initialize test.txt
+		String task = "add task Gymming due 12/12/2015";
+		String fileName = "testfile.txt";
+		RequestHandler tempRH = RequestHandler.getInstance();
+		tempRH.initialize(fileName);
+		// clear up the file
+		tempRH.processCommand("clear file");
+
+		// checker for due date
+		ArrayList<CalendarObject> checkArray = new ArrayList<CalendarObject>();
+		Task checkNewDueDate = new Task(0, 0, "Gymming", "23/11/2015");
+		checkArray.add(checkNewDueDate);
+
+		String cmdDueDate = String.format(CMD_UPDATE_TASK, "Gymming");
+		Result tempResult1 = new Result(cmdDueDate, true, putHashMap("tasks", checkArray));
 
 		// Compare results object
-		//tempRH.processCommand(task);
-	//	ArrayList<CalendarObject> checkArray1 = tempResult.getResults().get("tasks");
-	//	tempRH.processCommand(task);
-	//	ArrayList<CalendarObject> checkArray2 = tempRH.processCommand("update 0 name:okok").getResults().get("tasks"); 
-	//	assertEquals(checkArray1.toString(), checkArray2.toString());
-	//	tempRH.processCommand("clear file");
-		
-		
-		ArrayList<CalendarObject> checkArray1 = tempResult.getResults().get("tasks");
-		ArrayList<CalendarObject> checkArray2 =  tempRH.processCommand("update 0 name:okok").getResults().get("tasks");
-		assertEquals(checkArray1.toString(),checkArray2.toString());
+		tempRH.processCommand(task);
+		ArrayList<CalendarObject> expectedArrayName = tempResult1.getResults().get("tasks");
+		ArrayList<CalendarObject> actualArrayName = tempRH.processCommand("update 0 due:23/11/2015").getResults()
+				.get("tasks");
+		assertEquals(actualArrayName.toString(), expectedArrayName.toString());
 		tempRH.processCommand("clear file");
+
+	}
+	
+	@Test
+	public final void testUpdateFTaskName() {
+		// To test - initialize test.txt
+		String task = "add task Gymming";
+		String fileName = "testfile.txt";
+		RequestHandler tempRH = RequestHandler.getInstance();
+		tempRH.initialize(fileName);
+		// clear up the file
+		tempRH.processCommand("clear file");
+
+		// checker for due date
+		ArrayList<CalendarObject> checkArray = new ArrayList<CalendarObject>();
+		FloatingTask checkNewDueDate = new FloatingTask(0, 0, "changed");
+		checkArray.add(checkNewDueDate);
+
+		String cmdDueDate = String.format(CMD_UPDATE_FLOATING, "changed");
+		Result tempResult1 = new Result(cmdDueDate, true, putHashMap("floating tasks", checkArray));
+
+		// Compare results object
+		tempRH.processCommand(task);
+		ArrayList<CalendarObject> expectedArrayName = tempResult1.getResults().get("floating tasks");
+		ArrayList<CalendarObject> actualArrayName = tempRH.processCommand("update 0 name:changed").getResults()
+				.get("floating tasks");
+		assertEquals(actualArrayName.toString(), expectedArrayName.toString());
+		tempRH.processCommand("clear file");
+
+	}
+	
+	private final String TODAY_TASKS = "Tasks due today";
+	private final String NO_TODAY_TASKS = "You have no task today";
+	
+	private final String TODAY_EVENTS = "These are your events for the day";
+	private final String NO_TODAY_EVENTS = "You have no event today";
+
+	@Test
+	public final void testDisplayAll() {
+		String fileName = "testfile.txt";
+		RequestHandler tempRH = RequestHandler.getInstance();
+		tempRH.initialize(fileName);
+	//	tempRH.processCommand("add task Hello");
+	//	tempRH.processCommand("add event Dinner with mum from today at 9pm to tomorrow at 9pm");
+	//	tempRH.processCommand("add task Dinner with gf due today");
+
+		assertTrue(tempRH.processCommand("display all").isDisplayResult());
+		assertTrue(tempRH.processCommand("display all").isSuccess());
+		
+		//checker
+		ArrayList<String> checkerArray = new ArrayList<String>();
+//		checkerArray.add("1) Dinner with mum From: Sunday, 08/11/2015 21:00 To: Monday, 09/11/2015 21:00	[ID:0] ");
+        checkerArray.add("You have no event today"); 
+		checkerArray.add("");
+		checkerArray.add("You have no upcoming event");
+		checkerArray.add("");
+		checkerArray.add("You have no past event");
+		checkerArray.add("");
+		checkerArray.add("You have no task without deadline");
+		checkerArray.add("");
+		checkerArray.add("You have no task without deadline that are done");
+		checkerArray.add("");
+		checkerArray.add("You have no done tasks");
+		checkerArray.add("");
+        checkerArray.add("You have no task today");	
+	//	checkerArray.add("1) Dinner with gf Due: Sunday, 08/11/2015	[ID:1] ");
+		checkerArray.add("");
+		checkerArray.add("You have no upcoming task");
+		checkerArray.add("");
+	//	checkerArray.add("1) okokokok Due: Saturday, 12/12/2015	[ID:0] ");
+	//	checkerArray.add("");
+		checkerArray.add("You have no missed task");
+		checkerArray.add("");
+		
+		String checkerString = strArrayToString(checkerArray);
+		
+		//compare results
+		assertEquals(checkerString, tempRH.processCommand("display all").getCmdPerformed());
+		tempRH.processCommand("clear file");
+	}
+	
+	@Test
+	//equivalence testing
+	public final void testDisplayAll1() {
+		String fileName = "testfile.txt";
+		RequestHandler tempRH = RequestHandler.getInstance();
+		tempRH.initialize(fileName);
+		//upcoming event
+		tempRH.processCommand("add event date with gf from 23/12/2015 at 17:00 to 26/12/2015 at 19:00");
+		//past event
+		tempRH.processCommand("add event gymming from 06/11/2015 at 19:00 to 07/11/2015 at 19:00");
+		//event today
+		tempRH.processCommand("add event Dinner with mum from today at 9pm to tomorrow at 9pm");
+		//past task
+		tempRH.processCommand("add task Dinner with bf due 06/11/2015");
+		//today task
+		tempRH.processCommand("add task Dinner with gf due today");
+		//upcoming task
+		tempRH.processCommand("add task Dinner with mum due tomorrow");
+		//task done
+		tempRH.processCommand("add task eat due 23/12/2015");
+		tempRH.processCommand("done 6");
+		//floating task
+		tempRH.processCommand("add task Hello");
+		//floating task done
+		tempRH.processCommand("add task Hello2");
+		tempRH.processCommand("done 8");
+		
+		
+		assertTrue(tempRH.processCommand("display all").isDisplayResult());
+		assertTrue(tempRH.processCommand("display all").isSuccess());
+		
+		//checker
+		ArrayList<String> checkerArray = new ArrayList<String>();
+//		checkerArray.add("1) Dinner with mum From: Sunday, 08/11/2015 21:00 To: Monday, 09/11/2015 21:00	[ID:0] ");
+        checkerArray.add("These are your events for the day"); 
+		checkerArray.add("");
+		checkerArray.add("1) Dinner with mum From: Sunday, 08/11/2015 21:00 To: Monday, 09/11/2015 21:00	[ID:2] ");
+		checkerArray.add("");
+		checkerArray.add("These are the list of upcoming events");
+		checkerArray.add("");
+		checkerArray.add("1) date with gf From: Wednesday, 23/12/2015 17:00 To: Saturday, 26/12/2015 19:00	[ID:0] ");
+		checkerArray.add("");
+		checkerArray.add("These are the list of past events");
+		checkerArray.add("");
+		checkerArray.add("1) gymming From: Friday, 06/11/2015 19:00 To: Saturday, 07/11/2015 19:00	[ID:1] ");
+		checkerArray.add("");
+        checkerArray.add("These are the list of tasks without deadline");	
+		checkerArray.add("");
+		checkerArray.add("1) Hello	[ID:7] ");
+		checkerArray.add("");
+		checkerArray.add("These are the list of tasks without deadline that are done");
+		checkerArray.add("");
+		checkerArray.add("1) Hello2	[ID:8] ");
+		checkerArray.add("");
+		checkerArray.add("These are all the tasks that are done");
+		checkerArray.add("");
+		checkerArray.add("1) eat Due: Wednesday, 23/12/2015	[ID:6] ");
+		checkerArray.add("");
+		checkerArray.add("Tasks due today");
+		checkerArray.add("");
+		checkerArray.add("1) Dinner with gf Due: Sunday, 08/11/2015	[ID:4] ");
+		checkerArray.add("");
+		checkerArray.add("These are the list of upcoming tasks");
+		checkerArray.add("");
+		checkerArray.add("1) Dinner with mum Due: Monday, 09/11/2015	[ID:5] ");
+		checkerArray.add("");
+		checkerArray.add("These are the tasks you missed");
+		checkerArray.add("");
+		checkerArray.add("1) Dinner with bf Due: Friday, 06/11/2015	[ID:3] ");
+		checkerArray.add("");
+	
+		
+		String checkerString = strArrayToString(checkerArray);
+		
+		//compare results
+		assertEquals(checkerString, tempRH.processCommand("display all").getCmdPerformed());
+		tempRH.processCommand("clear file");
+	}
+	
+	public String strArrayToString(ArrayList<String> in){
+		String s = "";
+		
+		for(String str : in){
+			s += str+"\n";
+		}
+		
+		return s;
+	}
+	
+	@Test
+	public final void testSearchEvents() {
+		// To test - initialize test.txt
+		String fileName = "testfile.txt";
+		RequestHandler tempRH = RequestHandler.getInstance();
+		tempRH.initialize(fileName);
+		// clear up the file
+		tempRH.processCommand("clear file");
+		tempRH.processCommand("add event Dinner with mum from 21/12/2015 at 19:00 to 23/12/2015 at 19:00");
+
+		// checker for due date
+		ArrayList<CalendarObject> checkArray = new ArrayList<CalendarObject>();
+		Event event = new Event(0, 0, "Dinner with mum", "21/12/2015/19:00", "23/12/2015/19:00" );
+		checkArray.add(event);
+
+		String cmdDueDate = String.format(CMD_ADD_EVENT, "Dinner with mum");
+		Result tempResult1 = new Result(cmdDueDate, true, putHashMap("events", checkArray));
+
+		// Compare results object
+		ArrayList<CalendarObject> expectedArrayName = tempResult1.getResults().get("events");
+		ArrayList<CalendarObject> actualArrayName = tempRH.processCommand("search dinner").getResults()
+				.get("eventsBestMatches");
+		assertEquals(actualArrayName.toString(), expectedArrayName.toString());
+		tempRH.processCommand("clear file");
+
 	}
 	
 	
