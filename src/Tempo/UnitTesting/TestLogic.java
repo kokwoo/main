@@ -438,17 +438,17 @@ public class TestLogic {
 		String fileName = "testfile.txt";
 		RequestHandler tempRH = RequestHandler.getInstance();
 		tempRH.initialize(fileName);
-		tempRH.processCommand("add event Dinner with mum from today at 9pm to tomorrow at 9pm");
-		tempRH.processCommand("add task Dinner with gf due today");
+	//	tempRH.processCommand("add task Hello");
+	//	tempRH.processCommand("add event Dinner with mum from today at 9pm to tomorrow at 9pm");
+	//	tempRH.processCommand("add task Dinner with gf due today");
 
 		assertTrue(tempRH.processCommand("display all").isDisplayResult());
 		assertTrue(tempRH.processCommand("display all").isSuccess());
 		
 		//checker
 		ArrayList<String> checkerArray = new ArrayList<String>();
-		checkerArray.add("These are your events for the day");
-		checkerArray.add("");
-		checkerArray.add("1) Dinner with mum From: Sunday, 08/11/2015 21:00 To: Monday, 09/11/2015 21:00	[ID:0] ");
+//		checkerArray.add("1) Dinner with mum From: Sunday, 08/11/2015 21:00 To: Monday, 09/11/2015 21:00	[ID:0] ");
+        checkerArray.add("You have no event today"); 
 		checkerArray.add("");
 		checkerArray.add("You have no upcoming event");
 		checkerArray.add("");
@@ -460,9 +460,8 @@ public class TestLogic {
 		checkerArray.add("");
 		checkerArray.add("You have no done tasks");
 		checkerArray.add("");
-		checkerArray.add("Tasks due today");
-		checkerArray.add("");
-		checkerArray.add("1) Dinner with gf Due: Sunday, 08/11/2015	[ID:1] ");
+        checkerArray.add("You have no task today");	
+	//	checkerArray.add("1) Dinner with gf Due: Sunday, 08/11/2015	[ID:1] ");
 		checkerArray.add("");
 		checkerArray.add("You have no upcoming task");
 		checkerArray.add("");
@@ -470,6 +469,85 @@ public class TestLogic {
 	//	checkerArray.add("");
 		checkerArray.add("You have no missed task");
 		checkerArray.add("");
+		
+		String checkerString = strArrayToString(checkerArray);
+		
+		//compare results
+		assertEquals(checkerString, tempRH.processCommand("display all").getCmdPerformed());
+		tempRH.processCommand("clear file");
+	}
+	
+	@Test
+	//equivalence testing
+	public final void testDisplayAll1() {
+		String fileName = "testfile.txt";
+		RequestHandler tempRH = RequestHandler.getInstance();
+		tempRH.initialize(fileName);
+		//upcoming event
+		tempRH.processCommand("add event date with gf from 23/12/2015 at 17:00 to 26/12/2015 at 19:00");
+		//past event
+		tempRH.processCommand("add event gymming from 06/11/2015 at 19:00 to 07/11/2015 at 19:00");
+		//event today
+		tempRH.processCommand("add event Dinner with mum from today at 9pm to tomorrow at 9pm");
+		//past task
+		tempRH.processCommand("add task Dinner with bf due 06/11/2015");
+		//today task
+		tempRH.processCommand("add task Dinner with gf due today");
+		//upcoming task
+		tempRH.processCommand("add task Dinner with mum due tomorrow");
+		//task done
+		tempRH.processCommand("add task eat due 23/12/2015");
+		tempRH.processCommand("done 6");
+		//floating task
+		tempRH.processCommand("add task Hello");
+		//floating task done
+		tempRH.processCommand("add task Hello2");
+		tempRH.processCommand("done 8");
+		
+		
+		assertTrue(tempRH.processCommand("display all").isDisplayResult());
+		assertTrue(tempRH.processCommand("display all").isSuccess());
+		
+		//checker
+		ArrayList<String> checkerArray = new ArrayList<String>();
+//		checkerArray.add("1) Dinner with mum From: Sunday, 08/11/2015 21:00 To: Monday, 09/11/2015 21:00	[ID:0] ");
+        checkerArray.add("These are your events for the day"); 
+		checkerArray.add("");
+		checkerArray.add("1) Dinner with mum From: Sunday, 08/11/2015 21:00 To: Monday, 09/11/2015 21:00	[ID:2] ");
+		checkerArray.add("");
+		checkerArray.add("These are the list of upcoming events");
+		checkerArray.add("");
+		checkerArray.add("1) date with gf From: Wednesday, 23/12/2015 17:00 To: Saturday, 26/12/2015 19:00	[ID:0] ");
+		checkerArray.add("");
+		checkerArray.add("These are the list of past events");
+		checkerArray.add("");
+		checkerArray.add("1) gymming From: Friday, 06/11/2015 19:00 To: Saturday, 07/11/2015 19:00	[ID:1] ");
+		checkerArray.add("");
+        checkerArray.add("These are the list of tasks without deadline");	
+		checkerArray.add("");
+		checkerArray.add("1) Hello	[ID:7] ");
+		checkerArray.add("");
+		checkerArray.add("These are the list of tasks without deadline that are done");
+		checkerArray.add("");
+		checkerArray.add("1) Hello2	[ID:8] ");
+		checkerArray.add("");
+		checkerArray.add("These are all the tasks that are done");
+		checkerArray.add("");
+		checkerArray.add("1) eat Due: Wednesday, 23/12/2015	[ID:6] ");
+		checkerArray.add("");
+		checkerArray.add("Tasks due today");
+		checkerArray.add("");
+		checkerArray.add("1) Dinner with gf Due: Sunday, 08/11/2015	[ID:4] ");
+		checkerArray.add("");
+		checkerArray.add("These are the list of upcoming tasks");
+		checkerArray.add("");
+		checkerArray.add("1) Dinner with mum Due: Monday, 09/11/2015	[ID:5] ");
+		checkerArray.add("");
+		checkerArray.add("These are the tasks you missed");
+		checkerArray.add("");
+		checkerArray.add("1) Dinner with bf Due: Friday, 06/11/2015	[ID:3] ");
+		checkerArray.add("");
+	
 		
 		String checkerString = strArrayToString(checkerArray);
 		
@@ -487,5 +565,34 @@ public class TestLogic {
 		
 		return s;
 	}
+	
+	@Test
+	public final void testSearchEvents() {
+		// To test - initialize test.txt
+		String fileName = "testfile.txt";
+		RequestHandler tempRH = RequestHandler.getInstance();
+		tempRH.initialize(fileName);
+		// clear up the file
+		tempRH.processCommand("clear file");
+		tempRH.processCommand("add event Dinner with mum from 21/12/2015 at 19:00 to 23/12/2015 at 19:00");
+
+		// checker for due date
+		ArrayList<CalendarObject> checkArray = new ArrayList<CalendarObject>();
+		Event event = new Event(0, 0, "Dinner with mum", "21/12/2015/19:00", "23/12/2015/19:00" );
+		checkArray.add(event);
+
+		String cmdDueDate = String.format(CMD_ADD_EVENT, "Dinner with mum");
+		Result tempResult1 = new Result(cmdDueDate, true, putHashMap("events", checkArray));
+
+		// Compare results object
+		ArrayList<CalendarObject> expectedArrayName = tempResult1.getResults().get("events");
+		ArrayList<CalendarObject> actualArrayName = tempRH.processCommand("search dinner").getResults()
+				.get("eventsBestMatches");
+		assertEquals(actualArrayName.toString(), expectedArrayName.toString());
+		tempRH.processCommand("clear file");
+
+	}
+	
+	
 
 }
