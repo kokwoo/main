@@ -19,6 +19,7 @@ public class UpdateCommand implements Command {
 	public UpdateCommand(Calendar cal, IndexStore indexStore, 
 						 int idx, ArrayList<String> fields, 
 						 ArrayList<String> newValues, boolean isSeries) {
+		System.out.println("Creating update command object"); // debug
 		this.cal = cal;
 		this.indexStore = indexStore;
 		this.idx = idx;
@@ -43,7 +44,9 @@ public class UpdateCommand implements Command {
 	}
 	
 	private Result executeUpdateEvent() {
-	return cal.updateEvent(idx, fields, newValues, isSeries);
+		System.out.println("Calling cal to update event"); // debug
+		System.out.println("In command: isSeries == " + isSeries); // debug
+		return cal.updateEvent(idx, fields, newValues, isSeries);
 	}
 	
 	private Result executeUpdateFloating() {
