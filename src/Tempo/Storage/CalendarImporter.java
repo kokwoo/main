@@ -32,6 +32,10 @@ public class CalendarImporter {
 	public boolean importFromFile(String fileName){
 		_fileName = fileName;
 		
+		events = new ArrayList<CalendarObject>();
+		tasks = new ArrayList<CalendarObject>();
+		floatingTasks = new ArrayList<CalendarObject>();
+		
 		try {
 			in  = new BufferedReader(new FileReader(_fileName));
 		} catch (FileNotFoundException e) {
@@ -42,13 +46,10 @@ public class CalendarImporter {
 		String currLine;
 		try {
 			while((currLine = in.readLine()) != null){
+				
+				System.out.println("CurrLine: " + currLine);
+				
 				String[] split = currLine.trim().split("!!");
-//				--EVENTS--
-//				0!!dinner with mum!!30/10/2015/22:00!!30/10/2015/23:00
-//				--TASKS--
-//				4!!eat brkfast!!false!!20/01/2015
-//				--FLOATING TASKS--
-//				0!!Do homework!!false
 				
 				if(split.length == 5){
 					if(isBoolean(split[3])){
@@ -77,6 +78,7 @@ public class CalendarImporter {
 					
 				}
 			}
+			in.close();
 		} catch (IOException e) {
 			System.out.println("Error encountered when reading from file!");
 			return false;

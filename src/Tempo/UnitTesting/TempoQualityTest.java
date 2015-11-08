@@ -1,10 +1,10 @@
-package Tempo.UnitTesting;
+/*package Tempo.UnitTesting;
 /**
  * UNIT TESTS FOR TEMPO.
  * POST ISSUES OR QUESTIONS TO HOWHOW71 @ GITHUB
  */
 
-
+/*
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -16,25 +16,25 @@ import java.util.Queue;
 
 import Tempo.Logic.RequestHandler;
 import junit.framework.TestCase;
-
-public class TempoQualityTest extends TestCase {
+*/
+/*public class TempoQualityTest extends TestCase {
 	private final static ByteArrayOutputStream outContent = new ByteArrayOutputStream();
 	private final static ByteArrayOutputStream errContent = new ByteArrayOutputStream();
 	public static void test() {
 		//setUpStreams();
 		String filename = "testfile.txt";
-		boolean fileExists = clear(filename);
+  		boolean fileExists = clear(filename);
 		assertEquals(fileExists,false);
 		Queue cmds = setupCommands();
-		Queue digests = setupSha1Checksums();
-		RequestHandler tempRH = RequestHandler.getInstance();
-		canOpenFile(filename,tempRH);
-		canRunCommands(filename,tempRH,cmds,digests);
-		checkDisplay(tempRH);
-	}
+//		Queue digests = setupSha1Checksums();
+//		RequestHandler tempRH = RequestHandler.getInstance();
+//		canOpenFile(filename,tempRH);
+//		canRunCommands(filename,tempRH,cmds,digests);
+//		checkDisplay(tempRH);
+//	}*/
 	// CURRENT ISSUES WITH PARSER - LIST SHOULD BE RECOGNIZED AS EQUIVALENT OF DISPLAY. IT IS NOT.
 	// <KEY> TODAY SHOULD DISPLAY EVENTS OF TODAY. IT DOES NOT.
-	private static void checkDisplay(RequestHandler tempRH) {
+/*	private static void checkDisplay(RequestHandler tempRH) {
 		
 		Queue<Integer> digests = new LinkedList<Integer>();
 		Queue<String> cmds = new LinkedList<String>();
@@ -63,7 +63,7 @@ public class TempoQualityTest extends TestCase {
 		
 	}
 
-	private static int  getHash(ArrayList<String> output) {
+/*	private static int  getHash(ArrayList<String> output) {
 		// TODO Auto-generated method stub
 		String result = "";
 		for (int i = 0; i < output.size(); i++) {
@@ -86,7 +86,7 @@ public class TempoQualityTest extends TestCase {
 		return f.exists();
 	}
 
-	private static Queue setupSha1Checksums() {
+/*	private static Queue setupSha1Checksums() {
 		// TODO Auto-generated method stub
 		Queue<String> digests = new LinkedList<String>();
 		String testOne = "d1865679ed6e91f7fe180d0f84945d555dbd5b10";
@@ -117,8 +117,8 @@ public class TempoQualityTest extends TestCase {
 	    System.setOut(null);
 	    System.setErr(null);
 	}
-	
-	private static Queue setupCommands() {
+*/	
+/*	private static Queue setupCommands() {
 		Queue<String> commands = new LinkedList<String>();
 		commands.add("add event do something from 10/10/2015 at 10:00 to 10/11/2015 at 11:00");
 		commands.add("add event clean room from 100/10/2015 at 10:00 to 10/11/2015 at 11:00");
@@ -134,8 +134,8 @@ public class TempoQualityTest extends TestCase {
 		commands.add("   ");
 		return commands;
 	}
-
-	private static void canRunCommands(String filename, RequestHandler tempRH,Queue<String> cmds,Queue<String> digests) {
+*/
+/*	private static void canRunCommands(String filename, RequestHandler tempRH,Queue<String> cmds,Queue<String> digests) {
 		File file = new File(filename);
 		while(!cmds.isEmpty()) {
 			tempRH.processCommand(cmds.poll());
@@ -147,7 +147,7 @@ public class TempoQualityTest extends TestCase {
 
 		return;
 	}
-
+*/
 	/**
 	Optimal implementation of SHA-1 in Java.
 	Used the tutorial from mkyong.com for help with implementation
@@ -156,7 +156,7 @@ public class TempoQualityTest extends TestCase {
 	@param file		calculate SHA-1 of this file
 	@return	the hash value of the input file in Hex.
 	 */
-	private static String calculateSha1CheckSum(File file)  {
+/*	private static String calculateSha1CheckSum(File file)  {
 		try {
 			MessageDigest md = MessageDigest.getInstance("SHA1");
 			FileInputStream fis = new FileInputStream(file);
@@ -181,10 +181,10 @@ public class TempoQualityTest extends TestCase {
 
 		return "";
 	}
+*/
 
+//	private static void canOpenFile(String filename,RequestHandler tempRH) {
+//		assertEquals(tempRH.initialize(filename),"testfile.txt is ready to use.");
+//	}
 
-	private static void canOpenFile(String filename,RequestHandler tempRH) {
-		assertEquals(tempRH.initialize(filename),"testfile.txt is ready to use.");
-	}
-
-}
+//}

@@ -555,6 +555,8 @@ public class Display {
 		 tasksStr.add(EMPTY_STRING);
 		 tasksStr.addAll(getDoneFloatingTasksString());
 		 tasksStr.add(EMPTY_STRING);
+		 tasksStr.addAll(getDoneTasksString());
+		 tasksStr.add(EMPTY_STRING);
 		 tasksStr.addAll(getTasksTodayString());
 		 tasksStr.add(EMPTY_STRING);
 		 tasksStr.addAll(getUpcomingTasksString());

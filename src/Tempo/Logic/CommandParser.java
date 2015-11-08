@@ -17,6 +17,7 @@ import Tempo.Commands.ExitCommand;
 import Tempo.Commands.RedoCommand;
 import Tempo.Commands.RemoveCommand;
 import Tempo.Commands.SearchCommand;
+import Tempo.Commands.SwapCommand;
 import Tempo.Commands.UndoCommand;
 import Tempo.Commands.UpdateCommand;
 import Tempo.Storage.CalendarExporter;
@@ -39,7 +40,7 @@ public class CommandParser {
 	private static final String COMMAND_DONE = "done";
 	private static final String COMMAND_COMPLETED = "completed";
 	private static final String COMMAND_FINISHED = "finished";
-	
+
 	private static final String COMMAND_UNDONE = "undone";
 
 	private static final String COMMAND_VIEW = "view";
@@ -49,13 +50,13 @@ public class CommandParser {
 	private static final String COMMAND_FIND = "find";
 
 	private static final String COMMAND_UNDO = "undo";
-	
+
 	private static final String COMMAND_REDO = "redo";
-	
+
 	private static final String COMMAND_FILENAME = "filename";
-	
+
 	private static final String COMMAND_SWAP = "swap";
-	
+
 	private static final String COMMAND_CLEAR = "clear";
 
 	private static final String COMMAND_HELP = "help";
@@ -108,68 +109,72 @@ public class CommandParser {
 		String arguments = getArguments(commandString);
 		// process add, process update, process remove
 		switch (commandType.toLowerCase()) {
-		// Add Function
-		case COMMAND_ADD:
-		case COMMAND_CREATE:
-		case COMMAND_NEW:
-			return processAddCommand(arguments);
+			// Add Function
+			case COMMAND_ADD :
+			case COMMAND_CREATE :
+			case COMMAND_NEW :
+				return processAddCommand(arguments);
 
-		// Remove Function
-		case COMMAND_REMOVE:
-		case COMMAND_DELETE:
-		case COMMAND_CANCEL:
-			return processRemoveCommand(arguments);
+			// Remove Function
+			case COMMAND_REMOVE :
+			case COMMAND_DELETE :
+			case COMMAND_CANCEL :
+				return processRemoveCommand(arguments);
 
-		// Update Function
-		case COMMAND_UPDATE:
-		case COMMAND_EDIT:
-		case COMMAND_CHANGE:
-			return processUpdateCommand(arguments);
+			// Update Function
+			case COMMAND_UPDATE :
+			case COMMAND_EDIT :
+			case COMMAND_CHANGE :
+				return processUpdateCommand(arguments);
 
-		// Mark as Done Function
-		case COMMAND_DONE:
-		case COMMAND_FINISHED:
-		case COMMAND_COMPLETED:
-			return processDoneCommand(arguments);
-			
-		case COMMAND_UNDONE:
-			return processUndoneCommand(arguments);
+			// Mark as Done Function
+			case COMMAND_DONE :
+			case COMMAND_FINISHED :
+			case COMMAND_COMPLETED :
+				return processDoneCommand(arguments);
 
-		// Display Function
-		case COMMAND_VIEW:
-		case COMMAND_DISPLAY:
-			return processDisplayCommand(arguments);
+			case COMMAND_UNDONE :
+				return processUndoneCommand(arguments);
 
-		// Search Function
-		case COMMAND_SEARCH:
-		case COMMAND_FIND:
-			return processSearchCommand(arguments);
+			// Display Function
+			case COMMAND_VIEW :
+			case COMMAND_DISPLAY :
+				return processDisplayCommand(arguments);
 
-		// Undo Function
-		case COMMAND_UNDO:
-			return processUndoCommand();
-			
-		case COMMAND_REDO:
-			return processRedoCommand();
-			
-		// Filename Function
-		case COMMAND_FILENAME:
-			return processFilenameCommand(arguments);
-			
-		case COMMAND_CLEAR:
-			return processClearCommand();
+			// Search Function
+			case COMMAND_SEARCH :
+			case COMMAND_FIND :
+				return processSearchCommand(arguments);
 
-		// Display help/manual
-		case COMMAND_HELP:
-			return null;
+			// Undo Function
+			case COMMAND_UNDO :
+				return processUndoCommand();
 
-		// Exit command
-		case COMMAND_EXIT:
-			return processExitCommand();
+			case COMMAND_REDO :
+				return processRedoCommand();
 
-		// Generate Error Command Message
-		default:
-			return null;
+			// Filename Function
+			case COMMAND_FILENAME :
+				return processFilenameCommand(arguments);
+				
+			//Swap Function
+			case COMMAND_SWAP:
+				return processSwapCommand(arguments);
+
+			case COMMAND_CLEAR :
+				return processClearCommand();
+
+			// Display help/manual
+			case COMMAND_HELP :
+				return null;
+
+			// Exit command
+			case COMMAND_EXIT :
+				return processExitCommand();
+
+			// Generate Error Command Message
+			default :
+				return null;
 		}
 	}
 
@@ -201,25 +206,42 @@ public class CommandParser {
 			String recurringArgsString = split[split.length - 1];
 			argumentString = getArgumentString(argumentString);
 			isRecurring = true;
-			recurringArgs = processRecurringArgs(recurringArgsString);
+			try {
+				recurringArgs = processRecurringArgs(recurringArgsString);
+			} catch (Exception e) {
+				return new AddCommand(calendar, null, true, null, null);
+			}
 
 			recurringType = recurringArgs.get(0);
 			recurringDate = recurringArgs.get(1);
 		}
 
 		if (addType.equalsIgnoreCase("event")) {
-			args = processAddEventCommand(argumentString);
+			try {
+				args = processAddEventCommand(argumentString);
+			} catch (Exception e) {
+				return new AddCommand(calendar, null, true, null, null);
+			}
 		} else if (addType.equalsIgnoreCase("task")) {
-			args = processAddTaskCommand(argumentString);
+			try {
+				args = processAddTaskCommand(argumentString);
+			} catch (Exception e) {
+				return new AddCommand(calendar, null, true, null, null);
+			}
 		} else {
 			// TO-DO DISPLAY ERROR HERE
 		}
 
-		command = new AddCommand(calendar, args, isRecurring, recurringType, recurringDate);
+		if (args == null) {
+			command = new AddCommand(null, null);
+		} else {
+			command = new AddCommand(calendar, args, isRecurring, recurringType, recurringDate);
+		}
+
 		return command;
 	}
 
-	private ArrayList<String> processAddEventCommand(String argumentString) {
+	private ArrayList<String> processAddEventCommand(String argumentString) throws Exception {
 		// Dinner with mum from 9am to 9pm
 		// Dinner with mum today 9pm to 10pm
 		// Dinner with mum today from 9am to 9pm
@@ -324,16 +346,23 @@ public class CommandParser {
 			}
 		}
 
+		boolean validDate = true;
+
 		if (startDateTime != null && endDateTime != null) {
 			SimpleDateFormat df = new SimpleDateFormat(DATETIME_FORMAT);
+			df.setLenient(false);
 			startDateTimeString = df.format(startDateTime);
 			endDateTimeString = df.format(endDateTime);
-			endDateTimeString = adjustDates(startDateTimeString, endDateTimeString);
+			validDate = checkValidStartEnd(startDateTimeString, endDateTimeString);
 		}
-		
-		returnList.add(nameString);
-		returnList.add(startDateTimeString);
-		returnList.add(endDateTimeString);
+
+		if (validDate) {
+			returnList.add(nameString);
+			returnList.add(startDateTimeString);
+			returnList.add(endDateTimeString);
+		} else {
+			return null;
+		}
 
 		// System.out.println("Name: " + nameString);
 		// System.out.println("Start: " + startDateTimeString);
@@ -342,7 +371,7 @@ public class CommandParser {
 		return returnList;
 	}
 
-	private ArrayList<String> processAddTaskCommand(String argumentString) {
+	private ArrayList<String> processAddTaskCommand(String argumentString) throws Exception{
 		String nameString = null;
 		Date dueDate = null;
 		String dueDateString = null;
@@ -351,7 +380,9 @@ public class CommandParser {
 
 		if (argumentString.toLowerCase().contains("due")) {
 			nameString = getTaskName(argumentString);
+			
 			dueDate = getTaskDueDate(argumentString);
+
 		} else {
 			// Try parsing on natty
 			DateGroup dateGroup = parseDateTimeString(argumentString);
@@ -386,11 +417,10 @@ public class CommandParser {
 		int idx;
 		Command command;
 		boolean removeSeries = false;
-		
-		
+
 		String all = getFirstWord(argumentString);
-		
-		if(all.equalsIgnoreCase("all")){
+
+		if (all.equalsIgnoreCase("all")) {
 			removeSeries = true;
 			argumentString = removeFirstWord(argumentString);
 		}
@@ -404,10 +434,10 @@ public class CommandParser {
 	private Command processUpdateCommand(String arguments) {
 		int idx = getId(getFirstWord(arguments));
 		boolean removeSeries = false;
-		
+
 		String all = getFirstWord(arguments);
-		
-		if(all.equalsIgnoreCase("all")){
+
+		if (all.equalsIgnoreCase("all")) {
 			removeSeries = true;
 			arguments = removeFirstWord(arguments);
 		}
@@ -439,11 +469,11 @@ public class CommandParser {
 			return null;
 		}
 	}
-	
-	private Command processUndoneCommand(String argumentString){
+
+	private Command processUndoneCommand(String argumentString) {
 		int idx;
 		Command command;
-		
+
 		idx = getId(argumentString);
 
 		if (idx != -1) {
@@ -460,8 +490,6 @@ public class CommandParser {
 		command = new SearchCommand(calendar, arguments);
 		return command;
 	}
-	
-	
 
 	private Command processDisplayCommand(String arguments) {
 		Command command;
@@ -479,41 +507,45 @@ public class CommandParser {
 
 	private boolean checkArguments(String arguments) {
 		switch (arguments.toLowerCase()) {
-		case KEY_EVENTS:
-		case KEY_TASKS:
-		case KEY_UPCOMING_EVENTS:
-		case KEY_UNDONE_TASKS:
-		case KEY_MISSED_TASKS:
-		case KEY_TODAY:
-		case KEY_ALL:
-			return true;
-		default:
-			return false;
+			case KEY_EVENTS :
+			case KEY_TASKS :
+			case KEY_UPCOMING_EVENTS :
+			case KEY_UNDONE_TASKS :
+			case KEY_MISSED_TASKS :
+			case KEY_TODAY :
+			case KEY_ALL :
+				return true;
+			default :
+				return false;
 		}
 	}
 
 	private Command processUndoCommand() {
 		return new UndoCommand(calendar);
 	}
-	
-	private Command processRedoCommand(){
+
+	private Command processRedoCommand() {
 		return new RedoCommand(calendar);
 	}
-	
+
 	private Command processFilenameCommand(String arguments) {
-		return new EditFileNameCommand(calendar,arguments);
+		return new EditFileNameCommand(calendar, arguments);
 	}
 	
-	private Command processClearCommand(){
+	private Command processSwapCommand(String arguments){
+		return new SwapCommand(calendar, arguments);
+	}
+
+	private Command processClearCommand() {
 		return new ClearCommand(calendar);
-		
+
 	}
 
 	private Command processExitCommand() {
 		return new ExitCommand();
 	}
 
-	private Date getDateTime(String dateTimeString) {
+	private static Date getDateTime(String dateTimeString) throws Exception {
 		try {
 			if (dateTimeString.contains("at")) {
 				String dateString = dateTimeString.split("at")[0].trim();
@@ -522,7 +554,11 @@ public class CommandParser {
 				Date date = null;
 
 				// splits date according to
-				date = parseDateString(dateString);
+				try{
+					date = parseDateString(dateString);
+				}catch (Exception e){
+					return null;
+				}
 
 				dateGroup = parseDateTimeString(timeString);
 				Date time = null;
@@ -533,8 +569,9 @@ public class CommandParser {
 				} else {
 					time = dateGroup.getDates().get(0);
 				}
-				
+
 				SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
+				dateFormat.setLenient(false);
 				dateString = dateFormat.format(date);
 
 				SimpleDateFormat timeFormat = new SimpleDateFormat(TIME_FORMAT);
@@ -554,19 +591,22 @@ public class CommandParser {
 
 	}
 
-	private Date parseDateString(String dateTimeString) throws ParseException {
+	private static Date parseDateString(String dateTimeString) throws Exception {
 		SimpleDateFormat dateFormat;
 		DateGroup dateGroup;
 		Date date;
 		// splits date according to
 		if (dateTimeString.contains("/")) {
 			dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+			dateFormat.setLenient(false);
 			date = dateFormat.parse(dateTimeString);
 		} else if (dateTimeString.contains("-")) {
 			dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+			dateFormat.setLenient(false);
 			date = dateFormat.parse(dateTimeString);
 		} else if (dateTimeString.contains(".")) {
 			dateFormat = new SimpleDateFormat("dd.MM.yyyy");
+			dateFormat.setLenient(false);
 			date = dateFormat.parse(dateTimeString);
 		} else {
 			dateGroup = parseDateTimeString(dateTimeString);
@@ -622,7 +662,7 @@ public class CommandParser {
 		return returnString;
 	}
 
-	private ArrayList<String> processRecurringArgs(String recurringArgs) {
+	public static ArrayList<String> processRecurringArgs(String recurringArgs) throws Exception {
 		String recurringType = null;
 		Date recurringDate = null;
 		String recurringDateStr = null;
@@ -655,18 +695,18 @@ public class CommandParser {
 		return args;
 	}
 
-	private String processRecurringType(String recurringType) {
+	private static String processRecurringType(String recurringType) {
 		switch (recurringType.toLowerCase()) {
-		case KEY_DAY:
-			return KEY_DAILY;
-		case KEY_WEEK:
-			return KEY_WEEKLY;
-		case KEY_MONTH:
-			return KEY_MONTHLY;
-		case KEY_YEAR:
-			return KEY_ANNUALLY;
-		default:
-			return null;
+			case KEY_DAY :
+				return KEY_DAILY;
+			case KEY_WEEK :
+				return KEY_WEEKLY;
+			case KEY_MONTH :
+				return KEY_MONTHLY;
+			case KEY_YEAR :
+				return KEY_ANNUALLY;
+			default :
+				return null;
 		}
 	}
 
@@ -676,38 +716,33 @@ public class CommandParser {
 		return parameters1[0].trim();
 	}
 
-	private Date getTaskDueDate(String arguments) {
+	private Date getTaskDueDate(String arguments) throws Exception {
 		String[] parameters1 = arguments.split("due");
 		String dueDateString = parameters1[1].trim();
 		Date dueDate = getDateTime(dueDateString);
 		return dueDate;
 	}
 
-	private String adjustDates(String start, String end) {
+	private boolean checkValidStartEnd(String start, String end) {
 		SimpleDateFormat df = new SimpleDateFormat(DATETIME_FORMAT);
 		Date startDate = null;
 		Date endDate = null;
-		
+
 		try {
 			startDate = df.parse(start);
 			endDate = df.parse(end);
 		} catch (Exception e) {
-			// EXCEPTION HANDLING???
+			return false;
 		}
 
 		long startDateMilli = startDate.getTime();
 		long endDateMilli = endDate.getTime();
 
 		if (endDateMilli < startDateMilli) {
-			SimpleDateFormat formatDate = new SimpleDateFormat(DATE_FORMAT);
-			SimpleDateFormat formatTime = new SimpleDateFormat(TIME_FORMAT);
-
-			String startDateString = formatDate.format(startDate);
-			String endTimeString = formatTime.format(endDate);
-
-			end = startDateString + "/" + endTimeString;
+			return false;
+		} else {
+			return true;
 		}
-		return end;
 	}
 
 	// FOR UPDATE FUNCTION
@@ -771,7 +806,7 @@ public class CommandParser {
 		return returnMessage;
 	}
 
-	private DateGroup parseDateTimeString(String dateTimeString) {
+	private static DateGroup parseDateTimeString(String dateTimeString) {
 		Parser parser = new Parser();
 		List<DateGroup> groups = parser.parse(dateTimeString);
 		if (!groups.isEmpty()) {
