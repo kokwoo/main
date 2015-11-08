@@ -12,28 +12,7 @@ import Tempo.CalendarObjects.FloatingTask;
 import Tempo.CalendarObjects.Task;
 import Tempo.Commands.Result;
 
-//The list of things that can be displayed
-/*getEventsToday
-getUpcomingEvents
-getPastEvents
-getTasksToday
-getUpcomingTasks
-getMissedTasks
-getUndoneTasks
-getDoneTasks
-getUndoneFloatingTasks
-getDoneFloatingTasks
-getAll
-getEvents
-getTasks
-*/
-
-/*All my "get" methods will first refresh where it updates all the new changes it will then 
- * create a new ArrayList<String> to store the new changes and return this ArrayList<String>
-*/
-
 public class Display {
-
 	private Calendar cal = Calendar.getInstance();
 
 	// Global variables
@@ -76,13 +55,6 @@ public class Display {
 	private final String NO_DONE_FLOATING_TASKS = "You have no task without deadline that are done";
 	private final String EMPTY_STRING = "";
 	
-	private static final String KEY_EVENTS_BEST_MATCHES = "eventsBestMatches";
-	private static final String KEY_EVENTS_ALTERNATIVE_MATCHES = "eventsAlternativeMatches";
-	private static final String KEY_TASKS_BEST_MATCHES = "tasksBestMatches";
-	private static final String KEY_TASKS_ALTERNATIVE_MATCHES = "tasksAlternativeMatches";
-	private static final String KEY_FLOATING_TASKS_BEST_MATCHES = "floatingTasksBestMatches";
-	private static final String KEY_FLOATING_TASKS_ALTERNATIVE_MATCHES = "floatingTasksAlternativeMatches";
-
 	private static final String NO_BEST_MATCH = "There are no best matches found!";
 	private static final String BEST_MATCH_STRING = "These are the best matches found:";
 	private static final String NO_ALTERNATIVE_MATCH = "There are no alternative matches found!";
@@ -625,7 +597,7 @@ public class Display {
 		return todayString;
 	}
 	
-	public Result formatSearchResults(ArrayList<CalendarObject> eventsBestMatch, ArrayList<CalendarObject> eventsAlternativeMatch, ArrayList<CalendarObject>tasksBestMatch, ArrayList<CalendarObject>tasksAlternativeMatch, ArrayList<CalendarObject>floatingTaskBestMatch, ArrayList<CalendarObject>floatingTasksAlternativeMatch){
+	public String formatSearchResults(ArrayList<CalendarObject> eventsBestMatch, ArrayList<CalendarObject> eventsAlternativeMatch, ArrayList<CalendarObject>tasksBestMatch, ArrayList<CalendarObject>tasksAlternativeMatch, ArrayList<CalendarObject>floatingTaskBestMatch, ArrayList<CalendarObject>floatingTasksAlternativeMatch){
 		ArrayList<String> searchResults = new ArrayList<String>();
 		
 		boolean hasBestMatches = true;
@@ -662,17 +634,7 @@ public class Display {
 		
 		String returnString = strArrayToString(searchResults);
 		
-		HashMap<String, ArrayList<CalendarObject>> hm = new HashMap<String, ArrayList<CalendarObject>>();
-		
-		hm.put(KEY_EVENTS_BEST_MATCHES, eventsBestMatch);
-		hm.put(KEY_EVENTS_ALTERNATIVE_MATCHES, eventsBestMatch);
-		hm.put(KEY_TASKS_BEST_MATCHES, tasksBestMatch);
-		hm.put(KEY_TASKS_ALTERNATIVE_MATCHES, tasksAlternativeMatch);
-		hm.put(KEY_FLOATING_TASKS_BEST_MATCHES, floatingTaskBestMatch);
-		hm.put(KEY_FLOATING_TASKS_ALTERNATIVE_MATCHES, floatingTasksAlternativeMatch);
-		
-		Result result = new Result(returnString, true, true, hm);
-		return result;
+		return returnString;
 	}
 	
 	private String strArrayToString(ArrayList<String> in){

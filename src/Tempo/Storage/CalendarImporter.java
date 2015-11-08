@@ -45,10 +45,7 @@ public class CalendarImporter {
 		
 		String currLine;
 		try {
-			while((currLine = in.readLine()) != null){
-				
-				System.out.println("CurrLine: " + currLine);
-				
+			while((currLine = in.readLine()) != null){				
 				String[] split = currLine.trim().split("!!");
 				
 				if(split.length == 5){
