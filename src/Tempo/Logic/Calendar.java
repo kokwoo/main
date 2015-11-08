@@ -1111,7 +1111,7 @@ public class Calendar {
 		ArrayList<CalendarObject> floatingTasksAlternativeMatch = floatingTaskSearchResult.get(KEY_ALTERNATIVE_MATCHES);
 		
 		results.put(KEY_EVENTS_BEST_MATCHES, eventsBestMatch);
-		results.put(KEY_EVENTS_ALTERNATIVE_MATCHES, eventsBestMatch);
+		results.put(KEY_EVENTS_ALTERNATIVE_MATCHES, eventsAlternativeMatch);
 		results.put(KEY_TASKS_BEST_MATCHES, tasksBestMatch);
 		results.put(KEY_TASKS_ALTERNATIVE_MATCHES, tasksAlternativeMatch);
 		results.put(KEY_FLOATING_TASKS_BEST_MATCHES, floatingTaskBestMatch);
