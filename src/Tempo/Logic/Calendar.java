@@ -183,10 +183,6 @@ public class Calendar {
 		floatingTasksList = new ArrayList<CalendarObject>();
 
 		indexStore.resetStore();
-
-		System.out.println(eventsList);
-		System.out.println(tasksList);
-		System.out.println(floatingTasksList);
 	}
 
 	/***** ADD COMMAND EXECUTION ******/
