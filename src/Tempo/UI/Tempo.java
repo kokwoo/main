@@ -3,10 +3,6 @@ package Tempo.UI;
 import java.text.*;
 import java.util.*;
 
-import Tempo.CalendarObjects.CalendarObject;
-import Tempo.CalendarObjects.Event;
-import Tempo.CalendarObjects.FloatingTask;
-import Tempo.CalendarObjects.Task;
 import Tempo.Commands.Result;
 import Tempo.Logic.RequestHandler;
 

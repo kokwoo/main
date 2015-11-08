@@ -1,6 +1,5 @@
 package Tempo.Logic;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -17,10 +16,8 @@ import Tempo.Commands.ExitCommand;
 import Tempo.Commands.RedoCommand;
 import Tempo.Commands.RemoveCommand;
 import Tempo.Commands.SearchCommand;
-import Tempo.Commands.SwapCommand;
 import Tempo.Commands.UndoCommand;
 import Tempo.Commands.UpdateCommand;
-import Tempo.Storage.CalendarExporter;
 
 public class CommandParser {
 	private static CommandParser instance = new CommandParser();
@@ -55,8 +52,6 @@ public class CommandParser {
 
 	private static final String COMMAND_FILENAME = "filename";
 
-	private static final String COMMAND_SWAP = "swap";
-
 	private static final String COMMAND_CLEAR = "clear";
 
 	private static final String COMMAND_HELP = "help";
@@ -82,6 +77,7 @@ public class CommandParser {
 	private static final String KEY_ALL = "all";
 
 	private static final String DATE_DELIMETER = "/";
+	private static final String TIME_DELIMETER = ":";
 
 	private static final String DATE_FORMAT = "dd/MM/yyyy";
 	private static final String TIME_FORMAT = "HH:mm";
@@ -90,7 +86,6 @@ public class CommandParser {
 	private Calendar calendar = Calendar.getInstance();
 	private IndexStore indexStore = IndexStore.getInstance();
 	private Display display = Display.getInstance();
-	private CalendarExporter exporter = CalendarExporter.getInstance();
 
 	private CommandParser() {
 
@@ -156,10 +151,6 @@ public class CommandParser {
 			// Filename Function
 			case COMMAND_FILENAME :
 				return processFilenameCommand(arguments);
-				
-			//Swap Function
-			case COMMAND_SWAP:
-				return processSwapCommand(arguments);
 
 			case COMMAND_CLEAR :
 				return processClearCommand();
@@ -242,10 +233,6 @@ public class CommandParser {
 	}
 
 	private ArrayList<String> processAddEventCommand(String argumentString) throws Exception {
-		// Dinner with mum from 9am to 9pm
-		// Dinner with mum today 9pm to 10pm
-		// Dinner with mum today from 9am to 9pm
-		// Dinner with mum
 		String nameString = "";
 		String startDateString = null;
 		String startTimeString = null;
@@ -364,10 +351,6 @@ public class CommandParser {
 			return null;
 		}
 
-		// System.out.println("Name: " + nameString);
-		// System.out.println("Start: " + startDateTimeString);
-		// System.out.println("End: " + endDateTimeString);
-
 		return returnList;
 	}
 
@@ -432,21 +415,23 @@ public class CommandParser {
 	}
 
 	private Command processUpdateCommand(String arguments) {
-		int idx = getId(getFirstWord(arguments));
-		boolean removeSeries = false;
+		int idx;
+		boolean updateSeries = false;
 
 		String all = getFirstWord(arguments);
 
 		if (all.equalsIgnoreCase("all")) {
-			removeSeries = true;
+			updateSeries = true;
 			arguments = removeFirstWord(arguments);
 		}
+		
+		idx = getId(arguments);
 
 		ArrayList<String> fields = getFieldsList(arguments);
 		ArrayList<String> newValues = getNewValuesList(arguments);
 
 		if (idx != -1) {
-			Command command = new UpdateCommand(calendar, indexStore, idx, fields, newValues, removeSeries);
+			Command command = new UpdateCommand(calendar, indexStore, idx, fields, newValues, updateSeries);
 			return command;
 		} else {
 			// DISPLAY ERROR MESSAGE
@@ -493,13 +478,10 @@ public class CommandParser {
 
 	private Command processDisplayCommand(String arguments) {
 		Command command;
-		// System.out.println("got it!");
-		// System.out.println(arguments);
 		command = new DisplayCommand(display, arguments);
 		if (checkArguments(arguments)) {
 			return command;
 		} else {
-			// DISPLAY ERROR MSG
 			return null;
 		}
 
@@ -531,10 +513,6 @@ public class CommandParser {
 	private Command processFilenameCommand(String arguments) {
 		return new EditFileNameCommand(calendar, arguments);
 	}
-	
-	private Command processSwapCommand(String arguments){
-		return new SwapCommand(calendar, arguments);
-	}
 
 	private Command processClearCommand() {
 		return new ClearCommand(calendar);
@@ -547,37 +525,47 @@ public class CommandParser {
 
 	private static Date getDateTime(String dateTimeString) throws Exception {
 		try {
-			if (dateTimeString.contains("at")) {
-				String dateString = dateTimeString.split("at")[0].trim();
-				String timeString = dateTimeString.split("at")[1].trim();
+			if (dateTimeString.contains(" at ")) {
+				String dateString = dateTimeString.split(" at ")[0].trim();
+				String timeString = dateTimeString.split(" at ")[1].trim();
 				DateGroup dateGroup = null;
 				Date date = null;
+				Date time = null;
 
-				// splits date according to
 				try{
 					date = parseDateString(dateString);
 				}catch (Exception e){
 					return null;
 				}
+				
 
-				dateGroup = parseDateTimeString(timeString);
-				Date time = null;
+				if(timeString.contains(TIME_DELIMETER)){
+					System.out.println(timeString);
+					if(!validateTime(timeString)){
+						return null;
+					}
+				}else{
+					dateGroup = parseDateTimeString(timeString);
 
-				if (dateGroup == null) {
-					SimpleDateFormat tempFormat = new SimpleDateFormat(TIME_FORMAT);
-					time = tempFormat.parse("00:00");
-				} else {
-					time = dateGroup.getDates().get(0);
+					if (dateGroup == null) {
+						//CHANGE TO GET CURRENT TIME
+						SimpleDateFormat tempFormat = new SimpleDateFormat(TIME_FORMAT);
+						time = tempFormat.parse("00:00");
+					} else {
+						time = dateGroup.getDates().get(0);
+					}
 				}
 
 				SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
-				dateFormat.setLenient(false);
 				dateString = dateFormat.format(date);
-
-				SimpleDateFormat timeFormat = new SimpleDateFormat(TIME_FORMAT);
-				timeString = timeFormat.format(time);
+				
+				if(time != null){
+					SimpleDateFormat timeFormat = new SimpleDateFormat(TIME_FORMAT);
+					timeString = timeFormat.format(time);
+				}
 
 				String combinedDateTimeString = dateString + DATE_DELIMETER + timeString;
+				System.out.println(combinedDateTimeString);
 				SimpleDateFormat dateTimeFormat = new SimpleDateFormat(DATETIME_FORMAT);
 
 				Date parsedDate = dateTimeFormat.parse(combinedDateTimeString);
@@ -588,26 +576,41 @@ public class CommandParser {
 		} catch (Exception e) {
 			return null;
 		}
-
 	}
 
 	private static Date parseDateString(String dateTimeString) throws Exception {
 		SimpleDateFormat dateFormat;
 		DateGroup dateGroup;
 		Date date;
+		
+		System.out.println(dateTimeString);
+		
 		// splits date according to
 		if (dateTimeString.contains("/")) {
-			dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-			dateFormat.setLenient(false);
-			date = dateFormat.parse(dateTimeString);
+			if(validateDate(dateTimeString)){
+				dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+				dateFormat.setLenient(false);
+				date = dateFormat.parse(dateTimeString);
+			}else{
+				System.out.println("Throwing exception!");
+				throw new Exception();
+			}
 		} else if (dateTimeString.contains("-")) {
-			dateFormat = new SimpleDateFormat("dd-MM-yyyy");
-			dateFormat.setLenient(false);
-			date = dateFormat.parse(dateTimeString);
+			if(validateDate(dateTimeString)){
+				dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+				dateFormat.setLenient(false);
+				date = dateFormat.parse(dateTimeString);
+			}else{
+				throw new Exception();
+			}
 		} else if (dateTimeString.contains(".")) {
-			dateFormat = new SimpleDateFormat("dd.MM.yyyy");
-			dateFormat.setLenient(false);
-			date = dateFormat.parse(dateTimeString);
+			if(validateDate(dateTimeString)){
+				dateFormat = new SimpleDateFormat("dd.MM.yyyy");
+				dateFormat.setLenient(false);
+				date = dateFormat.parse(dateTimeString);
+			}else{
+				throw new Exception();
+			}
 		} else {
 			dateGroup = parseDateTimeString(dateTimeString);
 			if (dateGroup != null) {
@@ -618,6 +621,24 @@ public class CommandParser {
 		}
 
 		return date;
+	}
+	
+	private static boolean validateDate(String dateStr){
+		String regex = "(0?[1-9]|[12][0-9]|3[01])[/|.|-](0?[1-9]|1[012])[/|.|-]\\d{4}";
+		if(dateStr.matches(regex)){
+			return true;
+		}else{
+			return false;
+		}
+	}
+	
+	private static boolean validateTime(String timeStr){
+		String regex = "(0?[0-9]|1[0-9]|2[0-3]):([0-5][0-9])";
+		if(timeStr.matches(regex)){
+			return true;
+		}else{
+			return false;
+		}
 	}
 
 	// FOR REMOVE/MARK AS DONE FUNCTION
