@@ -425,7 +425,7 @@ public class CommandParser {
 			arguments = removeFirstWord(arguments);
 		}
 		
-		idx = getId(arguments);
+		idx = getId(getFirstWord(arguments));
 
 		ArrayList<String> fields = getFieldsList(arguments);
 		ArrayList<String> newValues = getNewValuesList(arguments);
