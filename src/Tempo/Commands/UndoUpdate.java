@@ -115,8 +115,9 @@ public class UndoUpdate implements Command {
 	}
 	
 	private Result undoUpdateEventsSeries() {
+		System.out.println("Undoing update events series"); // debug
 		Result result;
-		result = calendar.removeEvent(prevModIndex, isEventsSeries);
+		result = calendar.removeEvent(prevModIndex, true);
 		removeUndoUndoCommand();
 		result = calendar.addBackRecurrEvent(prevModEvents);
 		return result;
@@ -124,7 +125,7 @@ public class UndoUpdate implements Command {
 	
 	private Result undoUpdateTasksSeries() {
 		Result result;
-		result = calendar.removeTask(prevModIndex, isEventsSeries);
+		result = calendar.removeTask(prevModIndex, true);
 		removeUndoUndoCommand();
 		result = calendar.addBackRecurrTask(prevModTasks);
 		return result;

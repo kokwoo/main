@@ -22,8 +22,8 @@ public class Calendar {
 	private static Stack<Command> cmdHistory;
 
 	private static final String MSG_WARNING_CLASH = "Warning: this event clashes with another event.\nEnter 'undo' if you would like to revoke the previous operation.";
-	private static final String MSG_WARNING_INVALID_FIELD = "Warning: One or more fields is invalid! Pleae refer to the help menu for reference";
-	private static final String MSG_WARNING_RECUR_WITHOUT_DUE = "Warning: Unable to recur without due date!";
+	private static final String MSG_WARNING_RECUR_WITHOUT_DUE = "Warning: Unable to recur floating task!";
+	private static final String MSG_ERROR_INVALID_FIELD = "Error: You have input an invalid field.\nPleae refer to the 'help' menu for reference.";
 
 	private static final String CMD_ADD_EVENT = "add event %1$s";
 	private static final String CMD_ADD_RECURR_EVENT = "add recurring event %1$s";
@@ -86,8 +86,6 @@ public class Calendar {
 	public static final long MILLISECONDS_A_DAY = 86400000;
 	public static final long MILLISECONDS_A_WEEK = 604800000;
 	public static final String DATE_DELIMETER = "/";
-
-	private static final int INDEX_INVALID = -1;
 
 	private boolean isUndoCmd = false;
 
@@ -599,7 +597,7 @@ public class Calendar {
 
 	public Result updateEvent(int idx, ArrayList<String> fields, ArrayList<String> newValues, boolean isSeries) {
 		boolean hasClash = false;
-		ArrayList<CalendarObject> eventsToUpdate = new ArrayList<CalendarObject>();
+		ArrayList<CalendarObject> oldEvents = new ArrayList<CalendarObject>();
 
 		int arrayListIndex = getArrayListIndexOfEvent(idx);
 		Event eventToUpdate = (Event) eventsList.get(arrayListIndex);
@@ -610,13 +608,13 @@ public class Calendar {
 		String name = eventToUpdate.getName();
 		String cmd = String.format(CMD_UPDATE_EVENT, name);
 
-		boolean updateRecurring = false;
+		boolean isUpdateRecurring = false;
 
 		if (hasInvalidFields(fields, KEY_EVENTS)) {
-			return new Result(cmd, MSG_WARNING_INVALID_FIELD, false, null);
+			return new Result(cmd, MSG_ERROR_INVALID_FIELD, false, null);
 		}
 
-		updateRecurring = hasUpdateRecurring(fields);
+		isUpdateRecurring = hasUpdateRecurring(fields);
 
 		for (int i = 0; i < fields.size(); i++) {
 			if (!(fields.get(i).equals(PARAM_RECURRING) || fields.get(i).equals(PARAM_REPEAT))) {
@@ -630,13 +628,16 @@ public class Calendar {
 		}
 
 		if (isSeries) {
-			eventsToUpdate.add(oldEvent);
+			oldEvents.add(oldEvent);
 
 			for (int i = 0; i < eventsList.size(); i++) {
 				Event currEvent = (Event) eventsList.get(i);
 				if (currEvent.getSeriesIndex() == seriesIndex) {
-					eventsToUpdate.add(copyEvent(currEvent));
+					oldEvents.add(copyEvent(currEvent));
 					for (int j = 0; j < fields.size(); j++) {
+						if (fields.get(j).equals(PARAM_RECURRING)) {
+							continue;
+						}
 						currEvent.update(fields.get(j), newValues.get(j));
 						if (!hasClash && hasChangedTime(fields.get(i)) && hasClash(currEvent)) {
 							hasClash = true;
@@ -647,10 +648,20 @@ public class Calendar {
 			}
 		}
 
-		if (updateRecurring) {
+		if (isUpdateRecurring) {
+			if (hasOnlyOneField(fields)) {
+				oldEvents.add(oldEvent);
+			}
 			if (recurringFieldIdx != -1) {
-				// PROCESS RECURRING END AND TYPE
 				try {
+					if (hasOnlyOneField(fields)) {
+						for (int i = 0; i < eventsList.size(); i++) {
+							Event currEvent = (Event) eventsList.get(i);
+							if (currEvent.getSeriesIndex() == seriesIndex) {
+								oldEvents.add(copyEvent(currEvent));
+							}
+						}
+					}
 					ArrayList<String> recurringParams = CommandParser
 							.processRecurringArgs(newValues.get(recurringFieldIdx));
 
@@ -659,10 +670,8 @@ public class Calendar {
 					addRecurringEvent(tempEvent.getName(), tempEvent.getStartDateTimeSimplified(),
 							tempEvent.getEndDateTimeSimplified(), recurringParams.get(0), recurringParams.get(1));
 				} catch (Exception e) {
-					return new Result(cmd, MSG_WARNING_INVALID_FIELD, false, null);
+					return new Result(cmd, MSG_ERROR_INVALID_FIELD, false, null);
 				}
-			} else {
-				// PROBLEM?
 			}
 		}
 
@@ -670,8 +679,8 @@ public class Calendar {
 
 		Command newUndo;
 
-		if (isSeries) {
-			newUndo = (Command) new UndoUpdate(eventsToUpdate, true);
+		if (isSeries || isUpdateRecurring) {
+			newUndo = (Command) new UndoUpdate(oldEvents, true);
 		} else {
 			newUndo = (Command) new UndoUpdate(oldEvent);
 		}
@@ -699,7 +708,7 @@ public class Calendar {
 	}
 
 	public Result updateTask(int idx, ArrayList<String> fields, ArrayList<String> newValues, boolean isSeries) {
-		ArrayList<CalendarObject> tasksToUpdate = new ArrayList<CalendarObject>();
+		ArrayList<CalendarObject> oldTasks = new ArrayList<CalendarObject>();
 
 		int arrayListIndex = getArrayListIndexOfTask(idx);
 		Task taskToUpdate = (Task) tasksList.get(arrayListIndex);
@@ -709,14 +718,14 @@ public class Calendar {
 		String name = taskToUpdate.getName();
 		String cmd = String.format(CMD_UPDATE_TASK, name);
 
-		boolean updateRecurring = false;
+		boolean isUpdateRecurring = false;
 		int recurringFieldIdx = -1;
 
 		if (hasInvalidFields(fields, KEY_TASKS)) {
-			return new Result(cmd, MSG_WARNING_INVALID_FIELD, false, null);
+			return new Result(cmd, MSG_ERROR_INVALID_FIELD, false, null);
 		}
 
-		updateRecurring = hasUpdateRecurring(fields);
+		isUpdateRecurring = hasUpdateRecurring(fields);
 
 		for (int i = 0; i < fields.size(); i++) {
 			if (!(fields.get(i).equals(PARAM_RECURRING) || fields.get(i).equals(PARAM_REPEAT))) {
@@ -727,12 +736,12 @@ public class Calendar {
 		}
 
 		if (isSeries) {
-			tasksToUpdate.add(oldTask);
+			oldTasks.add(oldTask);
 
 			for (int i = 0; i < tasksList.size(); i++) {
 				Task currTask = (Task) tasksList.get(i);
 				if (currTask.getSeriesIndex() == seriesIndex) {
-					tasksToUpdate.add(copyTask(currTask));
+					oldTasks.add(copyTask(currTask));
 					for (int j = 0; j < fields.size(); j++) {
 						currTask.update(fields.get(j), newValues.get(j));
 					}
@@ -740,10 +749,20 @@ public class Calendar {
 			}
 		}
 
-		if (updateRecurring) {
+		if (isUpdateRecurring) {
+			if (hasOnlyOneField(fields)) {
+				oldTasks.add(oldTask);
+			}
 			if (recurringFieldIdx != -1) {
-				// PROCESS RECURRING END AND TYPE
 				try {
+					if (hasOnlyOneField(fields)) {
+						for(int i = 0; i < tasksList.size(); i++) {
+							Task currTask = (Task) tasksList.get(i);
+							if (currTask.getSeriesIndex() == seriesIndex) {
+								oldTasks.add(copyTask(currTask));
+							}
+						}
+					}
 					ArrayList<String> recurringParams = CommandParser
 							.processRecurringArgs(newValues.get(recurringFieldIdx));
 
@@ -752,19 +771,17 @@ public class Calendar {
 					addRecurringTask(tempTask.getName(), tempTask.getDueDateSimplified(), recurringParams.get(0),
 							recurringParams.get(1));
 				} catch (Exception e) {
-					return new Result(cmd, MSG_WARNING_INVALID_FIELD, false, null);
+					return new Result(cmd, MSG_ERROR_INVALID_FIELD, false, null);
 				}
-			} else {
-				// PROBLEM?
-			}
+			} 
 		}
 
 		exportToFile();
 
 		Command newUndo;
 
-		if (isSeries) {
-			newUndo = (Command) new UndoUpdate(tasksToUpdate, false);
+		if (isSeries || isUpdateRecurring) {
+			newUndo = (Command) new UndoUpdate(oldTasks, false);
 		} else {
 			newUndo = (Command) new UndoUpdate(oldTask);
 		}
@@ -800,7 +817,7 @@ public class Calendar {
 		int dueFieldIdx = -1;
 
 		if (hasInvalidFields(fields, KEY_FLOATING)) {
-			return new Result(cmd, MSG_WARNING_INVALID_FIELD, false, null);
+			return new Result(cmd, MSG_ERROR_INVALID_FIELD, false, null);
 		}
 
 		updateDue = hasUpdateDue(fields);
@@ -899,38 +916,38 @@ public class Calendar {
 
 	private boolean isValidEventField(String field) {
 		switch (field) {
-		case PARAM_NAME:
-		case PARAM_START_DATE:
-		case PARAM_START_TIME:
-		case PARAM_END_DATE:
-		case PARAM_END_TIME:
-		case PARAM_RECURRING:
-		case PARAM_REPEAT:
-			return true;
-		default:
-			return false;
+			case PARAM_NAME:
+			case PARAM_START_DATE:
+			case PARAM_START_TIME:
+			case PARAM_END_DATE:
+			case PARAM_END_TIME:
+			case PARAM_RECURRING:
+			case PARAM_REPEAT:
+				return true;
+			default:
+				return false;
 		}
 	}
 
 	private boolean isValidTaskField(String field) {
 		switch (field) {
-		case PARAM_NAME:
-		case PARAM_DUE:
-		case PARAM_RECURRING:
-		case PARAM_REPEAT:
-			return true;
-		default:
-			return false;
+			case PARAM_NAME:
+			case PARAM_DUE:
+			case PARAM_RECURRING:
+			case PARAM_REPEAT:
+				return true;
+			default:
+				return false;
 		}
 	}
 
 	private boolean isValidFloatingTaskField(String field) {
 		switch (field) {
-		case PARAM_NAME:
-		case PARAM_DUE:
-			return true;
-		default:
-			return false;
+			case PARAM_NAME:
+			case PARAM_DUE:
+				return true;
+			default:
+				return false;
 		}
 	}
 
@@ -1275,6 +1292,10 @@ public class Calendar {
 		map = new HashMap<String, ArrayList<CalendarObject>>();
 		map.put(key, value);
 		return map;
+	}
+	
+	private boolean hasOnlyOneField(ArrayList<String> fields) {
+		return fields.size() == 1;
 	}
 
 	/******
