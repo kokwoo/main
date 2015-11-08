@@ -117,11 +117,6 @@ public class Calendar {
 		File file = new File(fileName);
 		if (file.exists()) {
 			importFromFile();
-			System.out.println("Imported from file!");
-			System.out.println("Filename: " + fileName);
-			System.out.println("Events List" + eventsList);
-			System.out.println("Tasks List" + tasksList);
-			System.out.println("Floating Tasks List" + floatingTasksList);
 			indexStore.initialiseStore(eventsList, tasksList, floatingTasksList);
 		}
 	}
@@ -155,21 +150,6 @@ public class Calendar {
 
 	public String getFilename() {
 		return fileName;
-	}
-
-	public boolean swapFile(String fileName) {
-		this.fileName = fileName;
-		if (exporter.setFileName(fileName)) {
-			clearCalendar();
-			System.out.println("Filename: " + fileName);
-			System.out.println(eventsList);
-			System.out.println(tasksList);
-			System.out.println(floatingTasksList);
-			createFile(fileName);
-			return true;
-		} else {
-			return false;
-		}
 	}
 
 	public Result clearFile() {
@@ -635,11 +615,11 @@ public class Calendar {
 				if (currEvent.getSeriesIndex() == seriesIndex) {
 					oldEvents.add(copyEvent(currEvent));
 					for (int j = 0; j < fields.size(); j++) {
-						if (fields.get(j).equals(PARAM_RECURRING)) {
+						if ((fields.get(j).equals(PARAM_RECURRING) || fields.get(j).equals(PARAM_REPEAT))) {
 							continue;
 						}
 						currEvent.update(fields.get(j), newValues.get(j));
-						if (!hasClash && hasChangedTime(fields.get(i)) && hasClash(currEvent)) {
+						if (!hasClash && hasChangedTime(fields.get(j)) && hasClash(currEvent)) {
 							hasClash = true;
 						}
 					}
@@ -649,15 +629,12 @@ public class Calendar {
 		}
 
 		if (isUpdateRecurring) {
-			if (hasOnlyOneField(fields)) {
-				oldEvents.add(oldEvent);
-			}
 			if (recurringFieldIdx != -1) {
 				try {
-					if (hasOnlyOneField(fields)) {
+					if (hasOnlyOneField(fields) && !isSeries) {
 						for (int i = 0; i < eventsList.size(); i++) {
 							Event currEvent = (Event) eventsList.get(i);
-							if (currEvent.getSeriesIndex() == seriesIndex) {
+							if (currEvent.getSeriesIndex() == seriesIndex && currEvent.getIndex() != idx) {
 								oldEvents.add(copyEvent(currEvent));
 							}
 						}
@@ -743,6 +720,9 @@ public class Calendar {
 				if (currTask.getSeriesIndex() == seriesIndex) {
 					oldTasks.add(copyTask(currTask));
 					for (int j = 0; j < fields.size(); j++) {
+						if ((fields.get(j).equals(PARAM_RECURRING) || fields.get(j).equals(PARAM_REPEAT))) {
+							continue;
+						}
 						currTask.update(fields.get(j), newValues.get(j));
 					}
 				}
@@ -750,15 +730,12 @@ public class Calendar {
 		}
 
 		if (isUpdateRecurring) {
-			if (hasOnlyOneField(fields)) {
-				oldTasks.add(oldTask);
-			}
 			if (recurringFieldIdx != -1) {
 				try {
-					if (hasOnlyOneField(fields)) {
+					if (hasOnlyOneField(fields) && !isSeries) {
 						for(int i = 0; i < tasksList.size(); i++) {
 							Task currTask = (Task) tasksList.get(i);
-							if (currTask.getSeriesIndex() == seriesIndex) {
+							if (currTask.getSeriesIndex() == seriesIndex && currTask.getIndex() != idx) {
 								oldTasks.add(copyTask(currTask));
 							}
 						}
