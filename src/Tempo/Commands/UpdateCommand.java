@@ -19,13 +19,14 @@ public class UpdateCommand implements Command {
 	public UpdateCommand(Calendar cal, IndexStore indexStore, 
 						 int idx, ArrayList<String> fields, 
 						 ArrayList<String> newValues, boolean isSeries) {
-		System.out.println("Creating update command object"); // debug
+		System.out.println("UpdateCommand: Creating update command object"); // debug
 		this.cal = cal;
 		this.indexStore = indexStore;
 		this.idx = idx;
 		this.fields = fields;
 		this.newValues = newValues;
 		this.isSeries = isSeries;
+		System.out.println("UpdateCommand: isSeries == " + isSeries); // debug
 	}
 	
 	@Override
@@ -44,8 +45,6 @@ public class UpdateCommand implements Command {
 	}
 	
 	private Result executeUpdateEvent() {
-		System.out.println("Calling cal to update event"); // debug
-		System.out.println("In command: isSeries == " + isSeries); // debug
 		return cal.updateEvent(idx, fields, newValues, isSeries);
 	}
 	
