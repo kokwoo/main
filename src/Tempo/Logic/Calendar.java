@@ -63,6 +63,14 @@ public class Calendar {
 	private static final String KEY_WEEKLY = "weekly";
 	private static final String KEY_MONTHLY = "monthly";
 	private static final String KEY_ANNUALLY = "annually";
+	
+	private static final String KEY_EVENTS_BEST_MATCHES = "eventsBestMatches";
+	private static final String KEY_EVENTS_ALTERNATIVE_MATCHES = "eventsAlternativeMatches";
+	private static final String KEY_TASKS_BEST_MATCHES = "tasksBestMatches";
+	private static final String KEY_TASKS_ALTERNATIVE_MATCHES = "tasksAlternativeMatches";
+	private static final String KEY_FLOATING_TASKS_BEST_MATCHES = "floatingTasksBestMatches";
+	private static final String KEY_FLOATING_TASKS_ALTERNATIVE_MATCHES = "floatingTasksAlternativeMatches";
+
 
 	private static final String PARAM_NAME = "name";
 	private static final String PARAM_START_DATE = "start date";
@@ -1074,6 +1082,8 @@ public class Calendar {
 		ArrayList<CalendarObject> eventsToSearch = copyEventsList();
 		ArrayList<CalendarObject> tasksToSearch = copyTasksList();
 		ArrayList<CalendarObject> floatingTasksToSearch = copyFloatingTasksList();
+		
+		HashMap<String, ArrayList<CalendarObject>> results = new HashMap<String, ArrayList<CalendarObject>>();
 
 		HashMap<String, ArrayList<CalendarObject>> eventSearchResult = getMatches(eventsToSearch, bestMatchRegex,
 				alternativeMatchRegex);
@@ -1090,10 +1100,19 @@ public class Calendar {
 
 		ArrayList<CalendarObject> floatingTaskBestMatch = floatingTaskSearchResult.get(KEY_BEST_MATCHES);
 		ArrayList<CalendarObject> floatingTasksAlternativeMatch = floatingTaskSearchResult.get(KEY_ALTERNATIVE_MATCHES);
+		
+		results.put(KEY_EVENTS_BEST_MATCHES, eventsBestMatch);
+		results.put(KEY_EVENTS_ALTERNATIVE_MATCHES, eventsBestMatch);
+		results.put(KEY_TASKS_BEST_MATCHES, tasksBestMatch);
+		results.put(KEY_TASKS_ALTERNATIVE_MATCHES, tasksAlternativeMatch);
+		results.put(KEY_FLOATING_TASKS_BEST_MATCHES, floatingTaskBestMatch);
+		results.put(KEY_FLOATING_TASKS_ALTERNATIVE_MATCHES, floatingTasksAlternativeMatch);
+		
+		String cmd = String.format(CMD_SEARCH, arguments);
 
-		Result result = display.formatSearchResults(eventsBestMatch, eventsAlternativeMatch, tasksBestMatch,
-				tasksAlternativeMatch, floatingTaskBestMatch, floatingTasksAlternativeMatch);
-
+		String displayString = display.formatSearchResults(eventsBestMatch, eventsAlternativeMatch, tasksBestMatch, tasksAlternativeMatch, floatingTaskBestMatch, floatingTasksAlternativeMatch);
+		
+		Result result = new Result(cmd, displayString ,true,results);
 		return result;
 	}
 
