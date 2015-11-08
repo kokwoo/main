@@ -12,28 +12,7 @@ import Tempo.CalendarObjects.FloatingTask;
 import Tempo.CalendarObjects.Task;
 import Tempo.Commands.Result;
 
-//The list of things that can be displayed
-/*getEventsToday
-getUpcomingEvents
-getPastEvents
-getTasksToday
-getUpcomingTasks
-getMissedTasks
-getUndoneTasks
-getDoneTasks
-getUndoneFloatingTasks
-getDoneFloatingTasks
-getAll
-getEvents
-getTasks
-*/
-
-/*All my "get" methods will first refresh where it updates all the new changes it will then 
- * create a new ArrayList<String> to store the new changes and return this ArrayList<String>
-*/
-
 public class Display {
-
 	private Calendar cal = Calendar.getInstance();
 
 	// Global variables
@@ -76,13 +55,6 @@ public class Display {
 	private final String NO_DONE_FLOATING_TASKS = "You have no task without deadline that are done";
 	private final String EMPTY_STRING = "";
 	
-	private static final String KEY_EVENTS_BEST_MATCHES = "eventsBestMatches";
-	private static final String KEY_EVENTS_ALTERNATIVE_MATCHES = "eventsAlternativeMatches";
-	private static final String KEY_TASKS_BEST_MATCHES = "tasksBestMatches";
-	private static final String KEY_TASKS_ALTERNATIVE_MATCHES = "tasksAlternativeMatches";
-	private static final String KEY_FLOATING_TASKS_BEST_MATCHES = "floatingTasksBestMatches";
-	private static final String KEY_FLOATING_TASKS_ALTERNATIVE_MATCHES = "floatingTasksAlternativeMatches";
-
 	private static final String NO_BEST_MATCH = "There are no best matches found!";
 	private static final String BEST_MATCH_STRING = "These are the best matches found:";
 	private static final String NO_ALTERNATIVE_MATCH = "There are no alternative matches found!";
@@ -625,7 +597,7 @@ public class Display {
 		return todayString;
 	}
 	
-	public Result formatSearchResults(ArrayList<CalendarObject> eventsBestMatch, ArrayList<CalendarObject> eventsAlternativeMatch, ArrayList<CalendarObject>tasksBestMatch, ArrayList<CalendarObject>tasksAlternativeMatch, ArrayList<CalendarObject>floatingTaskBestMatch, ArrayList<CalendarObject>floatingTasksAlternativeMatch){
+	public String formatSearchResults(ArrayList<CalendarObject> eventsBestMatch, ArrayList<CalendarObject> eventsAlternativeMatch, ArrayList<CalendarObject>tasksBestMatch, ArrayList<CalendarObject>tasksAlternativeMatch, ArrayList<CalendarObject>floatingTaskBestMatch, ArrayList<CalendarObject>floatingTasksAlternativeMatch){
 		ArrayList<String> searchResults = new ArrayList<String>();
 		
 		boolean hasBestMatches = true;
@@ -662,20 +634,10 @@ public class Display {
 		
 		String returnString = strArrayToString(searchResults);
 		
-		HashMap<String, ArrayList<CalendarObject>> hm = new HashMap<String, ArrayList<CalendarObject>>();
-		
-		hm.put(KEY_EVENTS_BEST_MATCHES, eventsBestMatch);
-		hm.put(KEY_EVENTS_ALTERNATIVE_MATCHES, eventsBestMatch);
-		hm.put(KEY_TASKS_BEST_MATCHES, tasksBestMatch);
-		hm.put(KEY_TASKS_ALTERNATIVE_MATCHES, tasksAlternativeMatch);
-		hm.put(KEY_FLOATING_TASKS_BEST_MATCHES, floatingTaskBestMatch);
-		hm.put(KEY_FLOATING_TASKS_ALTERNATIVE_MATCHES, floatingTasksAlternativeMatch);
-		
-		Result result = new Result(returnString, true, true, hm);
-		return result;
+		return returnString;
 	}
 	
-	public String strArrayToString(ArrayList<String> in){
+	private String strArrayToString(ArrayList<String> in){
 		String s = "";
 		
 		for(String str : in){
@@ -683,6 +645,159 @@ public class Display {
 		}
 		
 		return s;
+	}
+	
+	public static String getManual(){
+		String manual = "";
+		// INTRO
+		manual += "Hello! This is the cheatsheet for tempo!\n";
+		
+		manual += "Manage TEMPO with the following KEYWORDS and PARAMETERS\n";
+		manual += "The following cheatsheet shows you the function and the keywords you can use\n";
+		manual += "<KEY>: keywords you can use for each function\n";
+		manual += "<id>: id is the index of the event as supplied by “List all events”\n";
+		manual += "<start date>/<end date>: day month year\n";
+		manual += "<start time>/<end time>: 24 hours format\n";
+		
+
+		// how to add
+		manual += "HOW TO ADD EVENT\n";
+		manual += "================\n";
+		manual += "<KEY>: add/create/new\n";
+		manual += "<KEY> event <name> from <start date> at <start time> to <end date> at <end time>\n";
+		
+
+		// how to edit
+		manual += "HOW TO EDIT EVENT\n";
+		manual += "=================\n";
+		manual += "<KEY>: edit/update/change\n";
+		manual += "<KEY> event <id> <name> from <start date> at <start time> to <end date> at <end time>\n";
+		manual += "For editing the event name only: <KEY> event <id> name: <name>\n";
+		manual += "For editing the start date only: <KEY> event <id> start date: <start date>\n";
+		manual += "For editing the start time only: <KEY> event <id> start time: <start time>\n";
+		manual += "For editing of end date only: <KEY> event <id> end date: <end date>\n";
+		manual += "For editing of end time only: <KEY> event <id> end time: <end time>\n";
+		
+
+		// how to add recurring events
+		manual += "HOW TO ADD RECURRING EVENT\n";
+		manual += "==========================\n";
+		manual += "<KEY>: repeat\n";
+		manual += "For daily recurring events: <KEY> event <id> daily until <end date>\n";
+		manual += "For weekly recurring events: <KEY> event <id> weekly until <end date>\n";
+		manual += "For monthly recurring events: <KEY> event <id> monthly until <end date>\n";
+		manual += "For annually recurring events: <KEY> event <id> yearly until <end date>\n";
+		
+
+		// how to delete existing events
+		manual += "HOW TO DELETE EXISTING EVENT\n";
+		manual += "============================\n";
+		manual += "<KEY>: delete/cancel/remove\n";
+		manual += "<KEY> event <id>\n";
+		
+
+		// how to search events
+		manual += "HOW TO SEARCH EXISTING EVENT\n";
+		manual += "============================\n";
+		manual += "<KEY>: search/find\n";
+		manual += "By name: <KEY> event <keywords>\n";
+		manual += "By id: <KEY> event <id>\n";
+		
+
+		// how to list upcoming events
+		manual += "HOW TO LIST UPCOMING EVENT/S\n";
+		manual += "============================\n";
+		manual += "<KEY>: list/all/view/display\n";
+		manual += "<KEY> upcoming events\n";
+		
+
+		// how to list all events
+		manual += "HOW TO LIST ALL EVENT/S\n";
+		manual += "=======================\n";
+		manual += "<KEY>: list/all/view/display\n";
+		manual += "<KEY> events\n";
+		
+
+		// how to add tasks
+		manual += "HOW TO ADD TASK\n";
+		manual += "===============\n";
+		manual += "<KEY>: add/create/new\n";
+		manual += "For tasks with no deadlines: <KEY> task <name>\n";
+		manual += "For tasks with deadlines: <KEY> task <name> due <date>\n";
+		
+
+		// how to edit existing tasks
+		manual += "HOW TO EDIT EXISTING TASK\n";
+		manual += "=========================\n";
+		manual += "<KEY>: edit/update/change\n";
+		manual += "<KEY> task <id> <name> due <date>\n";
+		manual += "For changing of name only: <KEY> task <id> name: <name>\n";
+		manual += "For changing of due date only: <KEY> task <id> due: <date>\n";
+		
+
+		// how to delete existing tasks
+		manual += "HOW TO DELETE EXISTING TASK\n";
+		manual += "===========================\n";
+		manual += "<KEY>: delete/cancel/remove\n";
+		manual += "<KEY> task <id>\n";
+		
+
+		// how to search tasks
+		manual += "HOW TO SEARCH EXISTING TASK\n";
+		manual += "===========================\n";
+		manual += "<KEY>: search/find\n";
+		manual += "<KEY> task <keywords>\n";
+		
+
+		// how to list undone tasks
+		manual += "HOW TO LIST UNDONE TASK/S\n";
+		manual += "=========================\n";
+		manual += "<KEY>: list/all/view/display\n";
+		manual += "<KEY> undone tasks\n";
+		
+
+		// how to list missed tasks
+		manual += "HOW TO LIST MISSED TASK/S\n";
+		manual += "=========================\n";
+		manual += "<KEY>: list/all/view/display\n";
+		manual += "<KEY> missed tasks\n";
+		
+
+		// how to list all tasks
+		manual += "HOW TO LIST ALL TASK/S\n";
+		manual += "======================\n";
+		manual += "<KEY>: list/all/view/display\n";
+		manual += "<KEY> tasks\n";
+		
+
+		// how to mark task as done
+		manual += "HOW TO MARK TASK AS DONE\n";
+		manual += "========================\n";
+		manual += "<KEY>: mark/flag\n";
+		manual += "<KEY> task done <id>\n";
+		
+
+		// how to undo previous operation
+		manual += "HOW TO UNDO PREVIOUS OPERATION\n";
+		manual += "==============================\n";
+		manual += "<KEY>: undo\n";
+		manual += "<KEY>\n";
+		
+
+		// how to view today’s events and tasks due
+		manual += "HOW TO VIEW EVENTS AND TASKS DUE TODAY \n";
+		manual += "=======================================\n";
+		manual += "<KEY>: view/display\n";
+		manual += "<KEY> today\n";
+		
+
+		// how to view this week’s events and tasks due
+		manual += "HOW TO VIEW EVENTS AND TASKS DUE THIS WEEK \n";
+		manual += "===========================================\n";
+		manual += "<KEY>: view/display\n";
+		manual += "<KEY> week\n";
+		
+		return manual;
 	}
 
 }
