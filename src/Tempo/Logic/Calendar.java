@@ -96,6 +96,7 @@ public class Calendar {
 	public static final String DATE_DELIMETER = "/";
 
 	private boolean isUndoCmd = false;
+	private boolean isUpdateRecurringCmd = false;
 
 	private String fileName;
 
@@ -266,8 +267,10 @@ public class Calendar {
 		sortEvents();
 		exportToFile();
 
-		Command newUndo = (Command) new UndoAdd(newEventIndex, true, false, true);
-		undoHistory.add(newUndo);
+		if (!isUpdateRecurringCmd) {
+			Command newUndo = (Command) new UndoAdd(newEventIndex, true, false, true);
+			undoHistory.add(newUndo);
+		}
 
 		if (!isUndoCmd) {
 			clearRedoHistory();
@@ -394,8 +397,10 @@ public class Calendar {
 		sortTasks();
 		exportToFile();
 
-		Command newUndo = (Command) new UndoAdd(newTaskIndex, false, true, true);
-		undoHistory.add(newUndo);
+		if (!isUpdateRecurringCmd) {
+			Command newUndo = (Command) new UndoAdd(newTaskIndex, false, true, true);
+			undoHistory.add(newUndo);
+		}
 
 		if (!isUndoCmd) {
 			clearRedoHistory();
@@ -485,16 +490,18 @@ public class Calendar {
 		}
 		exportToFile();
 
-		Command newUndo;
-
-		if (isSeries) {
-			newUndo = (Command) new UndoRemove(eventsToRemove, true);
-		} else {
-			Event event = (Event) eventsToRemove.get(0);
-			newUndo = (Command) new UndoRemove(event);
+		if (!isUpdateRecurringCmd) {
+			Command newUndo;
+		
+			if (isSeries) {
+				newUndo = (Command) new UndoRemove(eventsToRemove, true);
+			} else {
+				Event event = (Event) eventsToRemove.get(0);
+				newUndo = (Command) new UndoRemove(event);
+			}
+		
+			undoHistory.add(newUndo);
 		}
-
-		undoHistory.add(newUndo);
 
 		if (!isUndoCmd) {
 			clearRedoHistory();
@@ -535,16 +542,18 @@ public class Calendar {
 
 		exportToFile();
 
-		Command newUndo;
-
-		if (isSeries) {
-			newUndo = (Command) new UndoRemove(tasksToRemove, true);
-		} else {
-			Task task = (Task) tasksToRemove.get(0);
-			newUndo = (Command) new UndoRemove(task);
+		if (!isUpdateRecurringCmd) {
+			Command newUndo;
+	
+			if (isSeries) {
+				newUndo = (Command) new UndoRemove(tasksToRemove, true);
+			} else {
+				Task task = (Task) tasksToRemove.get(0);
+				newUndo = (Command) new UndoRemove(task);
+			}
+	
+			undoHistory.add(newUndo);
 		}
-
-		undoHistory.add(newUndo);
 
 		if (!isUndoCmd) {
 			clearRedoHistory();
@@ -616,8 +625,6 @@ public class Calendar {
 		}
 
 		if (isSeries) {
-			oldEvents.add(oldEvent);
-
 			for (int i = 0; i < eventsList.size(); i++) {
 				Event currEvent = (Event) eventsList.get(i);
 				if (currEvent.getSeriesIndex() == seriesIndex) {
@@ -651,9 +658,11 @@ public class Calendar {
 							.processRecurringArgs(newValues.get(recurringFieldIdx));
 
 					Event tempEvent = copyEvent(eventToUpdate);
+					isUpdateRecurringCmd = true;
 					removeEvent(eventToUpdate.getIndex(), true);
 					addRecurringEvent(tempEvent.getName(), tempEvent.getStartDateTimeSimplified(),
 							tempEvent.getEndDateTimeSimplified(), recurringParams.get(0), recurringParams.get(1));
+					isUpdateRecurringCmd = false;
 				} catch (Exception e) {
 					return new Result(cmd, MSG_ERROR_INVALID_FIELD, false, null);
 				}
@@ -721,8 +730,6 @@ public class Calendar {
 		}
 
 		if (isSeries) {
-			oldTasks.add(oldTask);
-
 			for (int i = 0; i < tasksList.size(); i++) {
 				Task currTask = (Task) tasksList.get(i);
 				if (currTask.getSeriesIndex() == seriesIndex) {
@@ -752,9 +759,11 @@ public class Calendar {
 							.processRecurringArgs(newValues.get(recurringFieldIdx));
 
 					Task tempTask = copyTask(taskToUpdate);
+					isUpdateRecurringCmd = true;
 					removeTask(taskToUpdate.getIndex(), true);
 					addRecurringTask(tempTask.getName(), tempTask.getDueDateSimplified(), recurringParams.get(0),
 							recurringParams.get(1));
+					isUpdateRecurringCmd = false;
 				} catch (Exception e) {
 					return new Result(cmd, MSG_ERROR_INVALID_FIELD, false, null);
 				}
