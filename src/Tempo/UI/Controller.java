@@ -539,7 +539,12 @@ public class Controller {
 	@FXML
 	public void handleEnterPressed(KeyEvent evt){
 		ComboBox currentBox = getCurrentSearchBox();
+		if(currentBox.getValue() == null) {
+			return;
+		}
 		String userInput =  currentBox.getValue().toString();
+		
+		
 		int currentTab = tabView.getSelectionModel().getSelectedIndex();
 
 		if(evt.getCode().equals(KeyCode.ENTER)) {
