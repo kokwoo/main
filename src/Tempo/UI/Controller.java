@@ -5,17 +5,12 @@ package Tempo.UI;
  * 	Controller Class for Tempo.UI.
  *  The user interface is stored in a Controller-View pattern.
  *  
- *  The View is an xml (temp.xml)
- *  The controller inflates the view and handles events.
+ *  The view's layout is designed in the XML (temp.xml)
+ *  The Controller inflates the view and handles events.
  *  
  *  References: 
  * 
  */
-
-
-
-
-
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -267,25 +262,60 @@ public class Controller {
 	private static final String KEY_TASKS_ALTERNATIVE_MATCHES = "tasksAlternativeMatches";
 	private static final String KEY_FLOATING_TASKS_BEST_MATCHES = "floatingTasksBestMatches";
 	private static final String KEY_FLOATING_TASKS_ALTERNATIVE_MATCHES = "floatingTasksAlternativeMatches";
+	private static final Integer ALL_TAB = 0;
+	private static final Integer TODAY_TAB = 1;
+	private static final Integer UPCOMING_TAB = 2;
+	private static final Integer MISSED_TAB = 3;
+	private static final Integer UNDONE_TAB = 4;
+	private static final Integer SEARCH_TAB = 5;
+	private static final Integer HELP_TAB = 6;
+	private static final String CHANGE_VIEW_HELP_TAB = "help";
+	private static final String SHORTCUT_DISPLAY_TASKS = "tsk";
+	private static final String SHORTCUT_DISPLAY_FLOATING_TASKS = "flt";
+	private static final String SHORTCUT_DISPLALY_EVENTS = "evt";
+	private static final String CHANGE_VIEW_MISSED_TAB = "m";
+	private static final String CHANGE_VIEW_ALL_TAB = "all";
+	private static final String CHANGE_VIEW_UPCOMING_TAB = "up";
+	private static final String CHANGE_VIEW_TODAY_TAB = "td";
+	private static final String CHANGE_VIEW_UNDONE_TAB = "ud";
+	private static final String SEARCH_CMD = "search";
+	private static final String SHORTCUT_DISPLAY_ALL = "view all";
+	private static final String VIEW_TASKS = "task";
+	private static final String VIEW_EVENTS = "event";
+	private static final String VIEW_FLOATING_TASKS = "float";
+	private static final String GET_TASKS = "Tasks";
+	private static final String GET_EVENTS = "Events";
+	private static final String NOT_SUCCESSFUL = " : not succsesful";
+	private static final String SUCCESSFUL = ": succesful";
 	Result query;
-
+	/**
+	 * 
+	 * @return Search box the user is currently viewing
+	 */
 	public ComboBox getCurrentSearchBox() {
 		int currTab = getCurrentTab();
 		ComboBox currentBox = inputBoxes.get(currTab);
 		return currentBox;	
 	}
 
-
+	/**
+	 * 
+	 * @return Tab the user is currently viewing
+	 */
 	public int getCurrentTab() {
 		SingleSelectionModel<Tab> selected = tabView.getSelectionModel();	
 		return selected.getSelectedIndex();
 	}
-
+	/**
+	 * Refreshes the users view. Triggered when ObservableList of TableEntries Changes
+	 * @param currPage 
+	 * @param view
+	 */
 	private void refresh(Page currPage,String view) {
 		SingleSelectionModel<Tab> selected = tabView.getSelectionModel();
-		selected.select(5);
+		selected.select(SEARCH_TAB);
 		ObservableList<TableEntry> events = determineView(currPage,view);
-		TableView currentTable = views.get(5);
+		TableView currentTable = views.get(SEARCH_TAB);
 		currentTable.setItems(events);		
 		currentTable.refresh();
 		setViews(view);
@@ -294,47 +324,28 @@ public class Controller {
 		setStatus(numberOfMissed,numberOfUpComing);
 	}
 
+	/**
+	 * Filters between events, tasks, and floating task depending on current view
+	 * @param currPage
+	 * @param view
+	 * @return
+	 */
 	private ObservableList<TableEntry> determineView(Page currPage,String view) {		
-		System.out.println("VIEW " + view);
-
 		ObservableList<TableEntry> events = null;
-		if(view.equals("task")) {
+		if(view.equals(VIEW_TASKS)) {
 			events = FXCollections.observableArrayList(currPage.tableTasks);
-			System.out.println("SIZE OF TSK" + currPage.tableTasks.size());
-			System.out.println("SIZE OF EVT" + currPage.tableEvents.size());
-			System.out.println("DISPLAY TASKS");
-
 		}
-		else if(view.equals("event")) {
-			System.out.println("DISPLAY EVENTS");
+		else if(view.equals(VIEW_EVENTS)) {
 			events = FXCollections.observableArrayList(currPage.tableEvents);
-			System.out.println("SIZE OF " + currPage.tableEvents.size());
-			System.out.println("SIZE OF EVT" + currPage.tableEvents.size());
-			System.out.println("DISPLAY EVENTS");
-
 
 		}
-		else if (view.equals("float")) {
-			//System.out.println("DISPLAY FLOAT");
-			//System.out.println("SIZE OF " + currPage.tableFloatingTasks.size());
-			//System.out.println("INSIDE FLOAT : BEFORE SIZE : " + events.size());
+		else if (view.equals(VIEW_FLOATING_TASKS)) {
 			events = FXCollections.observableArrayList(currPage.tableFloatingTasks);
-			System.out.println("INSIDE FLOAT : SIZE : " + events.size());
-			//System.out.println("SIZE OF EVT" + currPage.tableEvents.size());
-			//System.out.println("DISPLAY TASKS");
-
+			
 		}
 
-		else if (view.equals("all")) {
-			//System.out.println("DISPLAY FLOAT");
-			//System.out.println("SIZE OF " + currPage.tableFloatingTasks.size());
-			//System.out.println("INSIDE FLOAT : BEFORE SIZE : " + events.size());
-			System.out.println(currPage.entries.size());
+		else if (view.equals(CHANGE_VIEW_ALL_TAB)) {
 			events = FXCollections.observableArrayList(currPage.entries);
-			System.out.println("INSIDE FLOAT : SIZE : " + events.size());
-			//System.out.println("SIZE OF EVT" + currPage.tableEvents.size());
-			//System.out.println("DISPLAY TASKS");
-
 		}
 		else {
 			events = FXCollections.observableArrayList(currPage.entries);
@@ -343,10 +354,12 @@ public class Controller {
 		return events;
 
 	}
-
+	
+	/**
+	 * Refreshes the users current view table based on a triggered change in the ObservableList of TableEntries
+	 * @param view
+	 */
 	private void refresh(String view) {
-		System.out.println("VIEW " + view);
-
 		SingleSelectionModel<Tab> selected = tabView.getSelectionModel();
 		int currIndex = selected.getSelectedIndex();
 		Page currPage = null;
@@ -358,18 +371,19 @@ public class Controller {
 		currPage = determineCurrentPage(currIndex);
 		calendar = tempRH.getCalendar();
 		ObservableList<TableEntry> events = determineView(currPage,view);
-		System.out.println("TABLE ENTRY EVENTS SIZE " + events.size());
 		TableView currentTable = views.get(currIndex);
 		currentTable.setItems(events);		
 		currentTable.refresh();
-		
-		//inputBox.setValue("add event do something from 10/10/2015 at 10:00 to 10/11/2015 at 11:00");
 	}
-
+	/**
+	 * Determines the current page the user is viewing
+	 * @param currIndex
+	 * @return
+	 */
 	private Page determineCurrentPage(int currIndex) {
 
 		Page currPage;
-		if(currIndex == 0 ) {
+		if(currIndex == ALL_TAB ) {
 
 			currPage = new Page();
 			populateAllPage(currPage);
@@ -377,19 +391,19 @@ public class Controller {
 
 		}
 
-		else if (currIndex == 1) {
+		else if (currIndex == TODAY_TAB) {
 
 			currPage = new Page();
 			populateTodayPage(currPage);	
 		}
 
-		else if (currIndex == 2) {
+		else if (currIndex == UPCOMING_TAB) {
 
 			currPage = new Page();
 			populateUpcommingPage(currPage);	
 		}
 
-		else if(currIndex == 3) {
+		else if(currIndex == MISSED_TAB) {
 			System.out.println("***POPULATING MISSED*****");
 			currPage = new Page();
 			populateMissedPage(currPage);
@@ -397,7 +411,7 @@ public class Controller {
 			//   System.exit(0);
 		}
 
-		else if(currIndex == 4) {
+		else if(currIndex ==  UNDONE_TAB) {
 			currPage = new Page();
 			populateUndonePage(currPage);
 
@@ -414,7 +428,10 @@ public class Controller {
 	}
 
 
-
+	/**
+	 * Populates a Page Object with Upcoming Events
+	 * @param currPage
+	 */
 	private void populateUpcommingPage(Page currPage) {
 		// TODO Auto-generated method stub
 		populateUpCommingEvents(currPage);
@@ -424,26 +441,20 @@ public class Controller {
 
 	}
 
-	/**System.out.println("SIZE TODAYS TASK" + Display.getInstance().getTasksToday());
-		Result todaysCalendarObjects = Display.getInstance().getTasksToday();
-		ArrayList<CalendarObject> todaysTasksCalendarObjects = todaysCalendarObjects.getResults().get("Tasks");
-		ArrayList<Task> todaysTasks = toTasks(todaysTasksCalendarObjects);
-		fillTasks(currPage,todaysTasks);
-	 * 
-	 * 
+
+	/**
+	 * Populates a Page with missed events
 	 * @param currPage
 	 */
-
-
-
-
-
 	private void populateMissedPage(Page currPage) {
 		populateMissedTasks(currPage);
 		combine(currPage.entries,currPage.tableTasks);
-		System.out.println("CURR PAGE TABLE EVENT SIZE; " + currPage.tableEvents.size());
+	
 	}
-
+	/**
+	 * Populates a page with undone tasks
+	 * @param currPage
+	 */
 	private void populateUndoneTasks(Page currPage) {
 		// TODO Auto-generated method stub
 
@@ -453,7 +464,11 @@ public class Controller {
 		fillFloatingTasks(currPage,todaysTasks);
 
 	}
-
+	
+	/**
+	 * Populates a page with undone events, tasks, and floating tasks
+	 * @param currPage
+	 */
 	private void populateUndonePage(Page currPage) {
 		// TODO Auto-generated method stub
 		populateUndoneTasks(currPage);
@@ -461,6 +476,10 @@ public class Controller {
 
 	}
 
+	/**
+	 * Populates a page with missed tasks
+	 * @param currPage
+	 */
 	private void populateMissedTasks(Page currPage) {
 		// TODO Auto-generated method stub
 
@@ -474,7 +493,10 @@ public class Controller {
 
 
 
-
+	/**
+	 * Populates a page with upcoming tasks
+	 * @param currPage
+	 */
 	private void populateUpCommingTasks(Page currPage) {
 		// TODO Auto-generated method stub
 
@@ -484,18 +506,25 @@ public class Controller {
 		fillTasks(currPage,todaysTasks);
 
 	}
-
+	
+	/**
+	 * Populates a page with upcoming events
+	 * @param currPage
+	 */
 	private void populateUpCommingEvents(Page currPage) {
 		// TODO Auto-generated method stub
 
 		Result todaysCalendarObjects = Display.getInstance().getEventsToday();
-		ArrayList<CalendarObject> todaysTasksCalendarObjects = todaysCalendarObjects.getResults().get("Events");
+		ArrayList<CalendarObject> todaysTasksCalendarObjects = todaysCalendarObjects.getResults().get(GET_EVENTS);
 		ArrayList<Event> upComingTasks = toEvents(todaysTasksCalendarObjects);
 		fillEvents(currPage,upComingTasks);
 		//fillEvent(currPage,upComingTasks);
 	}
 
-
+	/**
+	 * Populates a page with events and tasks due today
+	 * @param currPage
+	 */
 	private void populateTodayPage(Page currPage) {
 		// TODO Auto-generated method stub
 		populateTodaysEvents(currPage);
@@ -506,28 +535,37 @@ public class Controller {
 
 	}
 
-
+	/**
+	 * Populates a page with todays tasks
+	 * @param currPage
+	 */
 	private void populateTodaysTasks(Page currPage) {
 
 		Result todaysCalendarObjects = Display.getInstance().getTasksToday();
-		ArrayList<CalendarObject> todaysTasksCalendarObjects = todaysCalendarObjects.getResults().get("Tasks");
+		ArrayList<CalendarObject> todaysTasksCalendarObjects = todaysCalendarObjects.getResults().get(GET_TASKS);
 		ArrayList<Task> todaysTasks = toTasks(todaysTasksCalendarObjects);
 		fillTasks(currPage,todaysTasks);
 	}
-
+	
+	/**
+	 * Populates a page with todays events
+	 * @param currPage
+	 */
 	private void populateTodaysEvents(Page currPage) {
 
 		Result todaysEventsCalendarObjects = Display.getInstance().getEventsToday();
-		ArrayList<Event> todaysEvents = toEvents(todaysEventsCalendarObjects.getResults().get("Events"));
+		ArrayList<Event> todaysEvents = toEvents(todaysEventsCalendarObjects.getResults().get(GET_EVENTS));
 		fillEvents(currPage,todaysEvents);
 
 
 	}
-
-
+	/*
+	 * Searches for a matching calendar object and writes to table.
+	 * Called when user continues to alter his search criteria inside the search tab
+	 */
 	private boolean recursiveSearch() {
 		SingleSelectionModel<Tab> selected = tabView.getSelectionModel();
-		if(selected.getSelectedIndex() == 5) {
+		if(selected.getSelectedIndex() == SEARCH_TAB) {
 			processSearch(query);
 			return true;
 		}
@@ -536,6 +574,10 @@ public class Controller {
 
 
 	//add event do something from 10/10/2015 at 10:00 to 10/11/2015 at 11:00
+	/**
+	 * Handles Input from the UserInput Boxes
+	 * @param evt
+	 */
 	@FXML
 	public void handleEnterPressed(KeyEvent evt){
 		ComboBox currentBox = getCurrentSearchBox();
@@ -553,16 +595,16 @@ public class Controller {
 				handleAll();
 				return;
 			}
-			else if(userInput.equals("help")) {
-				changeTab(6);
+			else if(userInput.equals(CHANGE_VIEW_HELP_TAB)) {
+				changeTab(HELP_TAB);
 				currentTab = getCurrentTab();
 			}
-			else if(userInput.equals("all")) {
+			else if(userInput.equals(CHANGE_VIEW_ALL_TAB)) {
 				handleAll();
 				return;
 			}
-			else if(userInput.equals("view all")) {
-				view = "all";
+			else if(userInput.equals(SHORTCUT_DISPLAY_ALL)) {
+				view = CHANGE_VIEW_ALL_TAB;
 				if(recursiveSearch()) {
 					return;
 				}
@@ -570,44 +612,44 @@ public class Controller {
 				table.refresh();
 			}
 
-			else if(userInput.equals("td")) {
-				changeTab(1);
+			else if(userInput.equals(CHANGE_VIEW_TODAY_TAB)) {
+				changeTab(TODAY_TAB);
 				currentTab = getCurrentTab();
 				refresh(view);
 
 				table.refresh();
 			} 
-			else if(userInput.equals("up")) {
-				changeTab(2);				
+			else if(userInput.equals(CHANGE_VIEW_UPCOMING_TAB)) {
+				changeTab(UPCOMING_TAB);				
 				currentTab = getCurrentTab();
 				refresh(view);
 				table.refresh();
 			}
 
-			else if (userInput.equals("m")) {
-				changeTab(3);
+			else if (userInput.equals(CHANGE_VIEW_MISSED_TAB)) {
+				changeTab(MISSED_TAB);
 				currentTab = getCurrentTab();
 				refresh(view);
 				table.refresh();
 			}
 
-			else if(userInput.equals("ud")) {
+			else if(userInput.equals(CHANGE_VIEW_UNDONE_TAB)) {
 				SingleSelectionModel<Tab> selected = tabView.getSelectionModel();
-				selected.select(4);
+				selected.select(UNDONE_TAB);
 				currentTab = selected.getSelectedIndex();
 				refresh(view);
 				table.refresh();
 			}
-			else if (userInput.equals("evt")) {
-				view = "event";
+			else if (userInput.equals(SHORTCUT_DISPLALY_EVENTS)) {
+				view = VIEW_EVENTS;
 				Boolean searchRequired = recursiveSearch();
 				if(!searchRequired) {
 					refresh(view);
 				}
 				return;
 			}
-			else if(userInput.equals("flt")) {
-				view = "float";
+			else if(userInput.equals(SHORTCUT_DISPLAY_FLOATING_TASKS)) {
+				view = VIEW_FLOATING_TASKS;
 				Boolean searchRequired = recursiveSearch();
 				if(!searchRequired) {
 					refresh(view);
@@ -615,15 +657,15 @@ public class Controller {
 				return;
 			}
 
-			else if(userInput.equals("tsk")) {
-				view = "task";
+			else if(userInput.equals(SHORTCUT_DISPLAY_TASKS)) {
+				view = VIEW_TASKS;
 				Boolean searchRequired = recursiveSearch();
 				if(!searchRequired) {
 					refresh(view);
 				}				
 				return;
 			}
-			else if(currentTab == 5) {
+			else if(currentTab == SEARCH_TAB) {
 				Result userResult = tempRH.processCommand(userInput);
 				updateConsoles(userResult);
 				processSearch(query);
@@ -646,6 +688,10 @@ public class Controller {
 		}
 	}	
 
+	/**
+	 * Changes tab to a given index
+	 * @param index
+	 */
 	private void changeTab(int index) {
 		// TODO Auto-generated method stub
 		SingleSelectionModel<Tab> selected = tabView.getSelectionModel();
@@ -653,17 +699,22 @@ public class Controller {
 
 	}
 
-
+	/**
+	 * Switches tab to all
+	 */
 	private void handleAll() {
 		// TODO Auto-generated method stub
 		System.out.println("********************ALLLLLL***********************");
 		SingleSelectionModel<Tab> selected = tabView.getSelectionModel();
-		view = "all";
+		view = CHANGE_VIEW_ALL_TAB;
 		selected.select(0);
-		refresh("all");
+		refresh(view);
 	}
 
-
+	/**
+	 * Returns the result of a query, changes the users tab to search, and populates the search table with matches
+	 * @param search
+	 */
 	private void processSearch(Result search ) {
 
 		Page searchPage = new Page();
@@ -676,7 +727,11 @@ public class Controller {
 
 	}
 
-
+	/**
+	 * Populates a page with floating tasks from a query
+	 * @param page
+	 * @param result
+	 */
 	private void populateSearchFloatingTask(Page page,Result result) {
 		//ArrayList<Event> userEvents = calendar.getEventsList();
 		ArrayList<CalendarObject> userCalendarObjects = result.getResults().get(KEY_FLOATING_TASKS_BEST_MATCHES);
@@ -892,14 +947,14 @@ public class Controller {
 	private void updateConsoles(Result result) {
 		String cmdPref = result.getCmdPerformed();
 		if(result.isSuccess()) {
-			cmdPref = cmdPref = " was successful";
+			cmdPref = cmdPref + SUCCESSFUL;
 		}
 		else if(!result.isSuccess() && result.hasWarning()) {
 			
 			cmdPref = "Error : " + result.getWarning();
 		}
 		else {
-			cmdPref = cmdPref = " not successful";
+			cmdPref = cmdPref = NOT_SUCCESSFUL;
 		}
 		
 		
@@ -966,7 +1021,7 @@ public class Controller {
 	private void populateTasks(Page page) {
 		ArrayList<CalendarObject> userCalendarObjects = calendar.getTasksList();
 		ArrayList<Task> userTasks = toTasks(userCalendarObjects);
-		//ArrayList<Task> userTasks = calendar.getTasksList();
+		
 
 		for(int i = 0; i < userTasks.size(); i++) {
 
@@ -1073,15 +1128,15 @@ public class Controller {
 	
 	private int getNumberOfMissedTasks() {
 		Result missed = Display.getInstance().getMissedTasks();
-		ArrayList<CalendarObject> missedTasks = missed.getResults().get("Tasks");
+		ArrayList<CalendarObject> missedTasks = missed.getResults().get(GET_TASKS);
 		return missedTasks.size();
 	}
 	private int getNumberOfUpcomingTasks() {
 		Result todayEvents = Display.getInstance().getEventsToday();
-		ArrayList<CalendarObject> today = todayEvents.getResults().get("Events");
+		ArrayList<CalendarObject> today = todayEvents.getResults().get(GET_EVENTS);
 		
 		Result tasks = Display.getInstance().getTasksToday();
-		ArrayList<CalendarObject> todaysTasks = tasks.getResults().get("Tasks");
+		ArrayList<CalendarObject> todaysTasks = tasks.getResults().get(GET_TASKS);
 		return today.size() + todaysTasks.size();
 	}
 
