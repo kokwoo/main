@@ -649,7 +649,7 @@ public class Calendar {
 					if (hasOnlyOneField(fields) && !isSeries) {
 						for (int i = 0; i < eventsList.size(); i++) {
 							Event currEvent = (Event) eventsList.get(i);
-							if (currEvent.getSeriesIndex() == seriesIndex && currEvent.getIndex() != idx) {
+							if (currEvent.getSeriesIndex() == seriesIndex) {
 								oldEvents.add(copyEvent(currEvent));
 							}
 						}
@@ -750,7 +750,7 @@ public class Calendar {
 					if (hasOnlyOneField(fields) && !isSeries) {
 						for(int i = 0; i < tasksList.size(); i++) {
 							Task currTask = (Task) tasksList.get(i);
-							if (currTask.getSeriesIndex() == seriesIndex && currTask.getIndex() != idx) {
+							if (currTask.getSeriesIndex() == seriesIndex) {
 								oldTasks.add(copyTask(currTask));
 							}
 						}
