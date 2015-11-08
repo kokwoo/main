@@ -13,6 +13,7 @@ import Tempo.Commands.DisplayCommand;
 import Tempo.Commands.EditFileNameCommand;
 import Tempo.Commands.ToggleDoneCommand;
 import Tempo.Commands.ExitCommand;
+import Tempo.Commands.HelpCommand;
 import Tempo.Commands.RedoCommand;
 import Tempo.Commands.RemoveCommand;
 import Tempo.Commands.SearchCommand;
@@ -78,8 +79,14 @@ public class CommandParser {
 
 	private static final String DATE_DELIMETER = "/";
 	private static final String TIME_DELIMETER = ":";
+	
+	private static final String REGEX_DATE = "(0?[1-9]|[12][0-9]|3[01])[/|.|-](0?[1-9]|1[012])[/|.|-]\\d{4}";
+	private static final String REGEX_TIME = "(0?[0-9]|1[0-9]|2[0-3]):([0-5][0-9])";
 
-	private static final String DATE_FORMAT = "dd/MM/yyyy";
+	private static final String DATE_FORMAT_1= "dd/MM/yyyy";
+	private static final String DATE_FORMAT_2= "dd-MM-yyyy";
+	private static final String DATE_FORMAT_3= "dd.MM.yyyy";
+	
 	private static final String TIME_FORMAT = "HH:mm";
 	private static final String DATETIME_FORMAT = "dd/MM/yyyy/HH:mm";
 
@@ -94,9 +101,6 @@ public class CommandParser {
 	public static CommandParser getInstance() {
 		return instance;
 	}
-
-	// UPDATE: update <id> <field name>:<new value>
-	// REMOVE: remove <id>
 
 	public Command parse(String commandString) {
 		// process command type
@@ -157,7 +161,7 @@ public class CommandParser {
 
 			// Display help/manual
 			case COMMAND_HELP :
-				return null;
+				return processHelpCommand();
 
 			// Exit command
 			case COMMAND_EXIT :
@@ -228,7 +232,6 @@ public class CommandParser {
 		} else {
 			command = new AddCommand(calendar, args, isRecurring, recurringType, recurringDate);
 		}
-
 		return command;
 	}
 
@@ -252,9 +255,8 @@ public class CommandParser {
 			// there is date within the nameString
 			DateGroup dateGroup = parseDateTimeString(nameString);
 			if (dateGroup != null) {
-				// We are in trouble... :(
 				Date startDate = dateGroup.getDates().get(0);
-				SimpleDateFormat formatDate = new SimpleDateFormat(DATE_FORMAT);
+				SimpleDateFormat formatDate = new SimpleDateFormat(DATE_FORMAT_1);
 				startDateString = formatDate.format(startDate);
 			}
 
@@ -434,7 +436,6 @@ public class CommandParser {
 			Command command = new UpdateCommand(calendar, indexStore, idx, fields, newValues, updateSeries);
 			return command;
 		} else {
-			// DISPLAY ERROR MESSAGE
 			return null;
 		}
 
@@ -450,7 +451,6 @@ public class CommandParser {
 			command = new ToggleDoneCommand(calendar, indexStore, idx, true);
 			return command;
 		} else {
-			// DISPLAY ERROR MESSAGE (TO-DO)
 			return null;
 		}
 	}
@@ -465,7 +465,6 @@ public class CommandParser {
 			command = new ToggleDoneCommand(calendar, indexStore, idx, false);
 			return command;
 		} else {
-			// DISPLAY ERROR MESSAGE (TO-DO)
 			return null;
 		}
 	}
@@ -516,7 +515,10 @@ public class CommandParser {
 
 	private Command processClearCommand() {
 		return new ClearCommand(calendar);
-
+	}
+	
+	private Command processHelpCommand(){
+		return new HelpCommand();
 	}
 
 	private Command processExitCommand() {
@@ -548,15 +550,14 @@ public class CommandParser {
 					dateGroup = parseDateTimeString(timeString);
 
 					if (dateGroup == null) {
-						//CHANGE TO GET CURRENT TIME
-						SimpleDateFormat tempFormat = new SimpleDateFormat(TIME_FORMAT);
-						time = tempFormat.parse("00:00");
+						CurrentTime currentTime = new CurrentTime();
+						timeString = currentTime.getHoursAndMin();
 					} else {
 						time = dateGroup.getDates().get(0);
 					}
 				}
 
-				SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT);
+				SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT_1);
 				dateString = dateFormat.format(date);
 				
 				if(time != null){
@@ -583,21 +584,18 @@ public class CommandParser {
 		DateGroup dateGroup;
 		Date date;
 		
-		System.out.println(dateTimeString);
-		
 		// splits date according to
 		if (dateTimeString.contains("/")) {
 			if(validateDate(dateTimeString)){
-				dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+				dateFormat = new SimpleDateFormat(DATE_FORMAT_1);
 				dateFormat.setLenient(false);
 				date = dateFormat.parse(dateTimeString);
 			}else{
-				System.out.println("Throwing exception!");
 				throw new Exception();
 			}
 		} else if (dateTimeString.contains("-")) {
 			if(validateDate(dateTimeString)){
-				dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+				dateFormat = new SimpleDateFormat(DATE_FORMAT_2);
 				dateFormat.setLenient(false);
 				date = dateFormat.parse(dateTimeString);
 			}else{
@@ -605,7 +603,7 @@ public class CommandParser {
 			}
 		} else if (dateTimeString.contains(".")) {
 			if(validateDate(dateTimeString)){
-				dateFormat = new SimpleDateFormat("dd.MM.yyyy");
+				dateFormat = new SimpleDateFormat(DATE_FORMAT_3);
 				dateFormat.setLenient(false);
 				date = dateFormat.parse(dateTimeString);
 			}else{
@@ -624,7 +622,7 @@ public class CommandParser {
 	}
 	
 	private static boolean validateDate(String dateStr){
-		String regex = "(0?[1-9]|[12][0-9]|3[01])[/|.|-](0?[1-9]|1[012])[/|.|-]\\d{4}";
+		String regex = REGEX_DATE;
 		if(dateStr.matches(regex)){
 			return true;
 		}else{
@@ -633,7 +631,7 @@ public class CommandParser {
 	}
 	
 	private static boolean validateTime(String timeStr){
-		String regex = "(0?[0-9]|1[0-9]|2[0-3]):([0-5][0-9])";
+		String regex = REGEX_TIME;
 		if(timeStr.matches(regex)){
 			return true;
 		}else{
@@ -695,7 +693,7 @@ public class CommandParser {
 			recurringType = split[0];
 			recurringDate = getDateTime(split[1]);
 
-			SimpleDateFormat df = new SimpleDateFormat(DATE_FORMAT);
+			SimpleDateFormat df = new SimpleDateFormat(DATE_FORMAT_1);
 
 			try {
 				recurringDateStr = df.format(recurringDate);
@@ -788,7 +786,6 @@ public class CommandParser {
 		ArrayList<String> newValues = new ArrayList<String>();
 		arguments = removeFirstWord(arguments);
 		if (arguments.contains(";")) {
-			// more than one field to be updated
 			String[] split = arguments.split("; ");
 			for (int i = 0; i < split.length; i++) {
 				String[] params = split[i].split(":");
@@ -809,7 +806,7 @@ public class CommandParser {
 				newValues.add(split[1]);
 			}
 		}
-		return newValues; // DONE
+		return newValues;
 	}
 
 	private String getFirstWord(String message) {
@@ -818,7 +815,7 @@ public class CommandParser {
 	}
 
 	private String removeFirstWord(String message) {
-		String[] split = message.split(" ");
+		String[] split = message.split("\\s+");
 		String returnMessage = "";
 		for (int i = 1; i < split.length; i++) {
 			returnMessage += split[i] + " ";
