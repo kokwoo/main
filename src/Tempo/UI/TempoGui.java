@@ -28,6 +28,10 @@ public class TempoGui extends Application {
 		
 		
 		
+		
+		
+		
+		
 	}
 	
 	
@@ -36,14 +40,17 @@ public class TempoGui extends Application {
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		// TODO Auto-generated method stub
-		//String fname = 	"gom";			
-		String fname =  AskForFile.display("Enter a filename", "Welcome to Tempo!");
+		String fname = 	"l";			
+		//String fname =  AskForFile.display("Enter a filename", "Welcome to Tempo!");
+		
 		
 		RequestHandler tempRH = RequestHandler.getInstance();
 		System.out.println(tempRH.initialize(fname));
 		Calendar calendar = tempRH.getCalendar();
 		
 	//	Controller a = new Controller();
+		
+		
 		
 	
 		
@@ -59,7 +66,7 @@ public class TempoGui extends Application {
 		
 		Parent root = FXMLLoader.load(getClass().getResource("temp.fxml"));
 		primaryStage.setTitle("Tempo");
-		primaryStage.setScene(new Scene(root,750,550));
+		primaryStage.setScene(new Scene(root,750,607));
 		primaryStage.show();
 	//	a.create(1,1,"a");
 		
