@@ -610,13 +610,13 @@ public class Calendar {
 		String name = eventToUpdate.getName();
 		String cmd = String.format(CMD_UPDATE_EVENT, name);
 
-		boolean updateRecurring = false;
+		boolean isUpdateRecurring = false;
 
 		if (hasInvalidFields(fields, KEY_EVENTS)) {
 			return new Result(cmd, MSG_ERROR_INVALID_FIELD, false, null);
 		}
 
-		updateRecurring = hasUpdateRecurring(fields);
+		isUpdateRecurring = hasUpdateRecurring(fields);
 
 		for (int i = 0; i < fields.size(); i++) {
 			if (!(fields.get(i).equals(PARAM_RECURRING) || fields.get(i).equals(PARAM_REPEAT))) {
@@ -637,6 +637,9 @@ public class Calendar {
 				if (currEvent.getSeriesIndex() == seriesIndex) {
 					oldEvents.add(copyEvent(currEvent));
 					for (int j = 0; j < fields.size(); j++) {
+						if (fields.get(j).equals(PARAM_RECURRING)) {
+							continue;
+						}
 						currEvent.update(fields.get(j), newValues.get(j));
 						if (!hasClash && hasChangedTime(fields.get(i)) && hasClash(currEvent)) {
 							hasClash = true;
@@ -647,8 +650,7 @@ public class Calendar {
 			}
 		}
 
-		if (updateRecurring) {
-			isSeries = true;
+		if (isUpdateRecurring) {
 			if (hasOnlyOneField(fields)) {
 				oldEvents.add(oldEvent);
 			}
@@ -679,7 +681,7 @@ public class Calendar {
 
 		Command newUndo;
 
-		if (isSeries) {
+		if (isSeries || isUpdateRecurring) {
 			newUndo = (Command) new UndoUpdate(oldEvents, true);
 		} else {
 			newUndo = (Command) new UndoUpdate(oldEvent);
