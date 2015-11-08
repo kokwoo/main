@@ -1,6 +1,12 @@
 --EVENTS--
+1!!1!!gymming!!06/11/2015/19:00!!07/11/2015/19:00
+2!!2!!Dinner with mum!!08/11/2015/21:00!!09/11/2015/21:00
+0!!0!!date with gf!!23/12/2015/17:00!!26/12/2015/19:00
 --TASKS--
-1!!0!!hello1!!false!!06/11/2015
-2!!0!!hello2!!false!!06/11/2015
+3!!0!!Dinner with bf!!false!!06/11/2015
+4!!0!!Dinner with gf!!false!!08/11/2015
+5!!0!!Dinner with mum!!false!!09/11/2015
+6!!0!!eat!!true!!23/12/2015
 --FLOATING TASKS--
-0!!0!!hello!!false
+7!!0!!Hello!!false
+8!!0!!Hello2!!true

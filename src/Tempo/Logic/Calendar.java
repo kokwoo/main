@@ -775,7 +775,7 @@ public class Calendar {
 			clearRedoHistory();
 		}
 
-		return new Result(cmd, true, putInHashMap(KEY_TASKS, eventsList));
+		return new Result(cmd, true, putInHashMap(KEY_TASKS, tasksList));
 	}
 
 	private Task copyTask(Task task) {
@@ -836,7 +836,7 @@ public class Calendar {
 			clearRedoHistory();
 		}
 
-		return new Result(cmd, true, putInHashMap(KEY_FLOATING, eventsList));
+		return new Result(cmd, true, putInHashMap(KEY_FLOATING, floatingTasksList));
 	}
 
 	private FloatingTask copyFloatingTask(FloatingTask task) {
