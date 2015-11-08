@@ -40,8 +40,8 @@ public class TempoGui extends Application {
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		// TODO Auto-generated method stub
-		String fname = 	"l";			
-		//String fname =  AskForFile.display("Enter a filename", "Welcome to Tempo!");
+		//String fname = 	"l";			
+		String fname =  AskForFile.display("Enter a filename", "Welcome to Tempo!");
 		
 		
 		RequestHandler tempRH = RequestHandler.getInstance();

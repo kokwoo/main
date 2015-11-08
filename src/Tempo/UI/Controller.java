@@ -878,7 +878,7 @@ public class Controller {
 		ObservableList<TableEntry> events = FXCollections.observableArrayList(allPage.entries);
 		setAttributes();
 		table.setItems(events);
-		inputBox.setValue("add event do something from 10/10/2015 at 10:00 to 10/11/2015 at 11:00");
+		//inputBox.setValue("add event do something from 10/10/2015 at 10:00 to 10/11/2015 at 11:00");
 		
 		table.refresh();
 		
