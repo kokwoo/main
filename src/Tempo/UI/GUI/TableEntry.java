@@ -1,6 +1,7 @@
-package Tempo.GUI;
+package Tempo.UI.GUI;
+//@@author A0145073L
 /**
- * @author A0145073l
+ * 
  * ashish
  * Object used to store information about an entry in the user table.
  * Contains information about events,tasks, and floating tasks

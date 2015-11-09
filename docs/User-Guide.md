@@ -30,7 +30,7 @@ To quickly list available commands, use the command `help`.
 
 To undo your previous operation, use the command `undo`. The most recently made change will then be reverted. Multiple undo's are supported.
 
-To redo an undo operation, use the command `redo`. Note that the redo operation can only be used after an undo command has been used. Multiple redo's are supported, but the redo history will be deleted once a new command other than undo is executed.
+To redo an undo operation, use the command `redo`. Note that the redo operation can only be used after an undo command has been used. Multiple redo's are not supported.
 
 To clear the file in which your schedule is stored, use the command `clear`.
 

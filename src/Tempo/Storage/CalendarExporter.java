@@ -1,12 +1,10 @@
+//@@author A0125962B
 package Tempo.Storage;
 
 import java.io.*;
 import java.util.ArrayList;
 
 import Tempo.Data.CalendarObject;
-import Tempo.Data.Event;
-import Tempo.Data.FloatingTask;
-import Tempo.Data.Task;
 import Tempo.Logic.Calendar;
 
 public class CalendarExporter {
