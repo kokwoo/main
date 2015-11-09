@@ -46,14 +46,15 @@ public class AskForFile {
 		label.setText(PROMPT_TEXT);
 		TextField startTime = new TextField();
 				
-		 Image image = new Image(IMG_DIR);
+		// Image image = new Image(IMG_DIR);
 		 System.out.println(System.getProperty(USR_DIR));
 
          // simple displays ImageView the image as is
-         ImageView iv1 = new ImageView();
-         iv1.setFitWidth(IMG_WIDTH);
-         iv1.setFitHeight(IMG_HEIGHT);
-         iv1.setImage(image);
+       //  ImageView iv1 = new ImageView();
+        // iv1.setFitWidth(IMG_WIDTH);
+        // iv1.setFitHeight(IMG_HEIGHT);
+        //
+		 //iv1.setImage(image);
        
 		Button closeButton = new Button(CLOSE_TEXT);
 		closeButton.setOnAction(e -> {
@@ -66,13 +67,15 @@ public class AskForFile {
 		
 		
 		
+		
+		
 		gp.setPadding(new Insets(PADDING_GRIDVIEW,PADDING_GRIDVIEW,PADDING_GRIDVIEW,PADDING_GRIDVIEW));
 
 		gp.setVgap(GRIDVIEW_VERTICAL_GAP);
 		gp.add(label, ZERO, ONE);
 		gp.add(eventName, ZERO, TWO);
 		gp.add(closeButton, ZERO, FOUR);
-		gp.add(iv1, ONE, FOUR);
+		//gp.add(iv1, ONE, FOUR);
 
 		Scene scene = new Scene(gp);
 		window.setScene(scene);
