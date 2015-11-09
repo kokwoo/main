@@ -123,10 +123,22 @@ public class IndexStore {
 	}
 	
 	public void addEvent(int index, Event newEvent) {
+		if (recycledPriId.contains(index)) {
+			recycledPriId.remove(index);
+		}
+		if (recycledSecId.contains(newEvent.getSeriesIndex())) {
+			recycledSecId.remove(index);
+		}
 		events.put(index, newEvent);
 	}
 	
 	public void addTask(int index, FloatingTask newTask) {
+		if (recycledPriId.contains(index)) {
+			recycledPriId.remove(index);
+		}
+		if (recycledSecId.contains(newTask.getSeriesIndex())) {
+			recycledSecId.remove(index);
+		}
 		tasks.put(index, newTask);
 	}
 	

@@ -115,7 +115,6 @@ public class UndoUpdate implements Command {
 	}
 	
 	private Result undoUpdateEventsSeries() {
-		System.out.println("Undoing update events series"); // debug
 		Result result;
 		result = calendar.removeEvent(prevModIndex, true);
 		removeUndoUndoCommand();
