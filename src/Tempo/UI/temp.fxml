@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.text.*?>
 <?import java.lang.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<TabPane fx:id="tabView" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="555.0" prefWidth="750.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Tempo.UI.Controller">
+<TabPane fx:id="tabView" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="604.0" prefWidth="750.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/8.0.40" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Tempo.UI.Controller">
   <tabs>
     <Tab text="All">
       <content>
-        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="551.0" prefWidth="750.0">
                <children>
                   <ComboBox fx:id="inputBox" editable="true" layoutY="1.0" onKeyPressed="#handleEnterPressed" onKeyTyped="#handleType" prefHeight="45.0" prefWidth="750.0" />
                   <TableView fx:id="table" layoutY="46.0" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="495.0" prefWidth="750.0">
@@ -22,6 +23,9 @@
                         <TableColumn fx:id="endTime" prefWidth="131.0" text="End Time" />
                     </columns>
                   </TableView>
+                  <Text fx:id="statusAll" layoutX="4.0" layoutY="562.0" strokeType="OUTSIDE" strokeWidth="0.0" text="0 Missed : 0 Upcoming" />
+                  <Text fx:id="viewAll" layoutX="201.0" layoutY="562.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Viewing: All" />
+                  <TextField fx:id="consoleAll" layoutX="366.0" layoutY="542.0" prefHeight="28.0" prefWidth="382.0" />
                </children></AnchorPane>
       </content>
     </Tab>
@@ -41,6 +45,9 @@
                         <TableColumn fx:id="endTimeToday" prefWidth="131.0" text="End Time" />
                      </columns>
                   </TableView>
+                  <Text fx:id="statusToday" layoutX="4.0" layoutY="562.0" strokeType="OUTSIDE" strokeWidth="0.0" text="0 Missed : 0 Upcoming" />
+                  <Text fx:id="viewToday" strokeType="OUTSIDE" strokeWidth="0.0" text="Viewing: All" x="201.0" y="562.0" />
+                  <TextField fx:id="consoleToday" layoutX="366.0" layoutY="542.0" prefHeight="28.0" prefWidth="382.0" />
                </children>
             </AnchorPane>
          </content>
@@ -61,6 +68,9 @@
                         <TableColumn fx:id="upcomingEndTime" prefWidth="131.0" text="End Time" />
                      </columns>
                   </TableView>
+                  <Text fx:id="statusUpcoming" layoutX="4.0" layoutY="562.0" strokeType="OUTSIDE" strokeWidth="0.0" text="0 Missed : 0 Upcoming" />
+                  <Text fx:id="viewUpcoming" layoutX="201.0" layoutY="562.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Viewing: All" />
+                  <TextField fx:id="consoleUpcoming" layoutX="366.0" layoutY="542.0" prefHeight="28.0" prefWidth="382.0" />
                </children>
             </AnchorPane>
          </content>
@@ -81,6 +91,9 @@
                         <TableColumn fx:id="missedEndTime" prefWidth="131.0" text="End Time" />
                      </columns>
                   </TableView>
+                  <Text fx:id="statusMissed" layoutX="4.0" layoutY="562.0" strokeType="OUTSIDE" strokeWidth="0.0" text="0 Missed : 0 Upcoming" />
+                  <Text fx:id="viewMissed" layoutX="201.0" layoutY="562.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Viewing: All" />
+                  <TextField fx:id="consoleMissed" layoutX="366.0" layoutY="542.0" prefHeight="28.0" prefWidth="382.0" />
                </children>
             </AnchorPane>
          </content>
@@ -101,6 +114,9 @@
                         <TableColumn fx:id="undoneEndTime" prefWidth="131.0" text="End Time" />
                      </columns>
                   </TableView>
+                  <Text fx:id="statusUndone" strokeType="OUTSIDE" strokeWidth="0.0" text="0 Missed : 0 Upcoming" x="4.0" y="562.0" />
+                  <Text fx:id="viewUndone" layoutX="201.0" layoutY="562.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Viewing: All" />
+                  <TextField fx:id="consoleUndone" layoutX="383.0" layoutY="542.0" prefHeight="28.0" prefWidth="366.0" />
                </children>
             </AnchorPane>
          </content>
@@ -121,6 +137,56 @@
                         <TableColumn fx:id="searchEndTime" prefWidth="131.0" text="End Time" />
                      </columns>
                   </TableView>
+                  <Text fx:id="statusSearch" strokeType="OUTSIDE" strokeWidth="0.0" text="0 Missed : 0 Upcoming" x="4.0" y="562.0" />
+                  <Text fx:id="viewSearch" strokeType="OUTSIDE" strokeWidth="0.0" text="Viewing: All" x="201.0" y="562.0" />
+                  <TextField fx:id="consoleSearch" layoutX="366.0" layoutY="542.0" prefHeight="28.0" prefWidth="382.0" />
+               </children>
+            </AnchorPane>
+         </content>
+      </Tab>
+      <Tab text="Help">
+         <content>
+            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+               <children>
+                  <ComboBox fx:id="helpInputBox" editable="true" layoutY="1.0" onKeyPressed="#handleEnterPressed" onKeyTyped="#handleType" prefHeight="45.0" prefWidth="750.0" />
+                  <Text fx:id="statusSearch1" strokeType="OUTSIDE" strokeWidth="0.0" text="0 Missed : 0 Upcoming" x="4.0" y="562.0" />
+                  <Text fx:id="viewSearch1" strokeType="OUTSIDE" strokeWidth="0.0" text="Viewing: All" x="201.0" y="562.0" />
+                  <TextField fx:id="consoleSearch1" layoutX="366.0" layoutY="542.0" prefHeight="28.0" prefWidth="382.0" />
+                  <Text layoutX="12.0" layoutY="95.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Shortcut Keys:" wrappingWidth="530.7294921875">
+                     <font>
+                        <Font size="16.0" />
+                     </font>
+                  </Text>
+                  <Text layoutX="63.0" layoutY="122.0" strokeType="OUTSIDE" strokeWidth="0.0" text="All : All Page" wrappingWidth="123.7294921875" />
+                  <Text layoutX="59.0" layoutY="147.0" strokeType="OUTSIDE" strokeWidth="0.0" text="td: Today Page" wrappingWidth="146.7294921875" />
+                  <Text layoutX="57.0" layoutY="173.0" strokeType="OUTSIDE" strokeWidth="0.0" text="up: Upcoming Tab" wrappingWidth="146.7294921875" />
+                  <Text layoutX="56.0" layoutY="202.0" strokeType="OUTSIDE" strokeWidth="0.0" text="up: Missed Tab" wrappingWidth="146.7294921875" />
+                  <Text layoutX="55.0" layoutY="230.0" strokeType="OUTSIDE" strokeWidth="0.0" text="ud: Undone Tab" wrappingWidth="146.7294921875" />
+                  <Text layoutX="56.0" layoutY="278.0" strokeType="OUTSIDE" strokeWidth="0.0" text="evt: Show events only" wrappingWidth="146.7294921875" />
+                  <Text layoutX="55.0" layoutY="299.0" strokeType="OUTSIDE" strokeWidth="0.0" text="tsk: Show task only" wrappingWidth="146.7294921875" />
+                  <Text layoutX="55.0" layoutY="321.0" strokeType="OUTSIDE" strokeWidth="0.0" text="flt: Show floating task only" wrappingWidth="191.7294921875" />
+                  <Text layoutX="16.0" layoutY="256.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Filters :" wrappingWidth="530.7294921875">
+                     <font>
+                        <Font size="16.0" />
+                     </font>
+                  </Text>
+                  <Text layoutX="251.0" layoutY="87.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Commands:" wrappingWidth="441.7294921875">
+                     <font>
+                        <Font size="16.0" />
+                     </font>
+                  </Text>
+                  <Text layoutX="240.0" layoutY="114.0" strokeType="OUTSIDE" strokeWidth="0.0" text="add event: add event &lt;name&gt; from &lt;start date&gt; at &lt;start time&gt; to &lt;end date&gt; at &lt;end time&gt;" wrappingWidth="514.7294921875" />
+                  <Text layoutX="240.0" layoutY="195.0" strokeType="OUTSIDE" strokeWidth="0.0" text="remove : remove &lt;ID&gt;" wrappingWidth="514.7294921875" />
+                  <Text layoutX="241.0" layoutY="218.0" strokeType="OUTSIDE" strokeWidth="0.0" text="search: search &lt;keyword&gt;" wrappingWidth="514.7294921875" />
+                  <Text layoutX="240.0" layoutY="152.0" strokeType="OUTSIDE" strokeWidth="0.0" text="add task : &lt;KEY&gt; task &lt;name&gt; due &lt;date&gt;" wrappingWidth="514.7294921875" />
+                  <Text layoutX="239.0" layoutY="175.0" strokeType="OUTSIDE" strokeWidth="0.0" text="add floating task : add task &lt;name&gt;" wrappingWidth="514.7294921875" />
+                  <Text layoutX="237.0" layoutY="248.0" strokeType="OUTSIDE" strokeWidth="0.0" text="update : update &lt;id&gt; &lt;property&gt;: &lt;new value&gt;" wrappingWidth="514.7294921875" />
+                  <Text layoutX="59.0" layoutY="382.0" strokeType="OUTSIDE" strokeWidth="0.0" text="                     View Manual For Full List of Commands " wrappingWidth="530.7294921875">
+                     <font>
+                        <Font size="16.0" />
+                     </font>
+                  </Text>
+                  <Text layoutX="238.0" layoutY="278.0" strokeType="OUTSIDE" strokeWidth="0.0" text="flag reoccuring : &lt; &gt;" wrappingWidth="514.7294921875" />
                </children>
             </AnchorPane>
          </content>
