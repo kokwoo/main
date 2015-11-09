@@ -1,3 +1,4 @@
+//@@author A0127047J
 package Tempo.Logic;
 
 import java.util.*;
@@ -13,7 +14,7 @@ public class IndexStore {
 	private static int nextUnusedPriId;
 	private static int nextUnusedSecId;
 	private static LinkedList<Integer> recycledPriId;
-	private static LinkedList<Integer> recycledSecId;
+	private static LinkedList<Integer> recycledSeriesId;
 	public static HashMap<Integer, CalendarObject> events;
 	public static HashMap<Integer, CalendarObject> tasks;
 	
@@ -29,7 +30,7 @@ public class IndexStore {
 		nextUnusedPriId = 0;
 		nextUnusedSecId = 0;
 		recycledPriId = new LinkedList<Integer>();
-		recycledSecId = new LinkedList<Integer>();
+		recycledSeriesId = new LinkedList<Integer>();
 		events = new HashMap<Integer, CalendarObject>();
 		tasks = new HashMap<Integer, CalendarObject>();
 	}
@@ -89,10 +90,19 @@ public class IndexStore {
 	}
 	
 	private void updateRecycledSecId() {
-		boolean[] usedId = getUsedSecId();
-		for (int i = 0; i < usedId.length; i++) {
-			if (!usedId[i]) {
-				recycledSecId.add(i);
+		for (Integer key : events.keySet()) {
+			Event currEvent = (Event) events.get(key);
+			int currId = currEvent.getSeriesIndex();
+			if (!recycledSeriesId.contains(currId)) {
+				recycledSeriesId.add(currId);
+			}
+		}
+		
+		for (Integer key : tasks.keySet()) {
+			FloatingTask currTask = (FloatingTask) tasks.get(key);
+			int currId = currTask.getSeriesIndex();
+			if (!recycledSeriesId.contains(currId)) {
+				recycledSeriesId.add(currId);
 			}
 		}
 	}
@@ -101,33 +111,12 @@ public class IndexStore {
 		return (events.containsKey(idx) || tasks.containsKey(idx));
 	}
 	
-	private boolean[] getUsedSecId() {
-		boolean[] usedId = new boolean[nextUnusedSecId];
-		for (Integer key : events.keySet()) {
-			Event currEvent = (Event) events.get(key);
-			int currId = currEvent.getSeriesIndex();
-			if (!usedId[currId]) {
-				usedId[currId] = true;
-			}
-		}
-		
-		for (Integer key : tasks.keySet()) {
-			FloatingTask currTask = (FloatingTask) tasks.get(key);
-			int currId = currTask.getSeriesIndex();
-			if (!usedId[currId]) {
-				usedId[currId] = true;
-			}
-		}
-		
-		return usedId;
-	}
-	
 	public void addEvent(int index, Event newEvent) {
 		if (recycledPriId.contains(index)) {
 			recycledPriId.remove(index);
 		}
-		if (recycledSecId.contains(newEvent.getSeriesIndex())) {
-			recycledSecId.remove(newEvent.getSeriesIndex());
+		if (recycledSeriesId.contains(newEvent.getSeriesIndex())) {
+			recycledSeriesId.remove(newEvent.getSeriesIndex());
 		}
 		events.put(index, newEvent);
 	}
@@ -136,8 +125,8 @@ public class IndexStore {
 		if (recycledPriId.contains(index)) {
 			recycledPriId.remove(index);
 		}
-		if (recycledSecId.contains(newTask.getSeriesIndex())) {
-			recycledSecId.remove(index);
+		if (recycledSeriesId.contains(newTask.getSeriesIndex())) {
+			recycledSeriesId.remove(index);
 		}
 		tasks.put(index, newTask);
 	}
@@ -145,7 +134,7 @@ public class IndexStore {
 	public void removeEvent(int index) {
 		Event eventToRemove = (Event) events.get(index);
 		int seriesId = eventToRemove.getSeriesIndex();
-		recycledSecId.add(seriesId);
+		recycledSeriesId.add(seriesId);
 		events.remove(index);
 		recycledPriId.add(index);
 	}
@@ -153,7 +142,7 @@ public class IndexStore {
 	public void removeTask(int index) {
 		FloatingTask taskToRemove = (FloatingTask) tasks.get(index);
 		int seriesId = taskToRemove.getSeriesIndex();
-		recycledSecId.add(seriesId);
+		recycledSeriesId.add(seriesId);
 		tasks.remove(index);
 		recycledPriId.add(index);
 	}
@@ -184,11 +173,11 @@ public class IndexStore {
 	
 	public int getNewSeriesId() {
 		int id;
-		if (recycledSecId.isEmpty()) {
+		if (recycledSeriesId.isEmpty()) {
 			id = nextUnusedSecId;
 			updateNextUnusedSecId(id);
 		} else {
-			id = recycledSecId.remove();
+			id = recycledSeriesId.remove();
 		}
 		
 		return id;
