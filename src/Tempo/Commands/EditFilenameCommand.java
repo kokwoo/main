@@ -2,6 +2,7 @@ package Tempo.Commands;
 
 import Tempo.Logic.Calendar;
 
+//@@author A0125962B
 public class EditFileNameCommand implements Command{
 	private static final String command = "rename file as %1$s";
 	
