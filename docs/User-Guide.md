@@ -110,7 +110,7 @@ To make an existing event/task recurring, use the following update command.
 ###Change Recurring Type
 To change the recurring type of a recurring event/task, use the following update command.
 
-update all <id> repeat:<new frequency>
+    update all <id> repeat:<new frequency>
 
 ###Update Recurring Item
 To update an instance of the recurring series, use the normal update command as listed above. To update all the instances of the recurring series, use the follow command.
