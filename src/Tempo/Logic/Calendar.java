@@ -1116,7 +1116,6 @@ public class Calendar {
 
 	private void clearRedoHistory() {
 		if (!isUndoCmd) {
-			System.out.println("Clearing redo history..."); // debug
 			redoHistory.clear();
 		}
 	}
