@@ -3,9 +3,9 @@ package Tempo.Commands;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import Tempo.CalendarObjects.CalendarObject;
-import Tempo.CalendarObjects.Event;
-import Tempo.CalendarObjects.FloatingTask;
+import Tempo.Data.CalendarObject;
+import Tempo.Data.Event;
+import Tempo.Data.FloatingTask;
 
 //@@author A0125962B
 public class Result {

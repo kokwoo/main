@@ -3,8 +3,8 @@ package Tempo.UnitTesting;
  * UNIT TESTS FOR TEMPO.
  */
 
-import Tempo.CalendarObjects.Event;
 import Tempo.Commands.Result;
+import Tempo.Data.Event;
 import Tempo.Logic.Calendar;
 import Tempo.Logic.RequestHandler;
 import junit.framework.TestCase;

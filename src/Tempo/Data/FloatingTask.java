@@ -1,4 +1,4 @@
-package Tempo.CalendarObjects;
+package Tempo.Data;
 
 //@@author A0125962B
 public class FloatingTask implements CalendarObject{

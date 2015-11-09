@@ -8,11 +8,11 @@ import java.util.HashMap;
 import org.junit.After;
 import org.junit.Test;
 
-import Tempo.CalendarObjects.CalendarObject;
-import Tempo.CalendarObjects.Event;
-import Tempo.CalendarObjects.FloatingTask;
-import Tempo.CalendarObjects.Task;
 import Tempo.Commands.Result;
+import Tempo.Data.CalendarObject;
+import Tempo.Data.Event;
+import Tempo.Data.FloatingTask;
+import Tempo.Data.Task;
 import Tempo.Logic.Display;
 import Tempo.Logic.RequestHandler;
 

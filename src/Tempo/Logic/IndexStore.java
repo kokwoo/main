@@ -2,10 +2,10 @@ package Tempo.Logic;
 
 import java.util.*;
 
-import Tempo.CalendarObjects.CalendarObject;
-import Tempo.CalendarObjects.Event;
-import Tempo.CalendarObjects.FloatingTask;
-import Tempo.CalendarObjects.Task;
+import Tempo.Data.CalendarObject;
+import Tempo.Data.Event;
+import Tempo.Data.FloatingTask;
+import Tempo.Data.Task;
 
 public class IndexStore {
 	private static IndexStore instance = new IndexStore();
