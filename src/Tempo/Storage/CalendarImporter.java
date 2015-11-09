@@ -1,3 +1,4 @@
+//@@author A0125962B
 package Tempo.Storage;
 
 import java.io.*;
@@ -50,29 +51,21 @@ public class CalendarImporter {
 				
 				if(split.length == 5){
 					if(isBoolean(split[3])){
-						//is a task
-						//tasks
 						int taskIndex = Integer.parseInt(split[0]);
 						int taskSeriesIndex = Integer.parseInt(split[1]);
 						Task newTask = new Task(taskIndex, taskSeriesIndex, split[2], split[3], split[4]);
 						tasks.add(newTask);
 					}else{
-						//is a event
-						//events
 						int eventIndex = Integer.parseInt(split[0]);
 						int eventSeriesIndex = Integer.parseInt(split[1]);
 						Event newEvent  = new Event(eventIndex, eventSeriesIndex, split[2], split[3], split[4]);
 						events.add(newEvent);
 					}
 				}else if (split.length == 4){
-					//floating tasks
 					int floatingTaskIndex = Integer.parseInt(split[0]);
 					int floatingTaskSeriesIndex = Integer.parseInt(split[1]);
 					FloatingTask newFloatingTask =  new FloatingTask(floatingTaskIndex, floatingTaskSeriesIndex, split[2], split[3]);
 					floatingTasks.add(newFloatingTask);
-				}else{
-					//unrecognized
-					
 				}
 			}
 			in.close();

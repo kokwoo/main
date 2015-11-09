@@ -1,3 +1,4 @@
+//@@author A0125962B
 package Tempo.Logic;
 
 import java.text.SimpleDateFormat;
@@ -20,7 +21,6 @@ import Tempo.Commands.SearchCommand;
 import Tempo.Commands.UndoCommand;
 import Tempo.Commands.UpdateCommand;
 
-//@@author A0125962B
 public class CommandParser {
 	private static CommandParser instance = new CommandParser();
 
@@ -70,6 +70,8 @@ public class CommandParser {
 	private static final String KEY_MONTHLY = "monthly";
 	private static final String KEY_ANNUALLY = "annually";
 
+	private static final String KEY_EVENT = "event";
+	private static final String KEY_TASK = "task";
 	private static final String KEY_EVENTS = "events";
 	private static final String KEY_TASKS = "tasks";
 	private static final String KEY_UPCOMING_EVENTS = "upcoming events";
@@ -79,15 +81,14 @@ public class CommandParser {
 	private static final String KEY_ALL = "all";
 
 	private static final String DATE_DELIMETER = "/";
-	private static final String TIME_DELIMETER = ":";
-	
+
 	private static final String REGEX_DATE = "(0?[1-9]|[12][0-9]|3[01])[/|.|-](0?[1-9]|1[012])[/|.|-]\\d{4}";
 	private static final String REGEX_TIME = "(0?[0-9]|1[0-9]|2[0-3]):([0-5][0-9])";
 
-	private static final String DATE_FORMAT_1= "dd/MM/yyyy";
-	private static final String DATE_FORMAT_2= "dd-MM-yyyy";
-	private static final String DATE_FORMAT_3= "dd.MM.yyyy";
-	
+	private static final String DATE_FORMAT_1 = "dd/MM/yyyy";
+	private static final String DATE_FORMAT_2 = "dd-MM-yyyy";
+	private static final String DATE_FORMAT_3 = "dd.MM.yyyy";
+
 	private static final String TIME_FORMAT = "HH:mm";
 	private static final String DATETIME_FORMAT = "dd/MM/yyyy/HH:mm";
 
@@ -104,30 +105,24 @@ public class CommandParser {
 	}
 
 	public Command parse(String commandString) {
-		// process command type
 		String commandType = getCommandType(commandString);
 		String arguments = getArguments(commandString);
-		// process add, process update, process remove
 		switch (commandType.toLowerCase()) {
-			// Add Function
 			case COMMAND_ADD :
 			case COMMAND_CREATE :
 			case COMMAND_NEW :
 				return processAddCommand(arguments);
 
-			// Remove Function
 			case COMMAND_REMOVE :
 			case COMMAND_DELETE :
 			case COMMAND_CANCEL :
 				return processRemoveCommand(arguments);
 
-			// Update Function
 			case COMMAND_UPDATE :
 			case COMMAND_EDIT :
 			case COMMAND_CHANGE :
 				return processUpdateCommand(arguments);
 
-			// Mark as Done Function
 			case COMMAND_DONE :
 			case COMMAND_FINISHED :
 			case COMMAND_COMPLETED :
@@ -136,39 +131,32 @@ public class CommandParser {
 			case COMMAND_UNDONE :
 				return processUndoneCommand(arguments);
 
-			// Display Function
 			case COMMAND_VIEW :
 			case COMMAND_DISPLAY :
 				return processDisplayCommand(arguments);
 
-			// Search Function
 			case COMMAND_SEARCH :
 			case COMMAND_FIND :
 				return processSearchCommand(arguments);
 
-			// Undo Function
 			case COMMAND_UNDO :
 				return processUndoCommand();
 
 			case COMMAND_REDO :
 				return processRedoCommand();
 
-			// Filename Function
 			case COMMAND_FILENAME :
 				return processFilenameCommand(arguments);
 
 			case COMMAND_CLEAR :
 				return processClearCommand();
 
-			// Display help/manual
 			case COMMAND_HELP :
 				return processHelpCommand();
 
-			// Exit command
 			case COMMAND_EXIT :
 				return processExitCommand();
 
-			// Generate Error Command Message
 			default :
 				return null;
 		}
@@ -182,10 +170,6 @@ public class CommandParser {
 		return removeFirstWord(message);
 	}
 
-	// ADD EVENT: add event <name> from <start date> at <start time> to <end
-	// date> at <end time> repeat:<frequency of occurrence>
-	// ADD TASK: add task <name> due <due date>
-	// ADD FLOATING: add task <name>
 	private Command processAddCommand(String argumentString) {
 		String addType = getFirstWord(argumentString);
 		argumentString = removeFirstWord(argumentString);
@@ -212,20 +196,18 @@ public class CommandParser {
 			recurringDate = recurringArgs.get(1);
 		}
 
-		if (addType.equalsIgnoreCase("event")) {
+		if (addType.equalsIgnoreCase(KEY_EVENT)) {
 			try {
 				args = processAddEventCommand(argumentString);
 			} catch (Exception e) {
 				return new AddCommand(calendar, null, true, null, null);
 			}
-		} else if (addType.equalsIgnoreCase("task")) {
+		} else if (addType.equalsIgnoreCase(KEY_TASK)) {
 			try {
 				args = processAddTaskCommand(argumentString);
 			} catch (Exception e) {
 				return new AddCommand(calendar, null, true, null, null);
 			}
-		} else {
-			// TO-DO DISPLAY ERROR HERE
 		}
 
 		if (args == null) {
@@ -252,9 +234,8 @@ public class CommandParser {
 			nameString = getEventNameFrom(argumentString);
 			argumentString = argumentString.split(nameString)[1].trim();
 
-			// ! Try parsing nameString on Natty: if returns a dateGroup, means
-			// there is date within the nameString
 			DateGroup dateGroup = parseDateTimeString(nameString);
+			
 			if (dateGroup != null) {
 				Date startDate = dateGroup.getDates().get(0);
 				SimpleDateFormat formatDate = new SimpleDateFormat(DATE_FORMAT_1);
@@ -262,7 +243,6 @@ public class CommandParser {
 			}
 
 			if (argumentString.contains(" to ")) {
-				// CASE 1: from and to
 				String[] startEndTime = argumentString.split(" to ");
 
 				endDateTimeString = startEndTime[1];
@@ -272,14 +252,11 @@ public class CommandParser {
 				endDateTime = getDateTime(endDateTimeString);
 
 			} else {
-				// CASE 2: from, no to (start date/time only)
 				endDateTime = null;
 				startDateTimeString = removeFirstWord(argumentString).trim();
 				startDateTime = getDateTime(startDateTimeString);
 			}
 		} else if (argumentString.contains(" to ")) {
-			// NO "FROM" BUT HAVE "TO"
-
 			nameString = getEventNameTo(argumentString);
 			argumentString = argumentString.split(nameString)[1].trim();
 
@@ -298,7 +275,6 @@ public class CommandParser {
 			}
 
 		} else {
-			// Try parsing on natty
 			DateGroup dateGroup = parseDateTimeString(argumentString);
 
 			if (dateGroup != null) {
@@ -325,14 +301,12 @@ public class CommandParser {
 			}
 
 		} else {
-			SimpleDateFormat df = new SimpleDateFormat(DATETIME_FORMAT);
-
 			if (startDateTime != null) {
-				startDateTimeString = df.format(startDateTime);
+				startDateTimeString = dateToString(startDateTime);
 			}
 
 			if (endDateTime != null) {
-				endDateTimeString = df.format(endDateTime);
+				endDateTimeString = dateToString(endDateTime);
 			}
 		}
 
@@ -340,7 +314,6 @@ public class CommandParser {
 
 		if (startDateTime != null && endDateTime != null) {
 			SimpleDateFormat df = new SimpleDateFormat(DATETIME_FORMAT);
-			df.setLenient(false);
 			startDateTimeString = df.format(startDateTime);
 			endDateTimeString = df.format(endDateTime);
 			validDate = checkValidStartEnd(startDateTimeString, endDateTimeString);
@@ -353,11 +326,10 @@ public class CommandParser {
 		} else {
 			return null;
 		}
-
 		return returnList;
 	}
 
-	private ArrayList<String> processAddTaskCommand(String argumentString) throws Exception{
+	private ArrayList<String> processAddTaskCommand(String argumentString) throws Exception {
 		String nameString = null;
 		Date dueDate = null;
 		String dueDateString = null;
@@ -366,31 +338,23 @@ public class CommandParser {
 
 		if (argumentString.toLowerCase().contains("due")) {
 			nameString = getTaskName(argumentString);
-			
 			dueDate = getTaskDueDate(argumentString);
 
 		} else {
-			// Try parsing on natty
 			DateGroup dateGroup = parseDateTimeString(argumentString);
-
 			if (dateGroup != null) {
 				dueDate = dateGroup.getDates().get(0);
-
 				String dateString = dateGroup.getText();
 				nameString = argumentString.split(dateString)[0].trim();
 			} else {
-				// Floating Task
 				nameString = argumentString.trim();
 				returnList.add(nameString);
-
 				return returnList;
 			}
 		}
 
-		SimpleDateFormat df = new SimpleDateFormat(DATETIME_FORMAT);
-
 		if (dueDate != null) {
-			dueDateString = df.format(dueDate);
+			dueDateString = dateToString(dueDate);
 		}
 
 		returnList.add(nameString);
@@ -427,7 +391,7 @@ public class CommandParser {
 			updateSeries = true;
 			arguments = removeFirstWord(arguments);
 		}
-		
+
 		idx = getId(getFirstWord(arguments));
 
 		ArrayList<String> fields = getFieldsList(arguments);
@@ -517,8 +481,8 @@ public class CommandParser {
 	private Command processClearCommand() {
 		return new ClearCommand(calendar);
 	}
-	
-	private Command processHelpCommand(){
+
+	private Command processHelpCommand() {
 		return new HelpCommand();
 	}
 
@@ -531,172 +495,160 @@ public class CommandParser {
 			if (dateTimeString.contains(" at ")) {
 				String dateString = dateTimeString.split(" at ")[0].trim();
 				String timeString = dateTimeString.split(" at ")[1].trim();
-				DateGroup dateGroup = null;
-				Date date = null;
-				Date time = null;
-
-				try{
-					date = parseDateString(dateString);
-				}catch (Exception e){
-					return null;
-				}
 				
-
-				if(timeString.contains(TIME_DELIMETER)){
-					System.out.println(timeString);
-					if(!validateTime(timeString)){
-						return null;
+				dateString = formatDate(dateString);
+				timeString = formatTime(timeString);
+				
+				Date parsedDate = null;
+				
+				if(dateString != null){
+					if(timeString != null){
+						String combinedDateTimeString = dateString + DATE_DELIMETER + timeString;
+						SimpleDateFormat dateTimeFormat = new SimpleDateFormat(DATETIME_FORMAT);
+						parsedDate = dateTimeFormat.parse(combinedDateTimeString);
+					}else{
+						CurrentTime currTime =  new CurrentTime();
+						timeString = currTime.getHoursAndMin();
+						
+						String combinedDateTimeString = dateString + DATE_DELIMETER + timeString;
+						SimpleDateFormat dateTimeFormat = new SimpleDateFormat(DATETIME_FORMAT);
+						parsedDate = dateTimeFormat.parse(combinedDateTimeString);
 					}
 				}else{
-					dateGroup = parseDateTimeString(timeString);
-
-					if (dateGroup == null) {
-						CurrentTime currentTime = new CurrentTime();
-						timeString = currentTime.getHoursAndMin();
-					} else {
-						time = dateGroup.getDates().get(0);
+					if(timeString != null){
+						CurrentTime currTime =  new CurrentTime();
+						dateString = currTime.getDate();
+						
+						String combinedDateTimeString = dateString + DATE_DELIMETER + timeString;
+						SimpleDateFormat dateTimeFormat = new SimpleDateFormat(DATETIME_FORMAT);
+						parsedDate = dateTimeFormat.parse(combinedDateTimeString);
+					}else{
+						return null;
 					}
 				}
 
-				SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT_1);
-				dateString = dateFormat.format(date);
-				
-				if(time != null){
-					SimpleDateFormat timeFormat = new SimpleDateFormat(TIME_FORMAT);
-					timeString = timeFormat.format(time);
-				}
-
-				String combinedDateTimeString = dateString + DATE_DELIMETER + timeString;
-				System.out.println(combinedDateTimeString);
-				SimpleDateFormat dateTimeFormat = new SimpleDateFormat(DATETIME_FORMAT);
-
-				Date parsedDate = dateTimeFormat.parse(combinedDateTimeString);
 				return parsedDate;
 			} else {
-				return parseDateString(dateTimeString);
+				DateGroup dateGroup = parseDateTimeString(dateTimeString);
+				return dateGroup.getDates().get(0);
 			}
 		} catch (Exception e) {
 			return null;
 		}
 	}
 	
-	public static String formatDate(String dateString){
-		if(validateDate(dateString)){
+	private String dateToString(Date date){
+		SimpleDateFormat df = new SimpleDateFormat(DATETIME_FORMAT);
+		return df.format(date);
+	}
+
+	public static String formatDate(String dateString) {
+		if (validateDate(dateString)) {
 			try {
 				Date date = parseDateString(dateString);
-				
+
 				SimpleDateFormat df = new SimpleDateFormat(DATE_FORMAT_1);
 				String dateStr = df.format(date);
-				
+
 				return dateStr;
-			}catch (Exception e){
+			} catch (Exception e) {
 				return null;
 			}
-		}else{
+		} else {
 			DateGroup dateGroup = parseDateTimeString(dateString);
 			Date date = dateGroup.getDates().get(0);
-			
-			if(date != null){
+
+			if (date != null) {
 				SimpleDateFormat df = new SimpleDateFormat(DATE_FORMAT_1);
 				String dateStr = df.format(date);
-				
+
 				return dateStr;
-			}else{
-				return null;
-			}
-		}
-	}
-	
-	public static String formatTime(String timeString){
-		if(validateTime(timeString)){
-			return timeString;
-		}else{
-			DateGroup dateGroup = parseDateTimeString(timeString);
-			Date date = dateGroup.getDates().get(0);
-			
-			if(date != null){
-				SimpleDateFormat df = new SimpleDateFormat(TIME_FORMAT);
-				String timeStr = df.format(date);
-				
-				return timeStr;
-			}else{
+			} else {
 				return null;
 			}
 		}
 	}
 
-	private static Date parseDateString(String dateTimeString) throws Exception {
+	public static String formatTime(String timeString) {
+		if (validateTime(timeString)) {
+			return timeString;
+		} else {
+			DateGroup dateGroup = parseDateTimeString(timeString);
+			Date date = dateGroup.getDates().get(0);
+
+			if (date != null) {
+				SimpleDateFormat df = new SimpleDateFormat(TIME_FORMAT);
+				String timeStr = df.format(date);
+
+				return timeStr;
+			} else {
+				return null;
+			}
+		}
+	}
+
+	private static Date parseDateString(String dateString) throws Exception {
 		SimpleDateFormat dateFormat;
 		DateGroup dateGroup;
 		Date date;
-		
+
 		// splits date according to
-		if (dateTimeString.contains("/")) {
-			if(validateDate(dateTimeString)){
+		if (dateString.contains("/")) {
+			if (validateDate(dateString)) {
 				dateFormat = new SimpleDateFormat(DATE_FORMAT_1);
 				dateFormat.setLenient(false);
-				date = dateFormat.parse(dateTimeString);
-			}else{
+				date = dateFormat.parse(dateString);
+			} else {
 				throw new Exception();
 			}
-		} else if (dateTimeString.contains("-")) {
-			if(validateDate(dateTimeString)){
+		} else if (dateString.contains("-")) {
+			if (validateDate(dateString)) {
 				dateFormat = new SimpleDateFormat(DATE_FORMAT_2);
 				dateFormat.setLenient(false);
-				date = dateFormat.parse(dateTimeString);
-			}else{
+				date = dateFormat.parse(dateString);
+			} else {
 				throw new Exception();
 			}
-		} else if (dateTimeString.contains(".")) {
-			if(validateDate(dateTimeString)){
+		} else if (dateString.contains(".")) {
+			if (validateDate(dateString)) {
 				dateFormat = new SimpleDateFormat(DATE_FORMAT_3);
 				dateFormat.setLenient(false);
-				date = dateFormat.parse(dateTimeString);
-			}else{
+				date = dateFormat.parse(dateString);
+			} else {
 				throw new Exception();
 			}
 		} else {
-			dateGroup = parseDateTimeString(dateTimeString);
+			dateGroup = parseDateTimeString(dateString);
 			if (dateGroup != null) {
 				date = dateGroup.getDates().get(0);
 			} else {
 				date = null;
 			}
 		}
-
 		return date;
 	}
-	
-	private static boolean validateDate(String dateStr){
+
+	private static boolean validateDate(String dateStr) {
 		String regex = REGEX_DATE;
-		if(dateStr.matches(regex)){
+		if (dateStr.matches(regex)) {
 			return true;
-		}else{
+		} else {
 			return false;
 		}
 	}
-	
-	private static boolean validateTime(String timeStr){
+
+	private static boolean validateTime(String timeStr) {
 		String regex = REGEX_TIME;
-		if(timeStr.matches(regex)){
+		if (timeStr.matches(regex)) {
 			return true;
-		}else{
+		} else {
 			return false;
 		}
 	}
 
-	// FOR REMOVE/MARK AS DONE FUNCTION
-	private int getId(String arguments) {
-		try {
-			int id = Integer.parseInt(arguments);
-			return id;
-		} catch (NumberFormatException e) {
-			return -1;
-		}
 
-	}
 
-	// FOR ADD EVENTS FUNCTION
+	/*****FOR ADD EVENTS FUNCTION*********/
 	private String getEventNameFrom(String arguments) {
 		String[] parameters = arguments.split(" from ");
 		String returnString = parameters[0];
@@ -775,7 +727,7 @@ public class CommandParser {
 		}
 	}
 
-	// FOR ADD TASK FUNCTION
+	/*****FOR ADD TASK FUNCTION*********/
 	private String getTaskName(String arguments) {
 		String[] parameters1 = arguments.split("due");
 		return parameters1[0].trim();
@@ -810,7 +762,7 @@ public class CommandParser {
 		}
 	}
 
-	// FOR UPDATE FUNCTION
+	/*****FOR UPDATE FUNCTION*********/
 	private ArrayList<String> getFieldsList(String arguments) {
 		ArrayList<String> fields = new ArrayList<String>();
 		arguments = removeFirstWord(arguments);
@@ -855,6 +807,16 @@ public class CommandParser {
 		return newValues;
 	}
 
+	/*****MISC HELPER FUNCTIONS*********/
+	private int getId(String arguments) {
+		try {
+			int id = Integer.parseInt(arguments);
+			return id;
+		} catch (NumberFormatException e) {
+			return -1;
+		}
+
+	}
 	private String getFirstWord(String message) {
 		String commandTypeString = message.trim().split("\\s+")[0];
 		return commandTypeString;

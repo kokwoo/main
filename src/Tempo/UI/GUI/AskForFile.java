@@ -1,7 +1,7 @@
-package Tempo.GUI;
-
+package Tempo.UI.GUI;
+//@@author A0145073L
 /**
- * @author A0145073L
+ * 
  * Dialog to ask for file.
  */
 
