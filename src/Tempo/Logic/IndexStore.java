@@ -127,7 +127,7 @@ public class IndexStore {
 			recycledPriId.remove(index);
 		}
 		if (recycledSecId.contains(newEvent.getSeriesIndex())) {
-			recycledSecId.remove(index);
+			recycledSecId.remove(newEvent.getSeriesIndex());
 		}
 		events.put(index, newEvent);
 	}

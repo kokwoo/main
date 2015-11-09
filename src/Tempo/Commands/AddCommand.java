@@ -5,6 +5,7 @@ import java.text.*;
 import Tempo.Logic.Calendar;
 import Tempo.Logic.*;
 
+//@@author A0127047J
 public class AddCommand implements Command {
 	private Calendar cal;
 	private ArrayList<String> cmdArgs;
@@ -23,7 +24,8 @@ public class AddCommand implements Command {
 	private static final String STR_EMPTY = "";
 	
 	private static final String INVALID_DATE = "Error: Date(s) entered is invalid!";
-	private static final String END_EARLIER_STRING = "Error: End time is earlier than start time!";
+	private static final String END_EARLIER_STRING = 
+			"Error: End time is earlier than start time!";
 	private static final String BLANK = "";
 	
 	private DateFormat dateTimeFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm");
@@ -35,7 +37,8 @@ public class AddCommand implements Command {
 		this.cmdArgs = params;
 	}
 	
-	public AddCommand(Calendar cal, ArrayList<String> params, boolean isRecurring, String recurringType, String recurrenceEndDate) {
+	public AddCommand(Calendar cal, ArrayList<String> params, boolean isRecurring, 
+					  String recurringType, String recurrenceEndDate) {
 		this.cal = cal;
 		this.cmdArgs = params;
 		this.isRecurring = isRecurring;
@@ -102,7 +105,8 @@ public class AddCommand implements Command {
 		String start = replaceNullStart(cmdArgs.get(1));
 		String end = replaceNullEnd(start, cmdArgs.get(2));
 			
-		Result result = cal.addRecurringEvent(name, start, end, recurringFrequency, recurrenceEndDate);
+		Result result = cal.addRecurringEvent(name, start, end, recurringFrequency, 
+											  recurrenceEndDate);
 		
 		return result;
 	}
@@ -207,7 +211,8 @@ public class AddCommand implements Command {
 	
 	private void saveCommand() {
 		if (isRecurring) {
-			cal.saveCmd((Command) new AddCommand(cal, cmdArgs, isRecurring, recurringFrequency, recurrenceEndDate));
+			cal.saveCmd((Command) new AddCommand(cal, cmdArgs, isRecurring, 
+												 recurringFrequency, recurrenceEndDate));
 		} else {
 			cal.saveCmd((Command) new AddCommand(cal, cmdArgs));
 		}

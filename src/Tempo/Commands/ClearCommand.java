@@ -2,6 +2,7 @@ package Tempo.Commands;
 
 import Tempo.Logic.Calendar;
 
+//@@author A0125962B
 public class ClearCommand implements Command{
 	private Calendar cal;
 	

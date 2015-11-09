@@ -1,5 +1,6 @@
 package Tempo.Commands;
 
+//@@author A0125962B
 public class ExitCommand implements Command{
 	private static final String MSG_BYE = "Thank you for using Tempo!";
 	
