@@ -20,6 +20,7 @@ import Tempo.Commands.SearchCommand;
 import Tempo.Commands.UndoCommand;
 import Tempo.Commands.UpdateCommand;
 
+//@@author A0125962B
 public class CommandParser {
 	private static CommandParser instance = new CommandParser();
 
@@ -576,6 +577,51 @@ public class CommandParser {
 			}
 		} catch (Exception e) {
 			return null;
+		}
+	}
+	
+	public static String formatDate(String dateString){
+		if(validateDate(dateString)){
+			try {
+				Date date = parseDateString(dateString);
+				
+				SimpleDateFormat df = new SimpleDateFormat(DATE_FORMAT_1);
+				String dateStr = df.format(date);
+				
+				return dateStr;
+			}catch (Exception e){
+				return null;
+			}
+		}else{
+			DateGroup dateGroup = parseDateTimeString(dateString);
+			Date date = dateGroup.getDates().get(0);
+			
+			if(date != null){
+				SimpleDateFormat df = new SimpleDateFormat(DATE_FORMAT_1);
+				String dateStr = df.format(date);
+				
+				return dateStr;
+			}else{
+				return null;
+			}
+		}
+	}
+	
+	public static String formatTime(String timeString){
+		if(validateTime(timeString)){
+			return timeString;
+		}else{
+			DateGroup dateGroup = parseDateTimeString(timeString);
+			Date date = dateGroup.getDates().get(0);
+			
+			if(date != null){
+				SimpleDateFormat df = new SimpleDateFormat(TIME_FORMAT);
+				String timeStr = df.format(date);
+				
+				return timeStr;
+			}else{
+				return null;
+			}
 		}
 	}
 

@@ -60,6 +60,10 @@ public class Display {
 	private static final String NO_ALTERNATIVE_MATCH = "There are no alternative matches found!";
 	private static final String NO_MATCHES = "There are no matches found!";
 	private static final String ALTERNATIVE_MATCH_STRING = "Other Results:";
+	
+	private static final String KEY_EVENTS = "Events";
+	private static final String KEY_TASKS = "Tasks";
+	private static final String KEY_FLOATING_TASKS = "Floating Tasks";
 
 	// create an object of SingleObject
 	private static Display instance = new Display();
@@ -609,9 +613,23 @@ public class Display {
 		}else{
 			searchResults.add(BEST_MATCH_STRING);
 			searchResults.add(EMPTY_STRING);
-			searchResults = addStrEventToArray(searchResults, eventsBestMatch);
-			searchResults = addStrTasksToArray(searchResults, tasksBestMatch);
-			searchResults = addStrFTasksToArray(searchResults, floatingTaskBestMatch);
+			
+			if(!eventsBestMatch.isEmpty()){
+				searchResults.add(KEY_EVENTS);
+				searchResults = addStrEventToArray(searchResults, eventsBestMatch);
+			}
+			
+			if(!tasksBestMatch.isEmpty()){
+				searchResults.add(EMPTY_STRING);
+				searchResults.add(KEY_TASKS);
+				searchResults = addStrTasksToArray(searchResults, tasksBestMatch);
+			}
+			
+			if(!floatingTaskBestMatch.isEmpty()){
+				searchResults.add(EMPTY_STRING);
+				searchResults.add(KEY_FLOATING_TASKS);
+				searchResults = addStrFTasksToArray(searchResults, floatingTaskBestMatch);
+			}
 		}
 		
 		searchResults.add(EMPTY_STRING);
@@ -622,9 +640,23 @@ public class Display {
 		}else{
 			searchResults.add(ALTERNATIVE_MATCH_STRING);
 			searchResults.add(EMPTY_STRING);
-			searchResults = addStrEventToArray(searchResults, eventsAlternativeMatch);
-			searchResults = addStrTasksToArray(searchResults, tasksAlternativeMatch);
-			searchResults = addStrFTasksToArray(searchResults, floatingTasksAlternativeMatch);
+			
+			if(!eventsAlternativeMatch.isEmpty()){
+				searchResults.add(KEY_EVENTS);
+				searchResults = addStrEventToArray(searchResults, eventsAlternativeMatch);
+			}
+			
+			if(!tasksAlternativeMatch.isEmpty()){
+				searchResults.add(EMPTY_STRING);
+				searchResults.add(KEY_TASKS);
+				searchResults = addStrTasksToArray(searchResults, tasksAlternativeMatch);
+			}
+			
+			if(!floatingTasksAlternativeMatch.isEmpty()){
+				searchResults.add(EMPTY_STRING);
+				searchResults.add(KEY_FLOATING_TASKS);
+				searchResults = addStrFTasksToArray(searchResults, floatingTasksAlternativeMatch);
+			}
 		}
 		
 		if(!hasBestMatches && !hasAlternativeMatches){

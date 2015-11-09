@@ -1,6 +1,9 @@
 package Tempo.CalendarObjects;
 
 import java.util.*;
+
+import Tempo.Logic.CommandParser;
+
 import java.text.*;
 
 //@@author A0125962B
@@ -35,6 +38,7 @@ public class Task extends FloatingTask implements Comparable<Task> {
 				super.setName(newValue);
 				break;
 			case "due":
+				newValue = CommandParser.formatDate(newValue);
 				setDueDate(newValue);
 				break;
 		}

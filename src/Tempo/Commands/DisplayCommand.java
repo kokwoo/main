@@ -2,6 +2,7 @@ package Tempo.Commands;
 
 import Tempo.Logic.Display;
 
+//@@author A0125962B
 public class DisplayCommand implements Command {
 	private Display display;
 	private String displayType;
