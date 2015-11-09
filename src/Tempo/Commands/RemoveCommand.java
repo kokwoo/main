@@ -1,9 +1,9 @@
+//@@author A0127047J
 package Tempo.Commands;
 
 import Tempo.Logic.Calendar;
 import Tempo.Logic.*;
 
-//@@author A0127047J
 public class RemoveCommand implements Command {
 	private Calendar cal;
 	private IndexStore indexStore;

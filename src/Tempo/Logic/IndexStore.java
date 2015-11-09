@@ -1,3 +1,4 @@
+//@@author A0127047J
 package Tempo.Logic;
 
 import java.util.*;
@@ -7,7 +8,6 @@ import Tempo.Data.Event;
 import Tempo.Data.FloatingTask;
 import Tempo.Data.Task;
 
-//@@author A0127047J
 public class IndexStore {
 	private static IndexStore instance = new IndexStore();
 	

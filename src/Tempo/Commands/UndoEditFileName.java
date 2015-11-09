@@ -1,8 +1,8 @@
+//@@author A0125962B
 package Tempo.Commands;
 
 import Tempo.Logic.Calendar;
 
-//@@author A0125962B
 public class UndoEditFileName implements Command {
 	private static Calendar cal = Calendar.getInstance();
 	private static final String CMD_UNDO = "undo <rename file as %1$s>";
