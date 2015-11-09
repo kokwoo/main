@@ -1,9 +1,9 @@
+//@@author A0125962B
 package Tempo.Commands;
 
 import Tempo.Logic.Calendar;
 import Tempo.Logic.*;
 
-//@@author A0125962B
 public class ToggleDoneCommand implements Command {
 	private Calendar cal;
 	private IndexStore indexStore;

@@ -1,3 +1,4 @@
+//@@author A0127047J
 package Tempo.Commands;
 
 import java.util.*;
@@ -5,7 +6,6 @@ import java.util.*;
 import Tempo.Data.*;
 import Tempo.Logic.Calendar;
 
-//@@author A0127047J
 public class UndoClear implements Command {
 	private static Calendar cal = Calendar.getInstance();
 	

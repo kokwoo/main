@@ -1,3 +1,4 @@
+//@@author A0127047J
 package Tempo.Logic;
 
 import java.io.*;
@@ -23,7 +24,6 @@ public class Calendar {
 
 	private static final String MSG_WARNING_CLASH = "Warning: this event clashes with another event.\n"
 			+ "Enter 'undo' if you would like to revoke the previous " + "operation.";
-	private static final String MSG_WARNING_RECUR_WITHOUT_DUE = "Warning: Unable to recur floating task!";
 	private static final String MSG_ERROR_INVALID_FIELD = "Error: You have input an invalid field.\n"
 			+ "Pleae refer to the 'help' menu for reference.";
 
@@ -82,8 +82,6 @@ public class Calendar {
 	private static final String PARAM_DUE = "due";
 	private static final String PARAM_REPEAT = "repeat";
 	private static final String PARAM_RECURRING = "recurring";
-
-	private static final String PARAM_DUMMY_DATE = "01/01/1990";
 
 	private static final String KEY_BEST_MATCHES = "bestMatches";
 	private static final String KEY_ALTERNATIVE_MATCHES = "alternativeMatches";
@@ -1306,10 +1304,6 @@ public class Calendar {
 		return index;
 	}
 
-	private boolean isEvent(int id) {
-		return indexStore.isEvent(id);
-	}
-
 	private boolean isFloatingTask(int id) {
 		return indexStore.isFloatingTask(id);
 	}
@@ -1571,12 +1565,6 @@ public class Calendar {
 		SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy");
 		df.setLenient(false);
 		return df.parse(dateString);
-	}
-
-	private String formatDate(Date date) {
-		SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy");
-		df.setLenient(false);
-		return df.format(date);
 	}
 
 	private String formatDateMilli(long date) {
