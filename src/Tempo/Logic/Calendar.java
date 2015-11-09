@@ -462,7 +462,7 @@ public class Calendar {
 	}
 	
 	private void addNewUndoAdd(int index, boolean isEvent, boolean isTask, 
-			   boolean isSeries ) {
+			   				   boolean isSeries ) {
 		if (!isUpdateRecurringCmd) {
 			Command newUndo = (Command) new UndoAdd(index, isEvent, isTask, isSeries);
 			undoHistory.add(newUndo);
@@ -585,7 +585,7 @@ public class Calendar {
 	}
 	
 	private void addNewUndoRemoveRecurr(ArrayList<CalendarObject> prevList, 
-	        boolean isEventsSeries) {
+	        							boolean isEventsSeries) {
 		if (!isUpdateRecurringCmd) {
 			Command newUndo = (Command) new UndoRemove(prevList, true);
 			undoHistory.add(newUndo);
@@ -877,7 +877,7 @@ public class Calendar {
 	}
 	
 	private void addNewUndoUpdateRecurr(ArrayList<CalendarObject> prevList, 
-			boolean isEventsSeries) {
+										boolean isEventsSeries) {
 		Command newUndo = (Command) new UndoUpdate(prevList, isEventsSeries);
 		undoHistory.add(newUndo);
 	}
@@ -1101,7 +1101,6 @@ public class Calendar {
 		undoHistory.add(cmd);
 	}
 
-	/***** REDO COMMAND EXECUTION ******/
 	public Result redo() {
 		if (redoHistory.isEmpty()) {
 			return new Result(CMD_REDO, false, null);
@@ -1122,7 +1121,6 @@ public class Calendar {
 		}
 	}
 
-	/***** SEARCH COMMAND EXECUTION ******/
 
 	//@@author A0125962B
 	public Result search(String arguments) {
@@ -1258,8 +1256,6 @@ public class Calendar {
 
 		return returnHashMap;
 	}
-
-	/***** OTHER METHODS ******/
 
 	public ArrayList<CalendarObject> getEventsList() {
 		return eventsList;
