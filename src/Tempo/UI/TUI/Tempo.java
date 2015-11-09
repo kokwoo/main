@@ -1,4 +1,4 @@
-package Tempo.TUI;
+package Tempo.UI.TUI;
 
 import java.text.*;
 import java.util.*;
