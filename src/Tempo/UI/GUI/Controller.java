@@ -1,4 +1,4 @@
-package Tempo.GUI;
+package Tempo.UI.GUI;
 //@@author A0145073L
 /**	
  * 

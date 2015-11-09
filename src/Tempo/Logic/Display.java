@@ -601,6 +601,7 @@ public class Display {
 		return todayString;
 	}
 	
+	//@@author A0125962B
 	public String formatSearchResults(ArrayList<CalendarObject> eventsBestMatch, ArrayList<CalendarObject> eventsAlternativeMatch, ArrayList<CalendarObject>tasksBestMatch, ArrayList<CalendarObject>tasksAlternativeMatch, ArrayList<CalendarObject>floatingTaskBestMatch, ArrayList<CalendarObject>floatingTasksAlternativeMatch){
 		ArrayList<String> searchResults = new ArrayList<String>();
 		
@@ -679,6 +680,7 @@ public class Display {
 		return s;
 	}
 	
+	//@@author A0125303X
 	public static String getManual(){
 		String manual = "";
 		// INTRO
