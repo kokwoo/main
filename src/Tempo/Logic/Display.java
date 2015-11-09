@@ -6,11 +6,11 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 
-import Tempo.CalendarObjects.CalendarObject;
-import Tempo.CalendarObjects.Event;
-import Tempo.CalendarObjects.FloatingTask;
-import Tempo.CalendarObjects.Task;
 import Tempo.Commands.Result;
+import Tempo.Data.CalendarObject;
+import Tempo.Data.Event;
+import Tempo.Data.FloatingTask;
+import Tempo.Data.Task;
 
 public class Display {
 	private Calendar cal = Calendar.getInstance();

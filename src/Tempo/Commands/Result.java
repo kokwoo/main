@@ -1,13 +1,11 @@
+//@@author A0125962B
 package Tempo.Commands;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import Tempo.CalendarObjects.CalendarObject;
-import Tempo.CalendarObjects.Event;
-import Tempo.CalendarObjects.FloatingTask;
+import Tempo.Data.*;
 
-//@@author A0125962B
 public class Result {
 	private String cmdPeformed;
 	private String warning;

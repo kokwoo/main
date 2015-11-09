@@ -1,4 +1,5 @@
-package Tempo.CalendarObjects;
+//@@author A0125962B
+package Tempo.Data;
 
 import java.util.*;
 
@@ -6,7 +7,6 @@ import Tempo.Logic.CommandParser;
 
 import java.text.*;
 
-//@@author A0125962B
 public class Task extends FloatingTask implements Comparable<Task> {
 	protected Date _dueDate;
 	private static final String DELIMETER = "!!";

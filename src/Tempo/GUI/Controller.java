@@ -1,6 +1,8 @@
-package Tempo.UI;
+package Tempo.GUI;
 
-/**	@author ashish juneja
+/**	@author A0145073L
+ * 
+ *  ashish juneja
  *  Direct questions, issue tracker requests to howhow71@github
  * 	Controller Class for Tempo.UI.
  *  The user interface is stored in a Controller-View pattern.
@@ -8,18 +10,17 @@ package Tempo.UI;
  *  The view's layout is designed in the XML (temp.xml)
  *  The Controller inflates the view and handles events.
  *  
- *  References: 
  * 
  */
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import Tempo.CalendarObjects.CalendarObject;
-import Tempo.CalendarObjects.Event;
-import Tempo.CalendarObjects.FloatingTask;
-import Tempo.CalendarObjects.Task;
 import Tempo.Commands.Result;
+import Tempo.Data.CalendarObject;
+import Tempo.Data.Event;
+import Tempo.Data.FloatingTask;
+import Tempo.Data.Task;
 import Tempo.Logic.Calendar;
 import Tempo.Logic.Display;
 import Tempo.Logic.RequestHandler;
@@ -752,7 +753,11 @@ public class Controller {
 
 	}
 
-
+	/**
+	 * populate table with query results
+	 * @param page
+	 * @param result
+	 */
 	private void populateSearchEvents(Page page,Result result) {
 		//ArrayList<Event> userEvents = calendar.getEventsList();
 		ArrayList<CalendarObject> userCalendarObjects = result.getResults().get(KEY_EVENTS_BEST_MATCHES);
@@ -775,7 +780,11 @@ public class Controller {
 		
 	}
 
-
+	/**
+	 * Get tasks from search query
+	 * @param page
+	 * @param result
+	 */
 	private void populateSearchTasks(Page page,Result result) {
 		//ArrayList<Event> userEvents = calendar.getEventsList();
 		ArrayList<CalendarObject> userCalendarObjects = result.getResults().get(KEY_TASKS_BEST_MATCHES);
@@ -803,7 +812,9 @@ public class Controller {
 	}
 
 
-
+	/**
+	 * Links table to TableEvents
+	 */
 	private void setAttributes() {
 
 		id.setCellValueFactory(new PropertyValueFactory<TableEntry,String>("index"));
@@ -863,6 +874,10 @@ public class Controller {
 
 
 	}	
+	
+	/**
+	 * Initialize search boxes in each tab 
+	 */
 
 	private void populateInputBoxes() {
 		inputBoxes = new ArrayList<ComboBox>();
@@ -875,6 +890,10 @@ public class Controller {
 		inputBoxes.add(helpInputBox);
 		helpInputBox.setValue("Enter any key to go to exit");
 	}
+	
+	/**
+	 * Populate Tables in each tab
+	 */
 
 	private void populateViews() {
 		views = new ArrayList<TableView>();
@@ -886,6 +905,9 @@ public class Controller {
 		views.add(searchTable);
 
 	}
+	/**
+	 * Populate user views for all tabs
+	 */
 	private void populateUserViews() {
 		userviews = new ArrayList<Text>();
 		userviews.add(viewAll);
@@ -897,6 +919,9 @@ public class Controller {
 
 
 	}
+	/**
+	 * Populate consoles for each tab
+	 */
 	private void populateConsoles() {
 		consoles = new ArrayList<TextField>();
 		consoles.add(consoleAll);
@@ -907,7 +932,9 @@ public class Controller {
 		consoles.add(consoleSearch);
 
 	}
-
+	/**
+	 * Populate status
+	 */
 	private void populateStatus() {
 		status = new ArrayList<Text>();
 		status.add(statusMissed);
@@ -918,6 +945,10 @@ public class Controller {
 		status.add(statusAll);
 	}
 	
+	
+	/**
+	 * Initialize all gui components, for every tab.
+	 */
 	private void initGuiComponents() {
 		populateInputBoxes();
 		populateViews();
@@ -925,6 +956,9 @@ public class Controller {
 		populateConsoles();
 		populateStatus();
 	}
+	/**
+	 * Triggered at the creation of Controller class. Initializes all views.
+	 */
 	@FXML
 	public void initialize() {
 		initGuiComponents();
@@ -944,6 +978,10 @@ public class Controller {
 		
 	}  
 
+	/**
+	 * Updates the result of a command, displays if it was executed correctly, and any error messages
+	 * @param result
+	 */
 	private void updateConsoles(Result result) {
 		String cmdPref = result.getCmdPerformed();
 		if(result.isSuccess()) {
@@ -963,7 +1001,10 @@ public class Controller {
 		}
 	}
 
-
+	/**
+	 * Populates all events, tasks, floating tasks, to a given page 
+	 * @param allPage
+	 */
 	private void populateAllPage(Page allPage) {
 		populateEvents(allPage);
 		populateTasks(allPage);
@@ -973,6 +1014,11 @@ public class Controller {
 		//		combine(allPage.entries,allPage.tableEvents);
 
 	}
+	/**
+	 * Converts an ArrayList of CalendarObjects to Event Objects
+	 * @param list
+	 * @return
+	 */
 	private ArrayList<Event> toEvents(ArrayList<CalendarObject> list) {
 		ArrayList<Event> userEvents = new ArrayList<Event>();
 		for(int i = 0; i < list.size(); i++) {
@@ -983,7 +1029,11 @@ public class Controller {
 		}
 		return userEvents;
 	}
-
+	/**
+	 * Converts an ArrayList of CalendarObjects to Task Objects
+	 * @param list
+	 * @return
+	 */
 	private ArrayList<Task> toTasks(ArrayList<CalendarObject> list) {
 		ArrayList<Task> userEvents = new ArrayList<Task>();
 		for(int i = 0; i < list.size(); i++) {
@@ -993,7 +1043,11 @@ public class Controller {
 		}
 		return userEvents;
 	}
-
+	/**
+	 * Converts an ArrayList of CalendarObjects to Floating Task Objects
+	 * @param list
+	 * @return
+	 */
 	private ArrayList<FloatingTask> toFloatingTasks(ArrayList<CalendarObject> list) {
 		ArrayList<FloatingTask> userEvents = new ArrayList<FloatingTask>();
 		for(int i = 0; i < list.size(); i++) {
@@ -1004,7 +1058,10 @@ public class Controller {
 		return userEvents;
 	}
 
-
+	/**
+	 * Populates the event field of a Page object
+	 * @param page
+	 */
 	private void populateEvents(Page page) {
 		//ArrayList<Event> userEvents = calendar.getEventsList();
 		ArrayList<CalendarObject> userCalendarObjects = calendar.getEventsList();
@@ -1017,7 +1074,10 @@ public class Controller {
 
 	}
 
-
+	/**
+	 * Populates a page with task objects
+	 * @param page
+	 */
 	private void populateTasks(Page page) {
 		ArrayList<CalendarObject> userCalendarObjects = calendar.getTasksList();
 		ArrayList<Task> userTasks = toTasks(userCalendarObjects);
@@ -1029,15 +1089,23 @@ public class Controller {
 			page.tableTasks.add(entry);
 		}
 	}
-
+	/**
+	 * Formats a floating task so that information can be stored in user table
+	 * @param t
+	 * @return
+	 */
 	private TableEntry newTableFloatingTaskEntry(FloatingTask t) {
 		TableEntry entry = new TableEntry(t.getIndex(),t.getName(),Boolean.toString(t.isDone())," "," "," "," ");
 
 		return entry;
 	}
 
-
-
+	
+	/**
+	 * Formats a task so that it can be stored in a user table
+	 * @param t
+	 * @return
+	 */
 	private TableEntry newTableTaskEntry(Task t) {
 		TableEntry entry = new TableEntry(t.getIndex(),t.getName()," "," "," ",t.getDueDateSimplified()," ");
 		return entry;
@@ -1045,7 +1113,10 @@ public class Controller {
 
 
 
-
+	/**
+	 * Populates a page with floating tasks
+	 * @param page
+	 */
 	private void populateFloatingTasks(Page page) {
 
 		//	ArrayList<FloatingTask> userFloatingTasks = calendar.getFloatingTasksList();
@@ -1065,27 +1136,45 @@ public class Controller {
 
 
 
-
+	/**
+	 * Merges the contents of two ArrayLists into a new ArrayList
+	 * @param result
+	 * @param copyOne
+	 * @param copyTwo
+	 */
 	private void coalesce(ArrayList<TableEntry> result, ArrayList<TableEntry> copyOne, ArrayList<TableEntry> copyTwo) {
 
 		combine(result,copyOne);
 		combine(result,copyTwo);
 
 	}
-
+	/**
+	 * Copies the contents of one ArrayList into another ArrayList of TableEntry Objects
+	 * @param mergedList
+	 * @param listToCopy
+	 */
 	private void combine(ArrayList<TableEntry>mergedList,ArrayList<TableEntry>listToCopy) {
 		for(int i = 0; i < listToCopy.size(); i++) {
 			mergedList.add(listToCopy.get(i));
 		}
 
 	}
-
+	/**
+	 * Formats an event so that it can be inserted into a user table
+	 * @param e
+	 * @return
+	 */
 	public TableEntry newTableEventEntry(Event e) {
 		TableEntry entry = new TableEntry(e.getIndex(),e.getName()," ",e.getStartDate(),e.getStartTime(),e.getEndDate(),e.getEndTime());
 		return entry;
 	}
 
-
+	/**
+	 * Helper method to fill events into a page
+	 * @param page
+	 * @param schedule
+	 * @return
+	 */
 	private Page fillEvents(Page page,ArrayList<Event> schedule) {
 
 		for(int i = 0; i < schedule.size(); i++) {
@@ -1096,7 +1185,12 @@ public class Controller {
 
 	}
 
-
+	/**
+	 * Helper method to fill floating tasks into a page
+	 * @param page
+	 * @param schedule
+	 * @return
+	 */
 	private Page fillFloatingTasks(Page page,ArrayList<FloatingTask> schedule) {
 
 		for(int i = 0; i < schedule.size(); i++) {
@@ -1108,7 +1202,12 @@ public class Controller {
 	}
 
 
-
+	/**
+	 * Helper method to fill tasks into a page
+	 * @param page
+	 * @param schedule
+	 * @return
+	 */
 	private Page fillTasks(Page page,ArrayList<Task> schedule) {
 
 		for(int i = 0; i < schedule.size(); i++) {
@@ -1118,6 +1217,10 @@ public class Controller {
 		return page;
 
 	}
+	/**
+	 * Sets all userviews to a given input text
+	 * @param view
+	 */
 	private void setViews(String view) {
 		String currView = "Viewing: " + view;
 		for(int i = 0; i < userviews.size(); i++) {
@@ -1125,12 +1228,20 @@ public class Controller {
 
 		}
 	}
-	
+	/**
+	 * Calculates the number of missed tasks in the users schedule
+	 * @return
+	 */
 	private int getNumberOfMissedTasks() {
 		Result missed = Display.getInstance().getMissedTasks();
 		ArrayList<CalendarObject> missedTasks = missed.getResults().get(GET_TASKS);
 		return missedTasks.size();
 	}
+	
+	/**
+	 * Calculated the number of upcoming tasks and events
+	 * @return
+	 */
 	private int getNumberOfUpcomingTasks() {
 		Result todayEvents = Display.getInstance().getEventsToday();
 		ArrayList<CalendarObject> today = todayEvents.getResults().get(GET_EVENTS);
@@ -1139,7 +1250,11 @@ public class Controller {
 		ArrayList<CalendarObject> todaysTasks = tasks.getResults().get(GET_TASKS);
 		return today.size() + todaysTasks.size();
 	}
-
+	/**
+	 * Sets the number of upcoming tasks and missed tasks
+	 * @param missed
+	 * @param upcoming
+	 */
 	private void setStatus(int missed, int upcoming) {
 		String displayStatus = "missed "  + missed + ": " + " today: " + upcoming;
 		for(int i = 0; i < status.size(); i++) {

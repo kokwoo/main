@@ -1,3 +1,4 @@
+//@@author A0127047J
 package Tempo.Commands;
 
 import java.util.*;
@@ -5,7 +6,6 @@ import java.text.*;
 import Tempo.Logic.Calendar;
 import Tempo.Logic.*;
 
-//@@author A0127047J
 public class AddCommand implements Command {
 	private Calendar cal;
 	private ArrayList<String> cmdArgs;
@@ -24,9 +24,6 @@ public class AddCommand implements Command {
 	private static final String STR_EMPTY = "";
 	
 	private static final String INVALID_DATE = "Error: Date(s) entered is invalid!";
-	private static final String END_EARLIER_STRING = 
-			"Error: End time is earlier than start time!";
-	private static final String BLANK = "";
 	
 	private DateFormat dateTimeFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm");
 	private DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");

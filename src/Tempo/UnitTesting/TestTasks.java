@@ -5,7 +5,7 @@ import static org.junit.Assert.*;
 import org.junit.After;
 import org.junit.Test;
 
-import Tempo.CalendarObjects.Task;
+import Tempo.Data.Task;
 
 public class TestTasks {
 

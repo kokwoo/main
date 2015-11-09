@@ -1,11 +1,11 @@
-package Tempo.CalendarObjects;
+//@@author A0125962B
+package Tempo.Data;
 
 import java.text.*;
 import java.util.*;
 
 import Tempo.Logic.CommandParser;
 
-//@@author A0125962B
 public class Event implements CalendarObject, Comparable<Event>{
 	protected Date startDateTime;
 	protected Date endDateTime;

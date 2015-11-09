@@ -1,6 +1,6 @@
-package Tempo.CalendarObjects;
-
 //@@author A0125962B
+package Tempo.Data;
+
 public class FloatingTask implements CalendarObject{
 	protected String name;
 	protected boolean done;

@@ -5,8 +5,8 @@ import static org.junit.Assert.*;
 import org.junit.After;
 import org.junit.Test;
 
-import Tempo.CalendarObjects.FloatingTask;
-import Tempo.CalendarObjects.Task;
+import Tempo.Data.FloatingTask;
+import Tempo.Data.Task;
 
 public class TestFloatingTask {
 
