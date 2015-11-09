@@ -186,7 +186,7 @@
                         <Font size="16.0" />
                      </font>
                   </Text>
-                  <Text layoutX="238.0" layoutY="278.0" strokeType="OUTSIDE" strokeWidth="0.0" text="flag reoccuring : &lt; &gt;" wrappingWidth="514.7294921875" />
+                  <Text layoutX="238.0" layoutY="278.0" strokeType="OUTSIDE" strokeWidth="0.0" text="flag repeat : &lt; add event xxxxxxx repeat daily &gt;" wrappingWidth="514.7294921875" />
                </children>
             </AnchorPane>
          </content>

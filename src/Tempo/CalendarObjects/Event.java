@@ -3,6 +3,8 @@ package Tempo.CalendarObjects;
 import java.text.*;
 import java.util.*;
 
+import Tempo.Logic.CommandParser;
+
 //@@author A0125962B
 public class Event implements CalendarObject, Comparable<Event>{
 	protected Date startDateTime;
@@ -36,15 +38,19 @@ public class Event implements CalendarObject, Comparable<Event>{
 				setName(newValue);
 				break;
 			case PARAM_START_DATE:
+				newValue = CommandParser.formatDate(newValue);
 				setStartDate(newValue);
 				break;
 			case PARAM_START_TIME:
+				newValue = CommandParser.formatTime(newValue);
 				setStartTime(newValue);
 				break;
 			case PARAM_END_DATE:
+				newValue = CommandParser.formatDate(newValue);
 				setEndDate(newValue);
 				break;
 			case PARAM_END_TIME:
+				newValue = CommandParser.formatTime(newValue);
 				setEndTime(newValue);
 				break;
 		}
