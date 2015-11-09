@@ -1,6 +1,6 @@
 package Tempo.GUI;
-
-/**	@author A0145073L
+//@@author A0145073L
+/**	
  * 
  *  ashish juneja
  *  Direct questions, issue tracker requests to howhow71@github

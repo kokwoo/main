@@ -1,15 +1,11 @@
+//@@author A0125962B
 package Tempo.Logic;
-
-import java.util.*;
 
 import Tempo.Commands.Command;
 import Tempo.Commands.Result;
 
-//@@author A0125962B
 public class RequestHandler {
 	private static RequestHandler instance = new RequestHandler();
-
-	private static final String MSG_INVALID_COMMAND = "Sorry, we are unable to process your command. Please try again.";
 
 	private CommandParser parser;
 	private Calendar calendar;
