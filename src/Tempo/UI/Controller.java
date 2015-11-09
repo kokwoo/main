@@ -1,5 +1,17 @@
 package Tempo.UI;
 
+/**	@author ashish juneja
+ *  Direct questions, issue tracker requests to howhow71@github
+ * 	Controller Class for Tempo.UI.
+ *  The user interface is stored in a Controller-View pattern.
+ *  
+ *  The view's layout is designed in the XML (temp.xml)
+ *  The Controller inflates the view and handles events.
+ *  
+ *  References: 
+ * 
+ */
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -21,6 +33,7 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
@@ -34,6 +47,56 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 
 public class Controller {
+	/**
+	 * There is no main method; Methods are called based on user events.
+	 * Therefore all the objects used need to be inflated as soon as the class 
+	 * is created and prepared in the initialize method.
+	 */
+
+	@FXML
+	Text viewAll;
+	@FXML
+	Text statusAll;
+	@FXML
+	TextField consoleAll;
+
+	@FXML
+	Text viewToday;
+	@FXML
+	Text statusToday;
+	@FXML
+	TextField consoleToday;
+
+	@FXML
+	Text viewUpcoming;
+	@FXML
+	Text statusUpcoming;
+	@FXML
+	TextField consoleUpcoming;
+
+
+	@FXML
+	Text viewMissed;
+	@FXML
+	Text statusMissed;
+	@FXML
+	TextField consoleMissed;
+
+	@FXML
+	Text viewSearch;
+	@FXML
+	Text statusSearch;
+	@FXML
+	TextField statusConsole;
+
+	@FXML
+	Text viewUndone;
+	@FXML
+	Text statusUndone;
+	@FXML
+	TextField consoleUndone;
+
+
 	@FXML
 	HBox display;
 	@FXML
@@ -75,7 +138,7 @@ public class Controller {
 	@FXML
 	TableColumn doneToday;
 
-	
+
 	@FXML
 	TableView upcomingTable;
 	@FXML
@@ -95,72 +158,72 @@ public class Controller {
 	TableColumn upcomingEndDate;
 	@FXML
 	TableColumn upcomingEndTime;
-	
+
 	@FXML
 	ComboBox inputBoxUpComing;
-	
+
 	@FXML
 	ComboBox missedInputBox;
-	
+
 	@FXML
 	TableView missedTable;
-	
+
 	@FXML
 	TableColumn missedId;
-	
+
 	@FXML
 	TableColumn missedName;
-	
+
 	@FXML
 	TableColumn missedDone;
-	
+
 	@FXML
 	TableColumn missedStartDate;
-	
+
 	@FXML
 	TableColumn missedStartTime;
-	
+
 	@FXML
 	TableColumn missedEndDate;
-	
+
 	@FXML
 	TableColumn missedEndTime;
-	
-	
-	
-//
-	
+
+
+
+	//
+
 	@FXML
 	ComboBox undoneInputBox;
-	
+
 	@FXML
 	TableView undoneTable;
-	
+
 	@FXML
 	TableColumn undoneId;
-	
+
 	@FXML
 	TableColumn undoneName;
-	
+
 	@FXML
 	TableColumn undoneDone;
-	
+
 	@FXML
 	TableColumn undoneStartDate;
-	
+
 	@FXML
 	TableColumn undoneStartTime;
-	
+
 	@FXML
 	TableColumn undoneEndDate;
-	
+
 	@FXML
 	TableColumn undoneEndTime;
 
-	
+
 	@FXML
 	TabPane tabView;
-	
+
 	@FXML
 	TableView searchTable;
 	@FXML
@@ -179,210 +242,289 @@ public class Controller {
 	TableColumn searchEndDate;
 	@FXML
 	TableColumn searchEndTime;
-	
+	@FXML
+	ComboBox helpInputBox;
+	@FXML
+	TextField consoleSearch;
 	RequestHandler tempRH;
 	Calendar calendar;
 	String view  = "all";
 	ArrayList<ComboBox> inputBoxes;
 	ArrayList<TableView> views;
-	
-	
-	
+	ArrayList<Text> userviews;
+	ArrayList<Text> status;
+	ArrayList<TextField> consoles;
+	private static final String KEY_BEST_MATCHES = "bestMatches";
+	private static final String KEY_ALTERNATIVE_MATCHES = "alternativeMatches";
+	private static final String KEY_EVENTS_BEST_MATCHES = "eventsBestMatches";
+	private static final String KEY_EVENTS_ALTERNATIVE_MATCHES = "eventsAlternativeMatches";
+	private static final String KEY_TASKS_BEST_MATCHES = "tasksBestMatches";
+	private static final String KEY_TASKS_ALTERNATIVE_MATCHES = "tasksAlternativeMatches";
+	private static final String KEY_FLOATING_TASKS_BEST_MATCHES = "floatingTasksBestMatches";
+	private static final String KEY_FLOATING_TASKS_ALTERNATIVE_MATCHES = "floatingTasksAlternativeMatches";
+	private static final Integer ALL_TAB = 0;
+	private static final Integer TODAY_TAB = 1;
+	private static final Integer UPCOMING_TAB = 2;
+	private static final Integer MISSED_TAB = 3;
+	private static final Integer UNDONE_TAB = 4;
+	private static final Integer SEARCH_TAB = 5;
+	private static final Integer HELP_TAB = 6;
+	private static final String CHANGE_VIEW_HELP_TAB = "help";
+	private static final String SHORTCUT_DISPLAY_TASKS = "tsk";
+	private static final String SHORTCUT_DISPLAY_FLOATING_TASKS = "flt";
+	private static final String SHORTCUT_DISPLALY_EVENTS = "evt";
+	private static final String CHANGE_VIEW_MISSED_TAB = "m";
+	private static final String CHANGE_VIEW_ALL_TAB = "all";
+	private static final String CHANGE_VIEW_UPCOMING_TAB = "up";
+	private static final String CHANGE_VIEW_TODAY_TAB = "td";
+	private static final String CHANGE_VIEW_UNDONE_TAB = "ud";
+	private static final String SEARCH_CMD = "search";
+	private static final String SHORTCUT_DISPLAY_ALL = "view all";
+	private static final String VIEW_TASKS = "task";
+	private static final String VIEW_EVENTS = "event";
+	private static final String VIEW_FLOATING_TASKS = "float";
+	private static final String GET_TASKS = "Tasks";
+	private static final String GET_EVENTS = "Events";
+	private static final String NOT_SUCCESSFUL = " : not succsesful";
+	private static final String SUCCESSFUL = ": succesful";
+	Result query;
+	/**
+	 * 
+	 * @return Search box the user is currently viewing
+	 */
 	public ComboBox getCurrentSearchBox() {
 		int currTab = getCurrentTab();
 		ComboBox currentBox = inputBoxes.get(currTab);
 		return currentBox;	
 	}
 
-
+	/**
+	 * 
+	 * @return Tab the user is currently viewing
+	 */
 	public int getCurrentTab() {
 		SingleSelectionModel<Tab> selected = tabView.getSelectionModel();	
 		return selected.getSelectedIndex();
 	}
-	
+	/**
+	 * Refreshes the users view. Triggered when ObservableList of TableEntries Changes
+	 * @param currPage 
+	 * @param view
+	 */
 	private void refresh(Page currPage,String view) {
 		SingleSelectionModel<Tab> selected = tabView.getSelectionModel();
-		selected.select(5);
-	
-		ObservableList<TableEntry> events = FXCollections.observableArrayList(currPage.entries);
-		TableView currentTable = views.get(5);
+		selected.select(SEARCH_TAB);
+		ObservableList<TableEntry> events = determineView(currPage,view);
+		TableView currentTable = views.get(SEARCH_TAB);
 		currentTable.setItems(events);		
 		currentTable.refresh();
-		
+		setViews(view);
+		int numberOfMissed = getNumberOfMissedTasks();
+		int numberOfUpComing = getNumberOfUpcomingTasks();
+		setStatus(numberOfMissed,numberOfUpComing);
 	}
-	
-	private void refresh(String view) {
-		System.out.println("VIEW " + view);
-		SingleSelectionModel<Tab> selected = tabView.getSelectionModel();
-		int currIndex = selected.getSelectedIndex();
-		Page currPage = null;
-		
-		if(currIndex == 0 ) {
-		
-			currPage = new Page();
-			populateAllPage(currPage);
-			System.out.println(currPage.entries.size());
+
+	/**
+	 * Filters between events, tasks, and floating task depending on current view
+	 * @param currPage
+	 * @param view
+	 * @return
+	 */
+	private ObservableList<TableEntry> determineView(Page currPage,String view) {		
+		ObservableList<TableEntry> events = null;
+		if(view.equals(VIEW_TASKS)) {
+			events = FXCollections.observableArrayList(currPage.tableTasks);
+		}
+		else if(view.equals(VIEW_EVENTS)) {
+			events = FXCollections.observableArrayList(currPage.tableEvents);
+
+		}
+		else if (view.equals(VIEW_FLOATING_TASKS)) {
+			events = FXCollections.observableArrayList(currPage.tableFloatingTasks);
 			
 		}
 
-		else if (currIndex == 1) {
+		else if (view.equals(CHANGE_VIEW_ALL_TAB)) {
+			events = FXCollections.observableArrayList(currPage.entries);
+		}
+		else {
+			events = FXCollections.observableArrayList(currPage.entries);
+		}
+
+		return events;
+
+	}
+	
+	/**
+	 * Refreshes the users current view table based on a triggered change in the ObservableList of TableEntries
+	 * @param view
+	 */
+	private void refresh(String view) {
+		SingleSelectionModel<Tab> selected = tabView.getSelectionModel();
+		int currIndex = selected.getSelectedIndex();
+		Page currPage = null;
+		setViews(view);
+		int numberOfMissed = getNumberOfMissedTasks();
+		int numberOfUpComing = getNumberOfUpcomingTasks();
+		setStatus(numberOfMissed,numberOfUpComing);
+		tempRH = RequestHandler.getInstance();
+		currPage = determineCurrentPage(currIndex);
+		calendar = tempRH.getCalendar();
+		ObservableList<TableEntry> events = determineView(currPage,view);
+		TableView currentTable = views.get(currIndex);
+		currentTable.setItems(events);		
+		currentTable.refresh();
+	}
+	/**
+	 * Determines the current page the user is viewing
+	 * @param currIndex
+	 * @return
+	 */
+	private Page determineCurrentPage(int currIndex) {
+
+		Page currPage;
+		if(currIndex == ALL_TAB ) {
+
+			currPage = new Page();
+			populateAllPage(currPage);
+			System.out.println(currPage.entries.size());
+
+		}
+
+		else if (currIndex == TODAY_TAB) {
 
 			currPage = new Page();
 			populateTodayPage(currPage);	
 		}
-		
-		else if (currIndex == 2) {
+
+		else if (currIndex == UPCOMING_TAB) {
 
 			currPage = new Page();
 			populateUpcommingPage(currPage);	
 		}
 
-		else if(currIndex == 3) {
+		else if(currIndex == MISSED_TAB) {
+			System.out.println("***POPULATING MISSED*****");
 			currPage = new Page();
 			populateMissedPage(currPage);
+			System.out.println("SIZE OF TASKS : " + currPage.tableTasks);
+			//   System.exit(0);
 		}
-		
-		else if(currIndex == 4) {
+
+		else if(currIndex ==  UNDONE_TAB) {
 			currPage = new Page();
 			populateUndonePage(currPage);
-				
-		}
-		
-		
-		tempRH = RequestHandler.getInstance();
-		calendar = tempRH.getCalendar();
 
-
-
-		
-
-		ObservableList<TableEntry> events;
-		if(view.equals("task")) {
-			events = FXCollections.observableArrayList(currPage.tableTasks);
-			System.out.println("SIZE OF " + currPage.tableTasks.size());
-			System.out.println("DISPLAY TASKS");
-		}
-		else if(view.equals("event")) {
-			System.out.println("DISPLAY EVENTS");
-			events = FXCollections.observableArrayList(currPage.tableEvents);
-			System.out.println("SIZE OF " + currPage.tableEvents.size());
-
-
-		}
-		else if (view.equals("float")) {
-			System.out.println("DISPLAY FLOAT");
-			System.out.println("SIZE OF " + currPage.tableFloatingTasks.size());
-			events = FXCollections.observableArrayList(currPage.tableFloatingTasks);
-		}
-		else if(view.equals("all")){
-			
-			System.out.println("CURR PGE " + currPage.entries);
-			System.out.println("displaying all");
-			System.out.println("currPage.entries size : \t" + currPage.entries.size());
-			//System.exit(0);
-			events = FXCollections.observableArrayList(currPage.entries);
-			events = FXCollections.observableArrayList(currPage.entries);
 		}
 		else {
-			System.out.println("currPage.entries size : \t" + currPage.entries.size());
-			events = FXCollections.observableArrayList(currPage.entries);
+
+			currPage = new Page();
+			populateAllPage(currPage);
+			System.out.println(currPage.entries.size());
+
+
 		}
-
-
-		System.out.println("TABLE ENTRY EVENTS SIZE " + events.size());
-
-		setAttributes();
-
-		TableView currentTable = views.get(currIndex);
-		currentTable.setItems(events);		
-		currentTable.refresh();
-		//inputBox.setValue("add event do something from 10/10/2015 at 10:00 to 10/11/2015 at 11:00");
+		return currPage;
 	}
-	
-	
-	
-	
-	
+
+
+	/**
+	 * Populates a Page Object with Upcoming Events
+	 * @param currPage
+	 */
 	private void populateUpcommingPage(Page currPage) {
 		// TODO Auto-generated method stub
 		populateUpCommingEvents(currPage);
 		populateUpCommingTasks(currPage);
 		coalesce(currPage.entries,currPage.tableEvents,currPage.tableTasks);
 		System.out.println("UPCOMING CURR PAGE ENTRIES: " + currPage.entries.size());
-		
+
 	}
-	
-	/**System.out.println("SIZE TODAYS TASK" + Display.getInstance().getTasksToday());
-		Result todaysCalendarObjects = Display.getInstance().getTasksToday();
-		ArrayList<CalendarObject> todaysTasksCalendarObjects = todaysCalendarObjects.getResults().get("Tasks");
-		ArrayList<Task> todaysTasks = toTasks(todaysTasksCalendarObjects);
-		fillTasks(currPage,todaysTasks);
-	 * 
-	 * 
+
+
+	/**
+	 * Populates a Page with missed events
 	 * @param currPage
 	 */
-
-	
-	
-	
-	
 	private void populateMissedPage(Page currPage) {
 		populateMissedTasks(currPage);
-		combine(currPage.entries,currPage.tableEvents);
+		combine(currPage.entries,currPage.tableTasks);
+	
 	}
-
+	/**
+	 * Populates a page with undone tasks
+	 * @param currPage
+	 */
 	private void populateUndoneTasks(Page currPage) {
 		// TODO Auto-generated method stub
-		
+
 		Result CalendarObjects = Display.getInstance().getUndoneFloatingTasks();
 		ArrayList<CalendarObject> todaysTasksCalendarObjects = CalendarObjects.getResults().get("Tasks");
 		ArrayList<FloatingTask> todaysTasks = toFloatingTasks(todaysTasksCalendarObjects);
 		fillFloatingTasks(currPage,todaysTasks);
-		
+
 	}
 	
+	/**
+	 * Populates a page with undone events, tasks, and floating tasks
+	 * @param currPage
+	 */
 	private void populateUndonePage(Page currPage) {
 		// TODO Auto-generated method stub
 		populateUndoneTasks(currPage);
 		combine(currPage.entries,currPage.tableFloatingTasks);
-		
+
 	}
-	
+
+	/**
+	 * Populates a page with missed tasks
+	 * @param currPage
+	 */
 	private void populateMissedTasks(Page currPage) {
 		// TODO Auto-generated method stub
-	
+
 		Result CalendarObjects = Display.getInstance().getMissedTasks();
 		ArrayList<CalendarObject> todaysTasksCalendarObjects = CalendarObjects.getResults().get("Tasks");
 		ArrayList<Task> todaysTasks = toTasks(todaysTasksCalendarObjects);
 		fillTasks(currPage,todaysTasks);
-		
+
 	}
-	
-	
-	
-	
-	
+
+
+
+
+	/**
+	 * Populates a page with upcoming tasks
+	 * @param currPage
+	 */
 	private void populateUpCommingTasks(Page currPage) {
 		// TODO Auto-generated method stub
-	
+
 		Result CalendarObjects = Display.getInstance().getUpcomingTasks();
 		ArrayList<CalendarObject> todaysTasksCalendarObjects = CalendarObjects.getResults().get("Tasks");
 		ArrayList<Task> todaysTasks = toTasks(todaysTasksCalendarObjects);
 		fillTasks(currPage,todaysTasks);
-		
-	}
 
+	}
+	
+	/**
+	 * Populates a page with upcoming events
+	 * @param currPage
+	 */
 	private void populateUpCommingEvents(Page currPage) {
 		// TODO Auto-generated method stub
-		
+
 		Result todaysCalendarObjects = Display.getInstance().getEventsToday();
-		ArrayList<CalendarObject> todaysTasksCalendarObjects = todaysCalendarObjects.getResults().get("Events");
+		ArrayList<CalendarObject> todaysTasksCalendarObjects = todaysCalendarObjects.getResults().get(GET_EVENTS);
 		ArrayList<Event> upComingTasks = toEvents(todaysTasksCalendarObjects);
 		fillEvents(currPage,upComingTasks);
 		//fillEvent(currPage,upComingTasks);
 	}
 
-	
+	/**
+	 * Populates a page with events and tasks due today
+	 * @param currPage
+	 */
 	private void populateTodayPage(Page currPage) {
 		// TODO Auto-generated method stub
 		populateTodaysEvents(currPage);
@@ -392,173 +534,275 @@ public class Controller {
 
 
 	}
-	
-	
+
+	/**
+	 * Populates a page with todays tasks
+	 * @param currPage
+	 */
 	private void populateTodaysTasks(Page currPage) {
-		
+
 		Result todaysCalendarObjects = Display.getInstance().getTasksToday();
-		ArrayList<CalendarObject> todaysTasksCalendarObjects = todaysCalendarObjects.getResults().get("Tasks");
+		ArrayList<CalendarObject> todaysTasksCalendarObjects = todaysCalendarObjects.getResults().get(GET_TASKS);
 		ArrayList<Task> todaysTasks = toTasks(todaysTasksCalendarObjects);
 		fillTasks(currPage,todaysTasks);
 	}
-
+	
+	/**
+	 * Populates a page with todays events
+	 * @param currPage
+	 */
 	private void populateTodaysEvents(Page currPage) {
-		
+
 		Result todaysEventsCalendarObjects = Display.getInstance().getEventsToday();
-		ArrayList<Event> todaysEvents = toEvents(todaysEventsCalendarObjects.getResults().get("Events"));
+		ArrayList<Event> todaysEvents = toEvents(todaysEventsCalendarObjects.getResults().get(GET_EVENTS));
 		fillEvents(currPage,todaysEvents);
 
 
 	}
+	/*
+	 * Searches for a matching calendar object and writes to table.
+	 * Called when user continues to alter his search criteria inside the search tab
+	 */
+	private boolean recursiveSearch() {
+		SingleSelectionModel<Tab> selected = tabView.getSelectionModel();
+		if(selected.getSelectedIndex() == SEARCH_TAB) {
+			processSearch(query);
+			return true;
+		}
+		return false;
+	}
 
-	
-	
-	
+
+	//add event do something from 10/10/2015 at 10:00 to 10/11/2015 at 11:00
+	/**
+	 * Handles Input from the UserInput Boxes
+	 * @param evt
+	 */
 	@FXML
 	public void handleEnterPressed(KeyEvent evt){
 		ComboBox currentBox = getCurrentSearchBox();
-		String userInput =  currentBox.getValue().toString();
-		if(evt.getCode().equals(KeyCode.ENTER)) {
-			currentBox.setValue("");
-			if(userInput.equals("all")) {
-				System.out.println("********************ALLLLLL***********************");
-				SingleSelectionModel<Tab> selected = tabView.getSelectionModel();
-				view = "all";
-				selected.select(0);
-				refresh("all");
-				return;
-			}
-			else if(userInput.equals("view all")) {
-				view = "all";
-			}
-			
-			else if(userInput.equals("td")) {
-				SingleSelectionModel<Tab> selected = tabView.getSelectionModel();
-				selected.select(1);
-
-			} 
-			else if(userInput.equals("up")) {
-				SingleSelectionModel<Tab> selected = tabView.getSelectionModel();
-				selected.select(2);
-
-			}
-			
-			else if (userInput.equals("m")) {
-				SingleSelectionModel<Tab> selected = tabView.getSelectionModel();
-				selected.select(3);
-			}
-			else if (userInput.equals("d")) {
-				SingleSelectionModel<Tab> selected = tabView.getSelectionModel();
-				selected.select(4);
-			}
-			
-			else if(userInput.equals("ud")) {
-				SingleSelectionModel<Tab> selected = tabView.getSelectionModel();
-				selected.select(4);
-			}
-			else if (userInput.equals("evt")) {
-				view = "event";
-				refresh(view);
-				return;
-			}
-			else if(userInput.equals("flt")) {
-				view = "float";
-				refresh(view);
-				return;
-			}
-			
-			else if(userInput.equals("tsk")) {
-				view = "task";
-				refresh(view);
-				return;
-			}
-			
-			
-			System.out.println("USER ENTERED : " + inputBox.getValue().toString());
-			Result userResult = tempRH.processCommand(userInput);
-			
-			if(userResult.getCmdPerformed().contains(("search"))) {
-				
-				processSearch(userResult);
-				return;
-				//System.exit(0);
-			}
-			refresh(view);
-
-			table.refresh();
-			
+		if(currentBox.getValue() == null) {
 			return;
 		}
-
-		else if(evt.getCode() == KeyCode.KP_LEFT) {
+		String userInput =  currentBox.getValue().toString();
 		
+		
+		int currentTab = tabView.getSelectionModel().getSelectedIndex();
 
+		if(evt.getCode().equals(KeyCode.ENTER)) {
+			currentBox.setValue("");
+			if(currentTab == 6) {
+				handleAll();
+				return;
+			}
+			else if(userInput.equals(CHANGE_VIEW_HELP_TAB)) {
+				changeTab(HELP_TAB);
+				currentTab = getCurrentTab();
+			}
+			else if(userInput.equals(CHANGE_VIEW_ALL_TAB)) {
+				handleAll();
+				return;
+			}
+			else if(userInput.equals(SHORTCUT_DISPLAY_ALL)) {
+				view = CHANGE_VIEW_ALL_TAB;
+				if(recursiveSearch()) {
+					return;
+				}
+				refresh(view);
+				table.refresh();
+			}
+
+			else if(userInput.equals(CHANGE_VIEW_TODAY_TAB)) {
+				changeTab(TODAY_TAB);
+				currentTab = getCurrentTab();
+				refresh(view);
+
+				table.refresh();
+			} 
+			else if(userInput.equals(CHANGE_VIEW_UPCOMING_TAB)) {
+				changeTab(UPCOMING_TAB);				
+				currentTab = getCurrentTab();
+				refresh(view);
+				table.refresh();
+			}
+
+			else if (userInput.equals(CHANGE_VIEW_MISSED_TAB)) {
+				changeTab(MISSED_TAB);
+				currentTab = getCurrentTab();
+				refresh(view);
+				table.refresh();
+			}
+
+			else if(userInput.equals(CHANGE_VIEW_UNDONE_TAB)) {
+				SingleSelectionModel<Tab> selected = tabView.getSelectionModel();
+				selected.select(UNDONE_TAB);
+				currentTab = selected.getSelectedIndex();
+				refresh(view);
+				table.refresh();
+			}
+			else if (userInput.equals(SHORTCUT_DISPLALY_EVENTS)) {
+				view = VIEW_EVENTS;
+				Boolean searchRequired = recursiveSearch();
+				if(!searchRequired) {
+					refresh(view);
+				}
+				return;
+			}
+			else if(userInput.equals(SHORTCUT_DISPLAY_FLOATING_TASKS)) {
+				view = VIEW_FLOATING_TASKS;
+				Boolean searchRequired = recursiveSearch();
+				if(!searchRequired) {
+					refresh(view);
+				}
+				return;
+			}
+
+			else if(userInput.equals(SHORTCUT_DISPLAY_TASKS)) {
+				view = VIEW_TASKS;
+				Boolean searchRequired = recursiveSearch();
+				if(!searchRequired) {
+					refresh(view);
+				}				
+				return;
+			}
+			else if(currentTab == SEARCH_TAB) {
+				Result userResult = tempRH.processCommand(userInput);
+				updateConsoles(userResult);
+				processSearch(query);
+			}
+			else {
+				System.out.println("USER ENTERED : " + userInput.toString());
+				Result userResult = tempRH.processCommand(userInput);
+				updateConsoles(userResult);
+				System.out.println("Preformed: " + userResult.getCmdPerformed());
+				if(userInput.contains(("search"))) {
+					query = userResult;
+					processSearch(userResult);
+					updateConsoles(userResult);
+					return;
+				}
+				refresh(view);
+				table.refresh();
+				return;
+			}
 		}
-
-		
-
-	
-	
 	}	
 
+	/**
+	 * Changes tab to a given index
+	 * @param index
+	 */
+	private void changeTab(int index) {
+		// TODO Auto-generated method stub
+		SingleSelectionModel<Tab> selected = tabView.getSelectionModel();
+		selected.select(index);
+
+	}
+
+	/**
+	 * Switches tab to all
+	 */
+	private void handleAll() {
+		// TODO Auto-generated method stub
+		System.out.println("********************ALLLLLL***********************");
+		SingleSelectionModel<Tab> selected = tabView.getSelectionModel();
+		view = CHANGE_VIEW_ALL_TAB;
+		selected.select(0);
+		refresh(view);
+	}
+
+	/**
+	 * Returns the result of a query, changes the users tab to search, and populates the search table with matches
+	 * @param search
+	 */
 	private void processSearch(Result search ) {
-	
+
 		Page searchPage = new Page();
 		populateSearchEvents(searchPage,search);
 		populateSearchTasks(searchPage,search);
+		populateSearchFloatingTask(searchPage,search);
 		coalesce(searchPage.entries,searchPage.tableEvents,searchPage.tableTasks);
 		combine(searchPage.entries,searchPage.tableFloatingTasks);
-		refresh(searchPage,"all");
-		
+		refresh(searchPage,view);
+
 	}
 
-	
+	/**
+	 * Populates a page with floating tasks from a query
+	 * @param page
+	 * @param result
+	 */
 	private void populateSearchFloatingTask(Page page,Result result) {
 		//ArrayList<Event> userEvents = calendar.getEventsList();
-		ArrayList<CalendarObject> userCalendarObjects = result.getResults().get("floating tasks");
-		
+		ArrayList<CalendarObject> userCalendarObjects = result.getResults().get(KEY_FLOATING_TASKS_BEST_MATCHES);
+		ArrayList<CalendarObject> alternative = result.getResults().get(KEY_FLOATING_TASKS_ALTERNATIVE_MATCHES);
 		ArrayList<FloatingTask> userFloatingTasks = toFloatingTasks(userCalendarObjects);
+		ArrayList<FloatingTask> alternativeMatches = toFloatingTasks(alternative);
+		
 		for(int i = 0; i < userFloatingTasks.size(); i++) {
 			TableEntry entry = newTableFloatingTaskEntry(userFloatingTasks.get(i));
 			page.tableFloatingTasks.add(entry);
 		}
+		
+		for(int i = 0; i < alternativeMatches.size(); i++) {
+			TableEntry entry = newTableFloatingTaskEntry(alternativeMatches.get(i));
+			page.tableFloatingTasks.add(entry);
+		}
+		
 
 	}
 
-	
+
 	private void populateSearchEvents(Page page,Result result) {
 		//ArrayList<Event> userEvents = calendar.getEventsList();
-		ArrayList<CalendarObject> userCalendarObjects = result.getResults().get("events");
-		
+		ArrayList<CalendarObject> userCalendarObjects = result.getResults().get(KEY_EVENTS_BEST_MATCHES);
+		ArrayList<CalendarObject> alternativeResults = result.getResults().get(KEY_EVENTS_ALTERNATIVE_MATCHES);
+		if(userCalendarObjects == null) {
+			return;
+		}
 		ArrayList<Event> userEvents = toEvents(userCalendarObjects);
+		ArrayList<Event> alternative = toEvents(alternativeResults);
 		for(int i = 0; i < userEvents.size(); i++) {
 			TableEntry entry = newTableEventEntry(userEvents.get(i));
 			page.tableEvents.add(entry);
 		}
 
-	}
-
-	
-	private void populateSearchTasks(Page page,Result result) {
-		//ArrayList<Event> userEvents = calendar.getEventsList();
-		ArrayList<CalendarObject> userCalendarObjects = result.getResults().get("tasks");
-	
-		ArrayList<Task> userEvents = toTasks(userCalendarObjects);
-		for(int i = 0; i < userEvents.size(); i++) {
-			TableEntry entry = newTableTaskEntry(userEvents.get(i));
+		for(int i = 0; i < alternative.size(); i++) {
+			TableEntry entry = newTableEventEntry(alternative.get(i));
 			page.tableEvents.add(entry);
-		}
+		}	
 
-	}
-	
-	
-	
-	@FXML 
-	public void handleType(KeyEvent evt) {
 		
 	}
 
-	
+
+	private void populateSearchTasks(Page page,Result result) {
+		//ArrayList<Event> userEvents = calendar.getEventsList();
+		ArrayList<CalendarObject> userCalendarObjects = result.getResults().get(KEY_TASKS_BEST_MATCHES);
+		ArrayList<CalendarObject> alternativeTasks = result.getResults().get(KEY_TASKS_ALTERNATIVE_MATCHES);
+		System.out.println("***SIZE EVENTS SEARCH " + userCalendarObjects.size());
+		ArrayList<Task> userEvents = toTasks(userCalendarObjects);
+		ArrayList<Task> alternative  = toTasks(alternativeTasks);
+		for(int i = 0; i < userEvents.size(); i++) {
+			TableEntry entry = newTableTaskEntry(userEvents.get(i));
+			page.tableTasks.add(entry);
+		}	
+
+		for(int i = 0; i < alternative.size(); i++) {
+			TableEntry entry = newTableTaskEntry(alternative.get(i));
+			page.tableTasks.add(entry);
+		}	
+		
+	}
+
+
+
+	@FXML 
+	public void handleType(KeyEvent evt) {
+
+	}
+
+
 
 	private void setAttributes() {
 
@@ -578,8 +822,8 @@ public class Controller {
 		endTimeToday.setCellValueFactory(new PropertyValueFactory<TableEntry,String>("endTime"));
 		endDateToday.setCellValueFactory(new PropertyValueFactory<TableEntry,String>("endDate"));
 		doneToday.setCellValueFactory(new PropertyValueFactory<TableEntry,String>("done"));
-		
-		
+
+
 		upcomingId.setCellValueFactory(new PropertyValueFactory<TableEntry,String>("index"));
 		upcomingName.setCellValueFactory(new PropertyValueFactory<TableEntry,String>("name"));
 		upcomingStartTime.setCellValueFactory(new PropertyValueFactory<TableEntry,String>("startTime"));
@@ -589,7 +833,7 @@ public class Controller {
 		upcomingDone.setCellValueFactory(new PropertyValueFactory<TableEntry,String>("done"));
 
 
-		
+
 
 		missedId.setCellValueFactory(new PropertyValueFactory<TableEntry,String>("index"));
 		missedName.setCellValueFactory(new PropertyValueFactory<TableEntry,String>("name"));
@@ -599,7 +843,7 @@ public class Controller {
 		missedEndDate.setCellValueFactory(new PropertyValueFactory<TableEntry,String>("endDate"));
 		missedDone.setCellValueFactory(new PropertyValueFactory<TableEntry,String>("done"));
 
-	
+
 		undoneId.setCellValueFactory(new PropertyValueFactory<TableEntry,String>("index"));
 		undoneName.setCellValueFactory(new PropertyValueFactory<TableEntry,String>("name"));
 		undoneStartTime.setCellValueFactory(new PropertyValueFactory<TableEntry,String>("startTime"));
@@ -614,16 +858,13 @@ public class Controller {
 		searchStartTime.setCellValueFactory(new PropertyValueFactory<TableEntry,String>("startTime"));
 		searchStartDate.setCellValueFactory(new PropertyValueFactory<TableEntry,String>("startDate"));
 		searchEndTime.setCellValueFactory(new PropertyValueFactory<TableEntry,String>("endTime"));
-		searchEndTime.setCellValueFactory(new PropertyValueFactory<TableEntry,String>("endDate"));
+		searchEndDate.setCellValueFactory(new PropertyValueFactory<TableEntry,String>("endDate"));
 		searchDone.setCellValueFactory(new PropertyValueFactory<TableEntry,String>("done"));
 
-		
-	}	
-	
 
-	
-	@FXML
-	public void initialize() {
+	}	
+
+	private void populateInputBoxes() {
 		inputBoxes = new ArrayList<ComboBox>();
 		inputBoxes.add(inputBox);
 		inputBoxes.add(inputBoxToday);
@@ -631,6 +872,11 @@ public class Controller {
 		inputBoxes.add(missedInputBox);
 		inputBoxes.add(undoneInputBox);
 		inputBoxes.add(searchInput);
+		inputBoxes.add(helpInputBox);
+		helpInputBox.setValue("Enter any key to go to exit");
+	}
+
+	private void populateViews() {
 		views = new ArrayList<TableView>();
 		views.add(table);
 		views.add(todayTable);
@@ -639,32 +885,92 @@ public class Controller {
 		views.add(undoneTable);
 		views.add(searchTable);
 
-		Page allPage = new Page();
+	}
+	private void populateUserViews() {
+		userviews = new ArrayList<Text>();
+		userviews.add(viewAll);
+		userviews.add(viewToday);
+		userviews.add(viewUpcoming);
+		userviews.add(viewUndone);
+		userviews.add(viewMissed);
+		userviews.add(viewSearch);
 
+
+	}
+	private void populateConsoles() {
+		consoles = new ArrayList<TextField>();
+		consoles.add(consoleAll);
+		consoles.add(consoleToday);
+		consoles.add(consoleUndone);
+		consoles.add(consoleMissed);
+		consoles.add(consoleUpcoming);
+		consoles.add(consoleSearch);
+
+	}
+
+	private void populateStatus() {
+		status = new ArrayList<Text>();
+		status.add(statusMissed);
+		status.add(statusSearch);
+		status.add(statusUndone);
+		status.add(statusUpcoming);
+		status.add(statusToday);
+		status.add(statusAll);
+	}
+	
+	private void initGuiComponents() {
+		populateInputBoxes();
+		populateViews();
+		populateUserViews();
+		populateConsoles();
+		populateStatus();
+	}
+	@FXML
+	public void initialize() {
+		initGuiComponents();
+		int numberOfMissed = getNumberOfMissedTasks();
+		int numberOfUpComing = getNumberOfUpcomingTasks();
+		setStatus(numberOfMissed,numberOfUpComing);
+		Page allPage = new Page();
 		tempRH = RequestHandler.getInstance();
 		calendar = tempRH.getCalendar();
-
-
 		populateAllPage(allPage);
-
 		ObservableList<TableEntry> events = FXCollections.observableArrayList(allPage.entries);
-		
 		setAttributes();
-
 		table.setItems(events);
-	//	inputBox.setValue("add event do something from 10/10/2015 at 10:00 to 10/11/2015 at 11:00");
+		//inputBox.setValue("add event do something from 10/10/2015 at 10:00 to 10/11/2015 at 11:00");
+		
 		table.refresh();
+		
 	}  
-	
-	
-	
+
+	private void updateConsoles(Result result) {
+		String cmdPref = result.getCmdPerformed();
+		if(result.isSuccess()) {
+			cmdPref = cmdPref + SUCCESSFUL;
+		}
+		else if(!result.isSuccess() && result.hasWarning()) {
+			
+			cmdPref = "Error : " + result.getWarning();
+		}
+		else {
+			cmdPref = cmdPref = NOT_SUCCESSFUL;
+		}
+		
+		
+		for(int i = 0; i < consoles.size(); i++) {
+			consoles.get(i).setText(cmdPref);
+		}
+	}
+
+
 	private void populateAllPage(Page allPage) {
 		populateEvents(allPage);
 		populateTasks(allPage);
 		populateFloatingTasks(allPage);
 		coalesce(allPage.entries,allPage.tableEvents,allPage.tableTasks);
 		combine(allPage.entries,allPage.tableFloatingTasks);
-//		combine(allPage.entries,allPage.tableEvents);
+		//		combine(allPage.entries,allPage.tableEvents);
 
 	}
 	private ArrayList<Event> toEvents(ArrayList<CalendarObject> list) {
@@ -672,11 +978,12 @@ public class Controller {
 		for(int i = 0; i < list.size(); i++) {
 			CalendarObject currentCalendarObject = list.get(i);
 			Event currentEvent = (Event) currentCalendarObject;
+			System.out.println("EVENT TO STRING " + currentEvent.toString());
 			userEvents.add(currentEvent);
 		}
 		return userEvents;
 	}
-	
+
 	private ArrayList<Task> toTasks(ArrayList<CalendarObject> list) {
 		ArrayList<Task> userEvents = new ArrayList<Task>();
 		for(int i = 0; i < list.size(); i++) {
@@ -686,7 +993,7 @@ public class Controller {
 		}
 		return userEvents;
 	}
-	
+
 	private ArrayList<FloatingTask> toFloatingTasks(ArrayList<CalendarObject> list) {
 		ArrayList<FloatingTask> userEvents = new ArrayList<FloatingTask>();
 		for(int i = 0; i < list.size(); i++) {
@@ -696,12 +1003,12 @@ public class Controller {
 		}
 		return userEvents;
 	}
-	
-	
+
+
 	private void populateEvents(Page page) {
 		//ArrayList<Event> userEvents = calendar.getEventsList();
 		ArrayList<CalendarObject> userCalendarObjects = calendar.getEventsList();
-		
+
 		ArrayList<Event> userEvents = toEvents(userCalendarObjects);
 		for(int i = 0; i < userEvents.size(); i++) {
 			TableEntry entry = newTableEventEntry(userEvents.get(i));
@@ -710,14 +1017,14 @@ public class Controller {
 
 	}
 
-	
+
 	private void populateTasks(Page page) {
 		ArrayList<CalendarObject> userCalendarObjects = calendar.getTasksList();
 		ArrayList<Task> userTasks = toTasks(userCalendarObjects);
-		//ArrayList<Task> userTasks = calendar.getTasksList();
 		
+
 		for(int i = 0; i < userTasks.size(); i++) {
-			
+
 			TableEntry entry = newTableTaskEntry(userTasks.get(i));
 			page.tableTasks.add(entry);
 		}
@@ -725,24 +1032,24 @@ public class Controller {
 
 	private TableEntry newTableFloatingTaskEntry(FloatingTask t) {
 		TableEntry entry = new TableEntry(t.getIndex(),t.getName(),Boolean.toString(t.isDone())," "," "," "," ");
-	
+
 		return entry;
 	}
 
-	
+
 
 	private TableEntry newTableTaskEntry(Task t) {
 		TableEntry entry = new TableEntry(t.getIndex(),t.getName()," "," "," ",t.getDueDateSimplified()," ");
 		return entry;
 	}
 
-	
-	
-	
+
+
+
 	private void populateFloatingTasks(Page page) {
 
-	//	ArrayList<FloatingTask> userFloatingTasks = calendar.getFloatingTasksList();
-	
+		//	ArrayList<FloatingTask> userFloatingTasks = calendar.getFloatingTasksList();
+
 		ArrayList<CalendarObject> userCalendarObjects = calendar.getFloatingTasksList();
 
 		ArrayList<FloatingTask> userFloatingTasks = toFloatingTasks(userCalendarObjects);
@@ -750,18 +1057,20 @@ public class Controller {
 			System.out.println("ADDING "  + userFloatingTasks.get(i) + "to tasks" );
 			TableEntry entry = newTableFloatingTaskEntry(userFloatingTasks.get(i));
 			page.tableFloatingTasks.add(entry);
+			
+			
 		}
 	} 
 
-	
-	
+
+
 
 
 	private void coalesce(ArrayList<TableEntry> result, ArrayList<TableEntry> copyOne, ArrayList<TableEntry> copyTwo) {
-		
+
 		combine(result,copyOne);
 		combine(result,copyTwo);
-		
+
 	}
 
 	private void combine(ArrayList<TableEntry>mergedList,ArrayList<TableEntry>listToCopy) {
@@ -775,8 +1084,8 @@ public class Controller {
 		TableEntry entry = new TableEntry(e.getIndex(),e.getName()," ",e.getStartDate(),e.getStartTime(),e.getEndDate(),e.getEndTime());
 		return entry;
 	}
-		
-	
+
+
 	private Page fillEvents(Page page,ArrayList<Event> schedule) {
 
 		for(int i = 0; i < schedule.size(); i++) {
@@ -798,17 +1107,43 @@ public class Controller {
 
 	}
 
-	
-	
+
+
 	private Page fillTasks(Page page,ArrayList<Task> schedule) {
 
 		for(int i = 0; i < schedule.size(); i++) {
 			TableEntry entry = newTableTaskEntry(schedule.get(i));
-			page.tableEvents.add(entry);
+			page.tableTasks.add(entry);
 		}
 		return page;
 
 	}
-		
+	private void setViews(String view) {
+		String currView = "Viewing: " + view;
+		for(int i = 0; i < userviews.size(); i++) {
+			userviews.get(i).setText(currView);
 
+		}
+	}
+	
+	private int getNumberOfMissedTasks() {
+		Result missed = Display.getInstance().getMissedTasks();
+		ArrayList<CalendarObject> missedTasks = missed.getResults().get(GET_TASKS);
+		return missedTasks.size();
+	}
+	private int getNumberOfUpcomingTasks() {
+		Result todayEvents = Display.getInstance().getEventsToday();
+		ArrayList<CalendarObject> today = todayEvents.getResults().get(GET_EVENTS);
+		
+		Result tasks = Display.getInstance().getTasksToday();
+		ArrayList<CalendarObject> todaysTasks = tasks.getResults().get(GET_TASKS);
+		return today.size() + todaysTasks.size();
+	}
+
+	private void setStatus(int missed, int upcoming) {
+		String displayStatus = "missed "  + missed + ": " + " today: " + upcoming;
+		for(int i = 0; i < status.size(); i++) {
+			status.get(i).setText(displayStatus);
+		}
+	}
 }
