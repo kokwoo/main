@@ -1,5 +1,11 @@
 package Tempo.UI;
-
+/**
+ * @author A0145073L
+ * ashish juneja
+ * Page object to store information about a TempoTab
+ * 
+ * 
+ */
 import java.util.ArrayList;
 
 public class Page {

@@ -1,5 +1,10 @@
 package Tempo.UI;
-
+/**
+ * @author A0145073l
+ * ashish
+ * Object used to store information about an entry in the user table.
+ * Contains information about events,tasks, and floating tasks
+ */
 import java.util.Date;
 
 public class TableEntry {
@@ -10,6 +15,9 @@ public class TableEntry {
 	protected String endDate;
 	protected String endTime;
 	protected int index;
+	private static final String COMPLETED_TRUE = "Yes";
+	private static final String COMPLETED_FALSE = "No";
+	
 	
 	public TableEntry() {
 		
@@ -85,10 +93,10 @@ public class TableEntry {
 	
 	public void setDone(boolean done) {
 		if(done) {
-			this.done = "Yes";
+			this.done = COMPLETED_TRUE;
 		}
 		else {
-			this.done = "No";
+			this.done = COMPLETED_FALSE;
 		}
 	}
   public String getDone() {
