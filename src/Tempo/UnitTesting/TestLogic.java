@@ -17,10 +17,12 @@ import Tempo.Logic.Display;
 import Tempo.Logic.RequestHandler;
 
 public class TestLogic {
-
+	//@@author A0125303X
 	private static final String CMD_ADD_EVENT = "add event %1$s";
 	private static final String CMD_ADD_TASK = "add task %1$s";
 	private static final String CMD_ADD_FLOATING = "add floating task %1$s";
+	private static final String CMD_ADD_RECURR_EVENT = "add recurring event %1$s";
+	private static final String CMD_ADD_RECURR_TASK = "add recurring task %1$s";
 
 	private static final String CMD_REMOVE_EVENT = "remove event %1$s";
 	private static final String CMD_REMOVE_TASK = "remove task %1$s";
@@ -69,7 +71,7 @@ public class TestLogic {
 		tryCatchAdd(pass, tempRH, event1);
 		tryCatchAdd(pass, tempRH, event2);
 		tryCatchAdd(pass, tempRH, event3);
-		// tryCatchAddEvent(pass, tempRH, event4);
+		tryCatchAdd(pass, tempRH, event4);
 		tryCatchAdd(pass, tempRH, event5);
 
 		// checker
@@ -421,7 +423,7 @@ public class TestLogic {
 
 		assertTrue(tempRH.processCommand("display all").isDisplayResult());
 		assertTrue(tempRH.processCommand("display all").isSuccess());
-
+		clearFile(tempRH);
 		// checker
 		ArrayList<String> checkerArray = new ArrayList<String>();
 		checkerArray.add("You have no event today");
@@ -459,13 +461,13 @@ public class TestLogic {
 		// past event
 		tempRH.processCommand("add event gymming from 06/11/2015 at 19:00 to 07/11/2015 at 19:00");
 		// event today
-		tempRH.processCommand("add event Dinner with mum from today at 9pm to tomorrow at 9pm");
+		tempRH.processCommand("add event Dinner with mum from 08/11/2015 at 21:00 to 09/11/2015 at 21:00");
 		// past task
 		tempRH.processCommand("add task Dinner with bf due 06/11/2015");
 		// today task
-		tempRH.processCommand("add task Dinner with gf due today");
+		tempRH.processCommand("add task Dinner with gf due 08/11/2015");
 		// upcoming task
-		tempRH.processCommand("add task Dinner with mum due tomorrow");
+		tempRH.processCommand("add task Dinner with mum due 12/12/2015");
 		// task done
 		tempRH.processCommand("add task eat due 23/12/2015");
 		tempRH.processCommand("done 6");
@@ -480,9 +482,7 @@ public class TestLogic {
 
 		// checker
 		ArrayList<String> checkerArray = new ArrayList<String>();
-		checkerArray.add("These are your events for the day");
-		checkerArray.add("");
-		checkerArray.add("1) Dinner with mum From: Sunday, 08/11/2015 21:00 To: Monday, 09/11/2015 21:00	[ID:2] ");
+		checkerArray.add("You have no event today");
 		checkerArray.add("");
 		checkerArray.add("These are the list of upcoming events");
 		checkerArray.add("");
@@ -491,6 +491,7 @@ public class TestLogic {
 		checkerArray.add("These are the list of past events");
 		checkerArray.add("");
 		checkerArray.add("1) gymming From: Friday, 06/11/2015 19:00 To: Saturday, 07/11/2015 19:00	[ID:1] ");
+		checkerArray.add("2) Dinner with mum From: Sunday, 08/11/2015 21:00 To: Monday, 09/11/2015 21:00	[ID:2] ");
 		checkerArray.add("");
 		checkerArray.add("These are the list of tasks without deadline");
 		checkerArray.add("");
@@ -504,17 +505,16 @@ public class TestLogic {
 		checkerArray.add("");
 		checkerArray.add("1) eat Due: Wednesday, 23/12/2015	[ID:6] ");
 		checkerArray.add("");
-		checkerArray.add("Tasks due today");
-		checkerArray.add("");
-		checkerArray.add("1) Dinner with gf Due: Sunday, 08/11/2015	[ID:4] ");
+		checkerArray.add("You have no task today");
 		checkerArray.add("");
 		checkerArray.add("These are the list of upcoming tasks");
 		checkerArray.add("");
-		checkerArray.add("1) Dinner with mum Due: Monday, 09/11/2015	[ID:5] ");
+		checkerArray.add("1) Dinner with mum Due: Saturday, 12/12/2015	[ID:5] ");
 		checkerArray.add("");
 		checkerArray.add("These are the tasks you missed");
 		checkerArray.add("");
 		checkerArray.add("1) Dinner with bf Due: Friday, 06/11/2015	[ID:3] ");
+		checkerArray.add("2) Dinner with gf Due: Sunday, 08/11/2015	[ID:4] ");
 		checkerArray.add("");
 
 		String checkerString = strArrayToString(checkerArray);
@@ -556,6 +556,171 @@ public class TestLogic {
 		clearFile(tempRH);
 
 	}
+	
+	@Test
+	public final void testAddRecurringEventsDialy() {
+		RequestHandler tempRH = initTempRH();
+		clearFile(tempRH);
+		
+		// checker for due date
+		ArrayList<CalendarObject> checkArray = new ArrayList<CalendarObject>();
+		Event event = new Event(0, 0, "Dinner with mum", "21/11/2015/19:00", "22/11/2015/19:00");
+		Event event1 = new Event(1, 0, "Dinner with mum", "22/11/2015/19:00", "23/11/2015/19:00");
+		Event event2 = new Event(2, 0, "Dinner with mum", "23/11/2015/19:00", "24/11/2015/19:00");
+		Event event3 = new Event(3, 0, "Dinner with mum", "24/11/2015/19:00", "25/11/2015/19:00");
+		checkArray.add(event);
+		checkArray.add(event1);
+		checkArray.add(event2);
+		checkArray.add(event3);
+
+		String cmdDueDate = String.format(CMD_ADD_RECURR_EVENT, "Dinner with mum");
+		Result tempResult1 = new Result(cmdDueDate, true, putHashMap("events", checkArray));
+
+		// Compare results object
+		ArrayList<CalendarObject> expectedArrayName = tempResult1.getResults().get("events");
+		ArrayList<CalendarObject> actualArrayName = tempRH.processCommand("add event Dinner with mum from 21/11/2015 at 19:00 to 22/11/2015 at 19:00 repeat daily till 24/11/2015 ").getResults().get("events");
+		assertEquals(actualArrayName.toString(), expectedArrayName.toString());
+		clearFile(tempRH);
+
+	}
+	
+	@Test
+	public final void testAddRecurringEventsWeekly() {
+		RequestHandler tempRH = initTempRH();
+		clearFile(tempRH);
+		
+		// checker for due date
+		ArrayList<CalendarObject> checkArray = new ArrayList<CalendarObject>();
+		Event event = new Event(0, 0, "Dinner with mum", "21/11/2015/19:00", "22/11/2015/19:00");
+		Event event1 = new Event(1, 0, "Dinner with mum", "28/11/2015/19:00", "29/11/2015/19:00");
+		Event event2 = new Event(2, 0, "Dinner with mum", "05/12/2015/19:00", "06/12/2015/19:00");
+		Event event3 = new Event(3, 0, "Dinner with mum", "12/12/2015/19:00", "13/12/2015/19:00");
+		Event event4 = new Event(4, 0, "Dinner with mum", "19/12/2015/19:00", "20/12/2015/19:00");
+		Event event5 = new Event(5, 0, "Dinner with mum", "26/12/2015/19:00", "27/12/2015/19:00");
+		checkArray.add(event);
+		checkArray.add(event1);
+		checkArray.add(event2);
+		checkArray.add(event3);
+		checkArray.add(event4);
+		checkArray.add(event5);
+
+		String cmdDueDate = String.format(CMD_ADD_RECURR_EVENT, "Dinner with mum");
+		Result tempResult1 = new Result(cmdDueDate, true, putHashMap("events", checkArray));
+
+		// Compare results object
+		ArrayList<CalendarObject> expectedArrayName = tempResult1.getResults().get("events");
+		ArrayList<CalendarObject> actualArrayName = tempRH.processCommand("add event Dinner with mum from 21/11/2015 at 19:00 to 22/11/2015 at 19:00 repeat weekly till 01/01/2016").getResults().get("events");
+		assertEquals(expectedArrayName.toString(), actualArrayName.toString());
+		clearFile(tempRH);
+
+	}
+	
+	@Test
+	public final void testAddRecurringEventsMonthly() {
+		RequestHandler tempRH = initTempRH();
+		clearFile(tempRH);
+		
+		// checker for due date
+		ArrayList<CalendarObject> checkArray = new ArrayList<CalendarObject>();
+		Event event = new Event(0, 0, "Dinner with mum", "21/11/2015/19:00", "22/11/2015/19:00");
+		Event event1 = new Event(1, 0, "Dinner with mum", "21/12/2015/19:00", "22/12/2015/19:00");
+		Event event2 = new Event(2, 0, "Dinner with mum", "21/01/2016/19:00", "22/01/2016/19:00");
+
+		checkArray.add(event);
+		checkArray.add(event1);
+		checkArray.add(event2);
+		
+
+		String cmdDueDate = String.format(CMD_ADD_RECURR_EVENT, "Dinner with mum");
+		Result tempResult1 = new Result(cmdDueDate, true, putHashMap("events", checkArray));
+
+		// Compare results object
+		ArrayList<CalendarObject> expectedArrayName = tempResult1.getResults().get("events");
+		ArrayList<CalendarObject> actualArrayName = tempRH.processCommand("add event Dinner with mum from 21/11/2015 at 19:00 to 22/11/2015 at 19:00 repeat monthly till 01/02/2016").getResults().get("events");
+		assertEquals(expectedArrayName.toString(), actualArrayName.toString());
+		clearFile(tempRH);
+
+	}
+	
+	@Test
+	public final void testAddRecurringTasksDaily() {
+		RequestHandler tempRH = initTempRH();
+		clearFile(tempRH);
+		
+		// checker for due date
+		ArrayList<CalendarObject> checkArray = new ArrayList<CalendarObject>();
+		Task task = new Task(0, 0, "Dinner with mum", "21/11/2015");
+		Task task1 = new Task(1, 0, "Dinner with mum", "22/11/2015");
+		Task  task2 = new Task(2, 0, "Dinner with mum", "23/11/2015");
+		Task task3 = new Task(3, 0, "Dinner with mum", "24/11/2015");
+		checkArray.add(task);
+		checkArray.add(task1);
+		checkArray.add(task2);
+		checkArray.add(task3);
+
+		String cmdDueDate = String.format(CMD_ADD_RECURR_TASK, "Dinner with mum");
+		Result tempResult1 = new Result(cmdDueDate, true, putHashMap("tasks", checkArray));
+
+		// Compare results object
+		ArrayList<CalendarObject> expectedArray = tempResult1.getResults().get("tasks");
+		ArrayList<CalendarObject> actualArray = tempRH.processCommand("add task Dinner with mum due 21/11/2015 repeat daily till 24/11/2015").getResults().get("tasks");
+		assertEquals(actualArray.toString(), expectedArray.toString());
+		clearFile(tempRH);
+
+	}
+	
+	@Test
+	public final void testAddRecurringTasksWeekly() {
+		RequestHandler tempRH = initTempRH();
+		clearFile(tempRH);
+		
+		// checker for due date
+		ArrayList<CalendarObject> checkArray = new ArrayList<CalendarObject>();
+		Task task = new Task(0, 0, "Dinner with mum", "21/11/2015");
+		Task task1 = new Task(1, 0, "Dinner with mum", "28/11/2015");
+		Task  task2 = new Task(2, 0, "Dinner with mum", "05/12/2015");
+
+		checkArray.add(task);
+		checkArray.add(task1);
+		checkArray.add(task2);
+
+		String cmdDueDate = String.format(CMD_ADD_RECURR_TASK, "Dinner with mum");
+		Result tempResult1 = new Result(cmdDueDate, true, putHashMap("tasks", checkArray));
+
+		// Compare results object
+		ArrayList<CalendarObject> expectedArray = tempResult1.getResults().get("tasks");
+		ArrayList<CalendarObject> actualArray = tempRH.processCommand("add task Dinner with mum due 21/11/2015 repeat weekly till 12/12/2015").getResults().get("tasks");
+		assertEquals(actualArray.toString(), expectedArray.toString());
+		clearFile(tempRH);
+
+	}
+	
+	@Test
+	public final void testAddRecurringTasksMonthly() {
+		RequestHandler tempRH = initTempRH();
+		clearFile(tempRH);
+		
+		// checker for due date
+		ArrayList<CalendarObject> checkArray = new ArrayList<CalendarObject>();
+		Task task = new Task(0, 0, "Dinner with mum", "21/11/2015");
+		Task task1 = new Task(1, 0, "Dinner with mum", "21/12/2015");
+		Task  task2 = new Task(2, 0, "Dinner with mum", "21/01/2016");
+
+		checkArray.add(task);
+		checkArray.add(task1);
+		checkArray.add(task2);
+
+		String cmdDueDate = String.format(CMD_ADD_RECURR_TASK, "Dinner with mum");
+		Result tempResult1 = new Result(cmdDueDate, true, putHashMap("tasks", checkArray));
+
+		// Compare results object
+		ArrayList<CalendarObject> expectedArray = tempResult1.getResults().get("tasks");
+		ArrayList<CalendarObject> actualArray = tempRH.processCommand("add task Dinner with mum due 21/11/2015 repeat monthly till 01/02/2016").getResults().get("tasks");
+		assertEquals(actualArray.toString(), expectedArray.toString());
+		clearFile(tempRH);
+
+	}
+	
 
 	// *****************OTHER METHODS********************//
 	private HashMap<String, ArrayList<CalendarObject>> putHashMap(String key, ArrayList<CalendarObject> value) {
@@ -589,9 +754,9 @@ public class TestLogic {
 			pass = 1;
 		}
 		if (!(pass == 1)) {
-			assertTrue(false);
-		} else {
 			assertTrue(true);
+		} else {
+			assertTrue(false);
 		}
 		clearFile(tempRH);
 	}

@@ -11,7 +11,6 @@ import Tempo.Data.*;
 import Tempo.Storage.*;
 
 public class Calendar {
-
 	private static Calendar instance = new Calendar();
 	private static IndexStore indexStore;
 	private static CalendarImporter importer;
@@ -1101,7 +1100,6 @@ public class Calendar {
 		undoHistory.add(cmd);
 	}
 
-	/***** REDO COMMAND EXECUTION ******/
 	public Result redo() {
 		if (redoHistory.isEmpty()) {
 			return new Result(CMD_REDO, false, null);
@@ -1121,8 +1119,6 @@ public class Calendar {
 			redoHistory.clear();
 		}
 	}
-
-	/***** SEARCH COMMAND EXECUTION ******/
 
 	//@@author A0125962B
 	public Result search(String arguments) {
@@ -1258,8 +1254,6 @@ public class Calendar {
 
 		return returnHashMap;
 	}
-
-	/***** OTHER METHODS ******/
 
 	public ArrayList<CalendarObject> getEventsList() {
 		return eventsList;
