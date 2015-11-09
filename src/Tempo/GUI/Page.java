@@ -1,4 +1,4 @@
-package Tempo.UI;
+package Tempo.GUI;
 /**
  * @author A0145073L
  * ashish juneja

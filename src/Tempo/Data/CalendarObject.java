@@ -1,4 +1,4 @@
-package Tempo.CalendarObjects;
+package Tempo.Data;
 
 public interface CalendarObject {
 	
