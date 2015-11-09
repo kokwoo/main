@@ -4,6 +4,7 @@ import java.util.*;
 import Tempo.CalendarObjects.*;
 import Tempo.Logic.Calendar;
 
+//@@author A0127047J
 public class UndoUpdate implements Command {
 	private static Calendar calendar = Calendar.getInstance();
 	
@@ -115,7 +116,6 @@ public class UndoUpdate implements Command {
 	}
 	
 	private Result undoUpdateEventsSeries() {
-		System.out.println("Undoing update events series"); // debug
 		Result result;
 		result = calendar.removeEvent(prevModIndex, true);
 		removeUndoUndoCommand();

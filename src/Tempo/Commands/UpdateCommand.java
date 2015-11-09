@@ -5,6 +5,7 @@ import java.util.*;
 import Tempo.Logic.Calendar;
 import Tempo.Logic.IndexStore;
 
+//@@author A0127047J
 public class UpdateCommand implements Command {
 	private static Calendar cal;
 	private static IndexStore indexStore;
@@ -19,14 +20,12 @@ public class UpdateCommand implements Command {
 	public UpdateCommand(Calendar cal, IndexStore indexStore, 
 						 int idx, ArrayList<String> fields, 
 						 ArrayList<String> newValues, boolean isSeries) {
-		System.out.println("UpdateCommand: Creating update command object"); // debug
 		this.cal = cal;
 		this.indexStore = indexStore;
 		this.idx = idx;
 		this.fields = fields;
 		this.newValues = newValues;
 		this.isSeries = isSeries;
-		System.out.println("UpdateCommand: isSeries == " + isSeries); // debug
 	}
 	
 	@Override

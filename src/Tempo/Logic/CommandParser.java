@@ -202,7 +202,7 @@ public class CommandParser {
 			argumentString = getArgumentString(argumentString);
 			isRecurring = true;
 			try {
-				recurringArgs = processRecurringArgs(recurringArgsString);
+				recurringArgs = getRecurrArgs(recurringArgsString);
 			} catch (Exception e) {
 				return new AddCommand(calendar, null, true, null, null);
 			}
@@ -681,7 +681,7 @@ public class CommandParser {
 		return returnString;
 	}
 
-	public static ArrayList<String> processRecurringArgs(String recurringArgs) throws Exception {
+	public static ArrayList<String> getRecurrArgs(String recurringArgs) throws Exception {
 		String recurringType = null;
 		Date recurringDate = null;
 		String recurringDateStr = null;

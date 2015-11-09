@@ -3,6 +3,7 @@ package Tempo.CalendarObjects;
 import java.text.*;
 import java.util.*;
 
+//@@author A0125962B
 public class Event implements CalendarObject, Comparable<Event>{
 	protected Date startDateTime;
 	protected Date endDateTime;
@@ -28,6 +29,7 @@ public class Event implements CalendarObject, Comparable<Event>{
 		setEndDateTime(end.trim());
 		}
 	
+	//@@author A0127047J
 	public void update(String field, String newValue) {
 		switch(field) {
 			case PARAM_NAME: 
@@ -93,6 +95,7 @@ public class Event implements CalendarObject, Comparable<Event>{
 		setEndDateTime(newEndDateTime);
 	}
 	
+	//@@author A0125962B
 	public int getIndex() {
 		return index;
 	}

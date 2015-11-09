@@ -7,6 +7,7 @@ import Tempo.CalendarObjects.CalendarObject;
 import Tempo.CalendarObjects.Event;
 import Tempo.CalendarObjects.FloatingTask;
 
+//@@author A0125962B
 public class Result {
 	private String cmdPeformed;
 	private String warning;
