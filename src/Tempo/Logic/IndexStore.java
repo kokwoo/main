@@ -87,7 +87,6 @@ public class IndexStore {
 				recycledPriId.add(i);
 			}
 		}
-		Collections.sort(recycledPriId);
 	}
 	
 	private void updateRecycledSecId() {
@@ -106,7 +105,6 @@ public class IndexStore {
 				recycledSeriesId.add(currId);
 			}
 		}
-		Collections.sort(recycledSeriesId);
 	}
 	
 	private boolean isUsedId(int idx) {
@@ -139,8 +137,6 @@ public class IndexStore {
 		recycledSeriesId.add(seriesId);
 		events.remove(index);
 		recycledPriId.add(index);
-		Collections.sort(recycledSeriesId);
-		Collections.sort(recycledPriId);
 	}
 	
 	public void removeTask(int index) {
@@ -149,8 +145,6 @@ public class IndexStore {
 		recycledSeriesId.add(seriesId);
 		tasks.remove(index);
 		recycledPriId.add(index);
-		Collections.sort(recycledSeriesId);
-		Collections.sort(recycledPriId);
 	}
 	
 	public void replaceEvent(int index, Event event) {
