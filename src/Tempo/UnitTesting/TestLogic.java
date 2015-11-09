@@ -17,7 +17,7 @@ import Tempo.Logic.Display;
 import Tempo.Logic.RequestHandler;
 
 public class TestLogic {
-
+	//@@author A0125303X
 	private static final String CMD_ADD_EVENT = "add event %1$s";
 	private static final String CMD_ADD_TASK = "add task %1$s";
 	private static final String CMD_ADD_FLOATING = "add floating task %1$s";
