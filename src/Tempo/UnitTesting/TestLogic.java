@@ -33,7 +33,7 @@ public class TestLogic {
 	private static final String CMD_REMOVE_EVENT = "remove event %1$s";
 	private static final String CMD_REMOVE_TASK = "remove task %1$s";
 	private static final String CMD_REMOVE_FLOATING = "remove floating task %1$s";
-	
+
 	private static final String CMD_REMOVE = "remove ";
 
 	private static final String CMD_UPDATE_EVENT = "update event %1$s";
@@ -45,16 +45,16 @@ public class TestLogic {
 	private static final String TEST_ADD_EVENT_ERROR = "add event Dinner with mum from 45/12/2015 at 19:00 to 24/12/2015 at 19:00";
 	private static final String TEST_ADD_EVENT_ERROR_1 = "add event Dinner with mum from 22/22/2015 at 19:00 to 24/12/2015 at 19:00";
 	private static final String TEST_ADD_EVENT_ERROR_2 = "add event Dinner with mum from 22/12/9999 at 19:00 to 24/12/2015 at 19:00";
-	private static final String TEST_ADD_EVENT_ERROR_3 =  "add event Dinner with mum from 22/12/2015 at 55:55 to 24/12/2015 at 19:00";
-	private static final String TEST_ADD_EVENT_ERROR_4 =  "add event Dinner with mum from 30/12/2015 at 19:00 to 24/12/2015 at 19:00";
-	
-	private static final String TEST_ADD_TASK ="add task Lunch with mum due 12/12/2015";
-	private static final String TEST_ADD_TASK_ERROR ="add task Dinner with mum due 45/12/2015";
-	private static final String TEST_ADD_TASK_ERROR_1 ="add task Dinner with mum due 45/12/2015";
-	private static final String TEST_ADD_TASK_ERROR_2 ="add task Dinner with mum due 45/12/2015";
-	
-	private static final String TEST_ADD_FTASK ="add task Dinner with mum";
-	
+	private static final String TEST_ADD_EVENT_ERROR_3 = "add event Dinner with mum from 22/12/2015 at 55:55 to 24/12/2015 at 19:00";
+	private static final String TEST_ADD_EVENT_ERROR_4 = "add event Dinner with mum from 30/12/2015 at 19:00 to 24/12/2015 at 19:00";
+
+	private static final String TEST_ADD_TASK = "add task Lunch with mum due 12/12/2015";
+	private static final String TEST_ADD_TASK_ERROR = "add task Dinner with mum due 45/12/2015";
+	private static final String TEST_ADD_TASK_ERROR_1 = "add task Dinner with mum due 45/12/2015";
+	private static final String TEST_ADD_TASK_ERROR_2 = "add task Dinner with mum due 45/12/2015";
+
+	private static final String TEST_ADD_FTASK = "add task Dinner with mum";
+
 	@After
 	public void tearDown() throws Exception {
 	}
@@ -114,7 +114,7 @@ public class TestLogic {
 
 		// equivalence testing
 		// invalid date
-		//all values should pass
+		// all values should pass
 		tryCatchAdd(pass, tempRH, TEST_ADD_TASK_ERROR);
 		tryCatchAdd(pass, tempRH, TEST_ADD_TASK_ERROR_1);
 		tryCatchAdd(pass, tempRH, TEST_ADD_TASK_ERROR_2);
@@ -137,8 +137,6 @@ public class TestLogic {
 
 	}
 
-	
-
 	@Test
 	public final void testAddFTask() {
 		// To test
@@ -156,7 +154,8 @@ public class TestLogic {
 		clearFile(tempRH);
 
 		ArrayList<CalendarObject> expectedArray = tempResult.getResults().get(CMD_FLOATING_TASK);
-		ArrayList<CalendarObject> actualArray = tempRH.processCommand(TEST_ADD_FTASK).getResults().get(CMD_FLOATING_TASK);
+		ArrayList<CalendarObject> actualArray = tempRH.processCommand(TEST_ADD_FTASK).getResults()
+				.get(CMD_FLOATING_TASK);
 		assertEquals(expectedArray.toString(), actualArray.toString());
 		clearFile(tempRH);
 
@@ -165,7 +164,7 @@ public class TestLogic {
 	@Test
 	public final void testRemoveEvent() {
 
-		//to tesy
+		// to tesy
 		RequestHandler tempRH = initTempRH();
 		clearFile(tempRH);
 		tempRH.processCommand(TEST_ADD_EVENT);
@@ -180,6 +179,15 @@ public class TestLogic {
 		assertEquals(tempResult.getCmdPerformed(), tempRH.processCommand(CMD_REMOVE + 0).getCmdPerformed());
 		assertEquals(tempResult.isSuccess(), tempRH.processCommand(CMD_REMOVE + 1).isSuccess());
 		assertEquals(tempResult.isDisplayResult(), tempRH.processCommand(CMD_REMOVE + 2).isDisplayResult());
+
+		// equivalence testing
+		try {
+			assertEquals(tempResult.isDisplayResult(), tempRH.processCommand(CMD_REMOVE + 3).isDisplayResult());
+			assertEquals(tempResult.isDisplayResult(), tempRH.processCommand(CMD_REMOVE + -1).isDisplayResult());
+		} catch (NullPointerException ex) {
+
+		}
+
 		clearFile(tempRH);
 	}
 
@@ -202,32 +210,40 @@ public class TestLogic {
 		assertEquals(tempResult.isSuccess(), tempRH.processCommand(CMD_REMOVE + 1).isSuccess());
 		assertEquals(tempResult.isDisplayResult(), tempRH.processCommand(CMD_REMOVE + 2).isDisplayResult());
 
+		// equivalence testing
+		try {
+			assertEquals(tempResult.isDisplayResult(), tempRH.processCommand(CMD_REMOVE + 3).isDisplayResult());
+			assertEquals(tempResult.isDisplayResult(), tempRH.processCommand(CMD_REMOVE + -1).isDisplayResult());
+		} catch (NullPointerException ex) {
+
+		}
+		clearFile(tempRH);
+
 	}
 
 	@Test
 	public final void testRemoveFTask() {
 		// To test
-		String Ftask = "add task Lunch with mum";
 		RequestHandler tempRH = initTempRH();
 		clearFile(tempRH);
-		tempRH.processCommand(Ftask);
-		tempRH.processCommand(Ftask);
-		tempRH.processCommand(Ftask);
+		tempRH.processCommand(TEST_ADD_FTASK);
+		tempRH.processCommand(TEST_ADD_FTASK);
+		tempRH.processCommand(TEST_ADD_FTASK);
 
 		// checker
 		ArrayList<CalendarObject> checkArray = new ArrayList<CalendarObject>();
-		String cmd = String.format(CMD_REMOVE_FLOATING, "Lunch with mum");
-		Result tempResult = new Result(cmd, true, putHashMap("floating tasks", checkArray));
+		String cmd = String.format(CMD_REMOVE_FLOATING, "Dinner with mum");
+		Result tempResult = new Result(cmd, true, putHashMap(CMD_FLOATING_TASK, checkArray));
 
 		// Compare results object
-		assertEquals(tempResult.getCmdPerformed(), tempRH.processCommand("remove 0").getCmdPerformed());
-		assertEquals(tempResult.isSuccess(), tempRH.processCommand("remove 1").isSuccess());
-		assertEquals(tempResult.isDisplayResult(), tempRH.processCommand("remove 2").isDisplayResult());
+		assertEquals(tempResult.getCmdPerformed(), tempRH.processCommand(CMD_REMOVE + 0).getCmdPerformed());
+		assertEquals(tempResult.isSuccess(), tempRH.processCommand(CMD_REMOVE + 1).isSuccess());
+		assertEquals(tempResult.isDisplayResult(), tempRH.processCommand(CMD_REMOVE + 2).isDisplayResult());
 
 		// equivalence testing
 		try {
-			assertEquals(tempResult.isDisplayResult(), tempRH.processCommand("remove 3").isDisplayResult());
-			assertEquals(tempResult.isDisplayResult(), tempRH.processCommand("remove -1").isDisplayResult());
+			assertEquals(tempResult.isDisplayResult(), tempRH.processCommand(CMD_REMOVE + 3).isDisplayResult());
+			assertEquals(tempResult.isDisplayResult(), tempRH.processCommand(CMD_REMOVE + -1).isDisplayResult());
 		} catch (NullPointerException ex) {
 
 		}
@@ -782,7 +798,7 @@ public class TestLogic {
 	private ArrayList<CalendarObject> getEventArray(Result tempResult) {
 		return tempResult.getResults().get("events");
 	}
-	
+
 	private ArrayList<CalendarObject> getTaskArray(Result tempResult) {
 		return tempResult.getResults().get("tasks");
 	}
