@@ -669,7 +669,7 @@ public class TestLogic {
 		Task task = new Task(0, 0, "Dinner with mum", "21/11/2015");
 		Task task1 = new Task(1, 0, "Dinner with mum", "22/11/2015");
 		Task task2 = new Task(2, 0, "Dinner with mum", "23/11/2015");
-		Task task3 = new Task(3, 0, "Dinner with mum", "23/11/2015");
+		Task task3 = new Task(3, 0, "Dinner with mum", "24/11/2015");
 		checkArray.add(task);
 		checkArray.add(task1);
 		checkArray.add(task2);
